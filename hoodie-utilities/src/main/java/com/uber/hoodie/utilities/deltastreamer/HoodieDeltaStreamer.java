@@ -448,7 +448,7 @@ public class HoodieDeltaStreamer implements Serializable {
     public Boolean enableHiveSync = false;
 
     @Parameter(names = {"--spark-master"}, description = "spark master to use.")
-    public String sparkMaster = "local[2]";
+    public String sparkMaster = "yarn";
 
     @Parameter(names = {"--commit-on-errors"}, description = "Commit even when some records failed to be written")
     public Boolean commitOnErrors = false;
