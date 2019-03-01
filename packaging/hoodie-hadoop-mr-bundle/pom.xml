@@ -47,22 +47,22 @@
     </dependency>
 
     <dependency>
-      <groupId>org.apache.hadoop</groupId>
+      <groupId>io.hops</groupId>
       <artifactId>hadoop-common</artifactId>
     </dependency>
 
     <dependency>
-      <groupId>org.apache.hadoop</groupId>
+      <groupId>io.hops</groupId>
       <artifactId>hadoop-mapreduce-client-core</artifactId>
     </dependency>
 
     <dependency>
-      <groupId>org.apache.hadoop</groupId>
+      <groupId>io.hops</groupId>
       <artifactId>hadoop-mapreduce-client-common</artifactId>
     </dependency>
 
     <dependency>
-      <groupId>org.apache.hadoop</groupId>
+      <groupId>io.hops</groupId>
       <artifactId>hadoop-auth</artifactId>
     </dependency>
 
@@ -109,7 +109,7 @@
     </dependency>
 
     <dependency>
-      <groupId>org.apache.hadoop</groupId>
+      <groupId>io.hops</groupId>
       <artifactId>hadoop-hdfs</artifactId>
     </dependency>
 
