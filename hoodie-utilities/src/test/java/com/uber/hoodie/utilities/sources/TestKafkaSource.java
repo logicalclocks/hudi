@@ -30,14 +30,15 @@ import com.uber.hoodie.utilities.sources.helpers.KafkaOffsetGen.CheckpointUtils;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Optional;
-import kafka.common.TopicAndPartition;
+import org.apache.kafka.common.TopicPartition;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
-import org.apache.spark.streaming.kafka.KafkaCluster.LeaderOffset;
-import org.apache.spark.streaming.kafka.KafkaTestUtils;
-import org.apache.spark.streaming.kafka.OffsetRange;
+//import org.apache.spark.streaming.kafka.KafkaCluster.LeaderOffset;
+//import org.apache.spark.streaming.kafka.KafkaTestUtils;
+//import org.apache.spark.streaming.kafka010
+import org.apache.spark.streaming.kafka010.OffsetRange;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -52,7 +53,7 @@ public class TestKafkaSource extends UtilitiesTestBase {
   private static String TEST_TOPIC_NAME = "hoodie_test";
 
   private FilebasedSchemaProvider schemaProvider;
-  private KafkaTestUtils testUtils;
+ /* private KafkaTestUtils testUtils;
 
   @BeforeClass
   public static void initClass() throws Exception {
@@ -68,7 +69,7 @@ public class TestKafkaSource extends UtilitiesTestBase {
   public void setup() throws Exception {
     super.setup();
     schemaProvider = new FilebasedSchemaProvider(Helpers.setupSchemaOnDFS(), jsc);
-    testUtils = new KafkaTestUtils();
+   testUtils = new KafkaTestUtils();
     testUtils.setup();
   }
 
@@ -132,11 +133,11 @@ public class TestKafkaSource extends UtilitiesTestBase {
     assertEquals(Optional.empty(), fetch4AsRows.getBatch());
   }
 
-
-  private static HashMap<TopicAndPartition, LeaderOffset> makeOffsetMap(int[] partitions, long[] offsets) {
-    HashMap<TopicAndPartition, LeaderOffset> map = new HashMap<>();
+*/
+  private static HashMap<TopicPartition, Long> makeOffsetMap(int[] partitions, long[] offsets) {
+    HashMap<TopicPartition, Long> map = new HashMap<>();
     for (int i = 0; i < partitions.length; i++) {
-      map.put(new TopicAndPartition(TEST_TOPIC_NAME, partitions[i]), new LeaderOffset("", -1, offsets[i]));
+      map.put(new TopicPartition(TEST_TOPIC_NAME, partitions[i]), offsets[i]);
     }
     return map;
   }

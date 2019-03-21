@@ -22,15 +22,27 @@ import com.uber.hoodie.common.util.TypedProperties;
 import com.uber.hoodie.utilities.schema.SchemaProvider;
 import com.uber.hoodie.utilities.sources.helpers.KafkaOffsetGen;
 import com.uber.hoodie.utilities.sources.helpers.KafkaOffsetGen.CheckpointUtils;
+
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Optional;
-import kafka.serializer.StringDecoder;
+//import kafka.serializer.StringDecoder;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.consumer.ConsumerRecords;
+import org.apache.kafka.common.serialization.ByteArrayDeserializer;
+import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
+import org.apache.spark.api.java.function.PairFunction;
 import org.apache.spark.sql.SparkSession;
-import org.apache.spark.streaming.kafka.KafkaUtils;
-import org.apache.spark.streaming.kafka.OffsetRange;
+import org.apache.spark.streaming.kafka010.KafkaUtils;
+import org.apache.spark.streaming.kafka010.LocationStrategies;
+import org.apache.spark.streaming.kafka010.OffsetRange;
+import org.json.JSONObject;
+import scala.Tuple2;
 
 /**
  * Read json kafka data
@@ -42,27 +54,57 @@ public class JsonKafkaSource extends JsonSource {
   private final KafkaOffsetGen offsetGen;
 
   public JsonKafkaSource(TypedProperties properties, JavaSparkContext sparkContext, SparkSession sparkSession,
-      SchemaProvider schemaProvider) {
+                         SchemaProvider schemaProvider) {
     super(properties, sparkContext, sparkSession, schemaProvider);
     offsetGen = new KafkaOffsetGen(properties);
+    log.info("Source class is ---------Json Kafka Source");
   }
 
   @Override
   protected InputBatch<JavaRDD<String>> fetchNewData(Optional<String> lastCheckpointStr,
-      long sourceLimit) {
+                                                     long sourceLimit) {
     OffsetRange[] offsetRanges = offsetGen.getNextOffsetRanges(lastCheckpointStr, sourceLimit);
     long totalNewMsgs = CheckpointUtils.totalNewMessages(offsetRanges);
     if (totalNewMsgs <= 0) {
       return new InputBatch<>(Optional.empty(),
-          lastCheckpointStr.isPresent() ? lastCheckpointStr.get() : "");
+              lastCheckpointStr.isPresent() ? lastCheckpointStr.get() : "");
     }
     log.info("About to read " + totalNewMsgs + " from Kafka for topic :" + offsetGen.getTopicName());
     JavaRDD<String> newDataRDD = toRDD(offsetRanges);
     return new InputBatch<>(Optional.of(newDataRDD), CheckpointUtils.offsetsToStr(offsetRanges));
   }
 
-  private JavaRDD<String> toRDD(OffsetRange[] offsetRanges) {
+  /*private JavaRDD<String> toRDD(OffsetRange[] offsetRanges) {
     return KafkaUtils.createRDD(sparkContext, String.class, String.class, StringDecoder.class, StringDecoder.class,
         offsetGen.getKafkaParams(), offsetRanges).values();
+  } */
+
+  private JavaRDD<String> toRDD(OffsetRange[] offsetRanges) {
+    //return KafkaUtils.createRDD(sparkContext, String.class, String.class, StringDecoder.class, StringDecoder.class,
+    //offsetGen.getKafkaParams(), offsetRanges).values();
+
+    //return KafkaUtils.createRDD(sparkContext, offsetGen.getKafkaParams(), offsetRanges, LocationStrategies.PreferConsistent()).flatMap(s -> Arrays.asList(s.value().toString()).iterator());
+    return KafkaUtils.createRDD(sparkContext, offsetGen.getKafkaParams(), offsetRanges, LocationStrategies.PreferConsistent()).map( s -> s.value().toString());
+    //return KafkaUtils.createRDD(sparkContext, offsetGen.getKafkaParams(), offsetRanges, LocationStrategies.PreferConsistent()).map( s -> { JSONObject jsonObject= new JSONObject(s.value().toString()); return jsonObject.getString("volume"); });
+
+    /*JavaRDD<ConsumerRecord<String, String>> consumerRecord = KafkaUtils.createRDD(sparkContext, offsetGen.getKafkaParams(), offsetRanges, LocationStrategies.PreferConsistent());
+    JavaPairRDD<String, String> pair = consumerRecord.mapToPair(new PairFunction<ConsumerRecord<String, String>, String, String>() {
+      public Tuple2<String, String> call(ConsumerRecord<String, String> record) {
+        log.info(" record key: " + record.key());
+        log.info(" record value: " + record.value());
+        return new Tuple2<>(record.key(), record.value());
+      }
+    });
+    return pair.values(); */
+
+   /* JavaRDD<ConsumerRecord<String, String>> consumerRecord = KafkaUtils.createRDD(sparkContext, offsetGen.getKafkaParams(), offsetRanges, LocationStrategies.PreferConsistent());
+    return consumerRecord.mapToPair(new PairFunction<ConsumerRecord<String, String>, String, String>() {
+      public Tuple2<String, String> call(ConsumerRecord<String, String> record) {
+        log.info(" record key: " + record.key());
+        log.info(" record value: " + record.value());
+        return new Tuple2<>(record.key(), record.value());
+      }
+    }).values();*/
+
   }
 }

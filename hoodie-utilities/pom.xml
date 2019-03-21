@@ -72,7 +72,7 @@
                   <include>io.confluent:common-config</include>
                   <include>io.confluent:common-utils</include>
                   <include>io.confluent:kafka-schema-registry-client</include>
-                  <include>org.apache.spark:spark-streaming-kafka-0-8_2.11</include>
+                  <include>org.apache.spark:spark-streaming-kafka-0-10_2.11</include>
                   <include>org.apache.kafka:kafka_2.11</include>
                   <include>com.yammer.metrics:metrics-core</include>
                   <include>com.101tec:zkclient</include>
@@ -339,7 +339,7 @@
 
     <dependency>
       <groupId>org.apache.spark</groupId>
-      <artifactId>spark-streaming-kafka-0-8_2.11</artifactId>
+      <artifactId>spark-streaming-kafka-0-10_2.11</artifactId>
       <version>${spark.version}</version>
     </dependency>
 

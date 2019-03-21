@@ -25,6 +25,8 @@ import java.util.Map;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.GenericRecord;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 /**
  * Marjority of this is copied from
@@ -35,6 +37,7 @@ public class MercifulJsonConverter {
 
   private final ObjectMapper mapper = new ObjectMapper();
   private final Schema baseSchema;
+  private static Logger log = LogManager.getLogger(MercifulJsonConverter.class);
 
   public MercifulJsonConverter(Schema schema) {
     this.baseSchema = schema;
@@ -43,7 +46,15 @@ public class MercifulJsonConverter {
 
   public GenericRecord convert(String json) throws IOException {
     try {
+      log.info("This is String to be parsed as JSON:>  " +json);
+        /* StringBuilder sb= new StringBuilder(json);
+        sb.replace(json.lastIndexOf("\n"),json.lastIndexOf("\n")+1,"");
+        json= sb.toString();*/
+      //json = json.replaceAll("[\\r\\n|\\r|\\n|\n|\r]", "");
+      // String test= "{\"volume\": 483951, \"symbol\": \"MSFT\", \"ts\": \"2018-08-31 09:30:00\", \"month\": \"08\", \"high\": 111.74, \"low\": 111.55, \"key\": \"MSFT_2018-08-31 09\", \"year\": 2018, \"date\": \"2018/08/31\", \"close\": 111.72, \"open\": 111.55, \"day\": \"31\"}";
       return convert(mapper.readValue(json, Map.class), baseSchema);
+      // return convert(mapper.readValue(test, Map.class), baseSchema);
+      //return convert(mapper.readValue(tr, Map.class), baseSchema);
     } catch (IOException e) {
       throw new IOException("Failed to parse as Json: " + json + "\n\n" + e.getMessage());
     }
