@@ -53,6 +53,7 @@ import org.apache.hadoop.io.DoubleWritable;
 import org.apache.hadoop.io.FloatWritable;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Writable;
 import org.apache.hadoop.mapred.FileInputFormat;
 import org.apache.hadoop.mapred.FileSplit;
@@ -145,7 +146,7 @@ public class HoodieRealtimeRecordReaderTest {
             jobConf), basePath.getRoot().getPath(), Arrays.asList(logFilePath), newCommitTime);
 
     //create a RecordReader to be used by HoodieRealtimeRecordReader
-    RecordReader<Void, ArrayWritable> reader =
+    RecordReader<NullWritable, ArrayWritable> reader =
         new MapredParquetInputFormat().getRecordReader(
             new FileSplit(split.getPath(), 0, fs.getLength(split.getPath()), (String[]) null),
             jobConf, null);
@@ -165,7 +166,7 @@ public class HoodieRealtimeRecordReaderTest {
 
     //use reader to read base Parquet File and log file, merge in flight and return latest commit
     //here all 100 records should be updated, see above
-    Void key = recordReader.createKey();
+    NullWritable key = recordReader.createKey();
     ArrayWritable value = recordReader.createValue();
     while (recordReader.next(key, value)) {
       Writable[] values = value.get();
@@ -207,7 +208,7 @@ public class HoodieRealtimeRecordReaderTest {
             jobConf), basePath.getRoot().getPath(), Arrays.asList(logFilePath), newCommitTime);
 
     //create a RecordReader to be used by HoodieRealtimeRecordReader
-    RecordReader<Void, ArrayWritable> reader =
+    RecordReader<NullWritable, ArrayWritable> reader =
         new MapredParquetInputFormat().getRecordReader(
             new FileSplit(split.getPath(), 0, fs.getLength(split.getPath()), (String[]) null),
             jobConf, null);
@@ -227,7 +228,7 @@ public class HoodieRealtimeRecordReaderTest {
 
     //use reader to read base Parquet File and log file
     //here all records should be present. Also ensure log records are in order.
-    Void key = recordReader.createKey();
+    NullWritable key = recordReader.createKey();
     ArrayWritable value = recordReader.createValue();
     int numRecordsAtCommit1 = 0;
     int numRecordsAtCommit2 = 0;
@@ -290,7 +291,7 @@ public class HoodieRealtimeRecordReaderTest {
             jobConf), basePath.getRoot().getPath(), Arrays.asList(logFilePath), newCommitTime);
 
     //create a RecordReader to be used by HoodieRealtimeRecordReader
-    RecordReader<Void, ArrayWritable> reader =
+    RecordReader<NullWritable, ArrayWritable> reader =
         new MapredParquetInputFormat().getRecordReader(
             new FileSplit(split.getPath(), 0, fs.getLength(split.getPath()), (String[]) null),
             jobConf, null);
@@ -309,7 +310,7 @@ public class HoodieRealtimeRecordReaderTest {
 
     // use reader to read base Parquet File and log file, merge in flight and return latest commit
     // here the first 50 records should be updated, see above
-    Void key = recordReader.createKey();
+    NullWritable key = recordReader.createKey();
     ArrayWritable value = recordReader.createValue();
     int numRecordsRead = 0;
     while (recordReader.next(key, value)) {

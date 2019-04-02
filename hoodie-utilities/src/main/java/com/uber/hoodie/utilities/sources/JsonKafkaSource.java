@@ -26,7 +26,6 @@ import com.uber.hoodie.utilities.sources.helpers.KafkaOffsetGen.CheckpointUtils;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Optional;
-//import kafka.serializer.StringDecoder;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.common.serialization.ByteArrayDeserializer;
@@ -41,7 +40,6 @@ import org.apache.spark.sql.SparkSession;
 import org.apache.spark.streaming.kafka010.KafkaUtils;
 import org.apache.spark.streaming.kafka010.LocationStrategies;
 import org.apache.spark.streaming.kafka010.OffsetRange;
-import org.json.JSONObject;
 import scala.Tuple2;
 
 /**
@@ -80,14 +78,19 @@ public class JsonKafkaSource extends JsonSource {
   } */
 
   private JavaRDD<String> toRDD(OffsetRange[] offsetRanges) {
-    //return KafkaUtils.createRDD(sparkContext, String.class, String.class, StringDecoder.class, StringDecoder.class,
-    //offsetGen.getKafkaParams(), offsetRanges).values();
 
-    //return KafkaUtils.createRDD(sparkContext, offsetGen.getKafkaParams(), offsetRanges, LocationStrategies.PreferConsistent()).flatMap(s -> Arrays.asList(s.value().toString()).iterator());
-    return KafkaUtils.createRDD(sparkContext, offsetGen.getKafkaParams(), offsetRanges, LocationStrategies.PreferConsistent()).map( s -> s.value().toString());
-    //return KafkaUtils.createRDD(sparkContext, offsetGen.getKafkaParams(), offsetRanges, LocationStrategies.PreferConsistent()).map( s -> { JSONObject jsonObject= new JSONObject(s.value().toString()); return jsonObject.getString("volume"); });
+   // return KafkaUtils.createRDD(sparkContext, offsetGen.getKafkaParams(), offsetRanges, LocationStrategies.PreferConsistent()).map( s -> s.value().toString());
 
-    /*JavaRDD<ConsumerRecord<String, String>> consumerRecord = KafkaUtils.createRDD(sparkContext, offsetGen.getKafkaParams(), offsetRanges, LocationStrategies.PreferConsistent());
+  /*  Function<ConsumerRecord<String, String>, String> handler= new Function<ConsumerRecord<String, String>, String>(){
+      @Override
+      public String call(ConsumerRecord<String, String> r){
+        return r.value();
+      }
+    };
+    return  KafkaUtils.<String, String>createRDD(sparkContext, offsetGen.getKafkaParams(), offsetRanges, LocationStrategies.PreferConsistent()).map(handler);
+  */
+
+  JavaRDD<ConsumerRecord<String, String>> consumerRecord = KafkaUtils.createRDD(sparkContext, offsetGen.getKafkaParams(), offsetRanges, LocationStrategies.PreferConsistent());
     JavaPairRDD<String, String> pair = consumerRecord.mapToPair(new PairFunction<ConsumerRecord<String, String>, String, String>() {
       public Tuple2<String, String> call(ConsumerRecord<String, String> record) {
         log.info(" record key: " + record.key());
@@ -95,16 +98,7 @@ public class JsonKafkaSource extends JsonSource {
         return new Tuple2<>(record.key(), record.value());
       }
     });
-    return pair.values(); */
-
-   /* JavaRDD<ConsumerRecord<String, String>> consumerRecord = KafkaUtils.createRDD(sparkContext, offsetGen.getKafkaParams(), offsetRanges, LocationStrategies.PreferConsistent());
-    return consumerRecord.mapToPair(new PairFunction<ConsumerRecord<String, String>, String, String>() {
-      public Tuple2<String, String> call(ConsumerRecord<String, String> record) {
-        log.info(" record key: " + record.key());
-        log.info(" record value: " + record.value());
-        return new Tuple2<>(record.key(), record.value());
-      }
-    }).values();*/
+    return pair.values();
 
   }
 }

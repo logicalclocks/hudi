@@ -27,26 +27,23 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import org.apache.kafka.clients.consumer.KafkaConsumer;
-import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.common.PartitionInfo;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.spark.streaming.kafka010.OffsetRange;
-import scala.Array;
-import scala.Predef;
 import scala.collection.JavaConverters;
 import scala.collection.immutable.Map;
 import scala.collection.immutable.Set;
-import scala.collection.mutable.ArrayBuffer;
 import scala.collection.mutable.StringBuilder;
-import scala.util.Either;
+import  java.io.Serializable;
+
 
 
 /**
  * Source to read data from Kafka, incrementally
  */
-public class KafkaOffsetGen {
+public class KafkaOffsetGen implements Serializable{
 
   private static volatile Logger log = LogManager.getLogger(KafkaOffsetGen.class);
 
@@ -237,6 +234,7 @@ public class KafkaOffsetGen {
   public OffsetRange[] getNextOffsetRanges(Optional<String> lastCheckpointStr, long sourceLimit) {
 
     // Obtain current metadata for the topic
+
     KafkaConsumer<String, String> consumer= new KafkaConsumer<>(props);
     consumer.subscribe(Arrays.asList(topicName));
     List<PartitionInfo> partionInfos= consumer.partitionsFor(topicName);
