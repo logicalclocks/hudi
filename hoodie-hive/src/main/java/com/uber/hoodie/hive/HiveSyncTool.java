@@ -175,6 +175,14 @@ public class HiveSyncTool {
         .collect(Collectors.toList());
   }
 
+  public HoodieHiveClient getHoodieHiveClient() {
+    return hoodieHiveClient;
+  }
+
+  public HiveSyncConfig getSyncCfg() {
+    return cfg;
+  }
+
   public static void main(String[] args) throws Exception {
     // parse the params
     final HiveSyncConfig cfg = new HiveSyncConfig();
@@ -184,7 +192,7 @@ public class HiveSyncTool {
       System.exit(1);
     }
     FileSystem fs = FSUtils.getFs(cfg.basePath, new Configuration());
-    HiveConf hiveConf = new HiveConf();
+    HiveConf hiveConf = new HiveConf(true);
     hiveConf.addResource(fs.getConf());
     new HiveSyncTool(cfg, hiveConf, fs).syncHoodieTable();
   }

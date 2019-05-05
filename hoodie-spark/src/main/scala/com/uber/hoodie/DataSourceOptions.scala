@@ -20,6 +20,7 @@ package com.uber.hoodie
 
 import com.uber.hoodie.common.model.HoodieTableType
 import com.uber.hoodie.hive.SlashEncodedDayPartitionValueExtractor
+import com.uber.hoodie.hive.MultiPartKeysValueExtractor
 
 /**
   * List of options that can be passed to the Hoodie datasource,
@@ -202,6 +203,7 @@ object DataSourceWriteOptions {
   val DEFAULT_HIVE_PASS_OPT_VAL = "hive"
   val DEFAULT_HIVE_URL_OPT_VAL = "jdbc:hive2://localhost:10000"
   val DEFAULT_HIVE_PARTITION_FIELDS_OPT_VAL = ""
-  val DEFAULT_HIVE_PARTITION_EXTRACTOR_CLASS_OPT_VAL = classOf[SlashEncodedDayPartitionValueExtractor].getCanonicalName
+  //val DEFAULT_HIVE_PARTITION_EXTRACTOR_CLASS_OPT_VAL = classOf[SlashEncodedDayPartitionValueExtractor].getCanonicalName
+  val DEFAULT_HIVE_PARTITION_EXTRACTOR_CLASS_OPT_VAL = classOf[MultiPartKeysValueExtractor].getCanonicalName
   val DEFAULT_HIVE_ASSUME_DATE_PARTITION_OPT_VAL = "false"
 }

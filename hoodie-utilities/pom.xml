@@ -43,7 +43,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-shade-plugin</artifactId>
-        <version>3.1.1</version>
+        <version>3.2.1</version>
         <executions>
           <execution>
             <phase>package</phase>
@@ -66,6 +66,7 @@
                   <include>com.twitter:bijection-avro_2.11</include>
                   <include>com.twitter:bijection-core_2.11</include>
                   <include>org.apache.parquet:parquet-avro</include>
+                  <include>com.twitter:parquet-hadoop-bundle</include>
                   <include>com.twitter:parquet-avro</include>
                   <include>com.twitter.common:objectsize</include>
                   <include>io.confluent:kafka-avro-serializer</include>
@@ -76,14 +77,14 @@
                   <include>org.apache.kafka:kafka_2.11</include>
                   <include>com.yammer.metrics:metrics-core</include>
                   <include>com.101tec:zkclient</include>
-                  <include>org.apache.kafka:kafka-clients</include>
-                  <include>org.apache.hive:hive-common</include>
-                  <include>org.apache.hive:hive-service</include>
-                  <include>org.apache.hive:hive-metastore</include>
-                  <include>org.apache.hive:hive-jdbc</include>
                   <include>com.esotericsoftware:kryo-shaded</include>
                   <include>org.objenesis:objenesis</include>
                   <include>com.esotericsoftware:minlog</include>
+                  <include>org.jpache.kafka:kafka-clients</include>
+                 <!-- <include>io.hops.hive:hive-common</include>
+                  <include>io.hops.hive:hive-service</include>
+                  <include>io.hops.hive:hive-metastore</include>
+                  <include>io.hops.hive:hive-jdbc</include> -->
                 </includes>
               </artifactSet>
               <relocations>
@@ -153,6 +154,17 @@
     <repository>
       <id>confluent</id>
       <url>http://packages.confluent.io/maven/</url>
+    </repository>
+    <repository>
+      <id>Hops</id>
+      <name>Hops Repo</name>
+      <url>https://bbc1.sics.se/archiva/repository/Hops/</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
     </repository>
   </repositories>
 
@@ -390,6 +402,12 @@
       <groupId>io.confluent</groupId>
       <artifactId>kafka-schema-registry-client</artifactId>
       <version>3.0.0</version>
+    </dependency>
+
+    <dependency>
+      <groupId>io.hops</groupId>
+      <artifactId>hops-util</artifactId>
+      <version>0.10.0-SNAPSHOT</version>
     </dependency>
 
   </dependencies>

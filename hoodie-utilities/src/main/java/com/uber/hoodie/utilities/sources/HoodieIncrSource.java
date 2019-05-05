@@ -5,7 +5,8 @@ import com.uber.hoodie.DataSourceUtils;
 import com.uber.hoodie.common.model.HoodieRecord;
 import com.uber.hoodie.common.util.TypedProperties;
 import com.uber.hoodie.common.util.collection.Pair;
-import com.uber.hoodie.hive.SlashEncodedDayPartitionValueExtractor;
+import com.uber.hoodie.hive.MultiPartKeysValueExtractor;
+//import com.uber.hoodie.hive.SlashEncodedDayPartitionValueExtractor;
 import com.uber.hoodie.utilities.schema.SchemaProvider;
 import com.uber.hoodie.utilities.sources.helpers.IncrSourceHelper;
 import java.util.Arrays;
@@ -47,7 +48,9 @@ public class HoodieIncrSource extends RowSource {
     private static final String HOODIE_SRC_PARTITION_EXTRACTORCLASS =
         "hoodie.deltastreamer.source.hoodieincr.partition.extractor.class";
     private static final String DEFAULT_HOODIE_SRC_PARTITION_EXTRACTORCLASS =
-        SlashEncodedDayPartitionValueExtractor.class.getCanonicalName();
+        MultiPartKeysValueExtractor.class.getCanonicalName();
+    //private static final String DEFAULT_HOODIE_SRC_PARTITION_EXTRACTORCLASS =
+    //SlashEncodedDayPartitionValueExtractor.class.getCanonicalName();
 
     /**
      * {@value #READ_LATEST_INSTANT_ON_MISSING_CKPT} allows delta-streamer to incrementally fetch from latest committed
@@ -59,8 +62,8 @@ public class HoodieIncrSource extends RowSource {
   }
 
   public HoodieIncrSource(TypedProperties props,
-      JavaSparkContext sparkContext, SparkSession sparkSession,
-      SchemaProvider schemaProvider) {
+                          JavaSparkContext sparkContext, SparkSession sparkSession,
+                          SchemaProvider schemaProvider) {
     super(props, sparkContext, sparkSession, schemaProvider);
   }
 
@@ -72,11 +75,11 @@ public class HoodieIncrSource extends RowSource {
     /**
      DataSourceUtils.checkRequiredProperties(props, Arrays.asList(Config.HOODIE_SRC_BASE_PATH,
      Config.HOODIE_SRC_PARTITION_FIELDS));
-    List<String> partitionFields = props.getStringList(Config.HOODIE_SRC_PARTITION_FIELDS, ",",
-        new ArrayList<>());
-    PartitionValueExtractor extractor = DataSourceUtils.createPartitionExtractor(props.getString(
-        Config.HOODIE_SRC_PARTITION_EXTRACTORCLASS, Config.DEFAULT_HOODIE_SRC_PARTITION_EXTRACTORCLASS));
-    **/
+     List<String> partitionFields = props.getStringList(Config.HOODIE_SRC_PARTITION_FIELDS, ",",
+     new ArrayList<>());
+     PartitionValueExtractor extractor = DataSourceUtils.createPartitionExtractor(props.getString(
+     Config.HOODIE_SRC_PARTITION_EXTRACTORCLASS, Config.DEFAULT_HOODIE_SRC_PARTITION_EXTRACTORCLASS));
+     **/
     String srcPath = props.getString(Config.HOODIE_SRC_BASE_PATH);
     int numInstantsPerFetch = props.getInteger(Config.NUM_INSTANTS_PER_FETCH, Config.DEFAULT_NUM_INSTANTS_PER_FETCH);
     boolean readLatestOnMissingCkpt = props.getBoolean(Config.READ_LATEST_INSTANT_ON_MISSING_CKPT,
@@ -103,37 +106,37 @@ public class HoodieIncrSource extends RowSource {
     Dataset<Row> source = reader.load(srcPath);
 
     /**
-    log.info("Partition Fields are : (" + partitionFields + "). Initial Source Schema :" + source.schema());
+     log.info("Partition Fields are : (" + partitionFields + "). Initial Source Schema :" + source.schema());
 
-    StructType newSchema = new StructType(source.schema().fields());
-    for (String field : partitionFields) {
-      newSchema = newSchema.add(field, DataTypes.StringType, true);
-    }
+     StructType newSchema = new StructType(source.schema().fields());
+     for (String field : partitionFields) {
+     newSchema = newSchema.add(field, DataTypes.StringType, true);
+     }
 
-    /**
+     /**
      * Validates if the commit time is sane and also generates Partition fields from _hoodie_partition_path if
      * configured
      *
-    Dataset<Row> validated = source.map((MapFunction<Row, Row>) (Row row) -> {
-      // _hoodie_instant_time
-      String instantTime = row.getString(0);
-      IncrSourceHelper.validateInstantTime(row, instantTime, instantEndpts.getKey(), instantEndpts.getValue());
-      if (!partitionFields.isEmpty()) {
-        // _hoodie_partition_path
-        String hoodiePartitionPath = row.getString(3);
-        List<Object> partitionVals = extractor.extractPartitionValuesInPath(hoodiePartitionPath).stream()
-            .map(o -> (Object) o).collect(Collectors.toList());
-        Preconditions.checkArgument(partitionVals.size() == partitionFields.size(),
-            "#partition-fields != #partition-values-extracted");
-        List<Object> rowObjs = new ArrayList<>(scala.collection.JavaConversions.seqAsJavaList(row.toSeq()));
-        rowObjs.addAll(partitionVals);
-        return RowFactory.create(rowObjs.toArray());
-      }
-      return row;
-    }, RowEncoder.apply(newSchema));
+     Dataset<Row> validated = source.map((MapFunction<Row, Row>) (Row row) -> {
+     // _hoodie_instant_time
+     String instantTime = row.getString(0);
+     IncrSourceHelper.validateInstantTime(row, instantTime, instantEndpts.getKey(), instantEndpts.getValue());
+     if (!partitionFields.isEmpty()) {
+     // _hoodie_partition_path
+     String hoodiePartitionPath = row.getString(3);
+     List<Object> partitionVals = extractor.extractPartitionValuesInPath(hoodiePartitionPath).stream()
+     .map(o -> (Object) o).collect(Collectors.toList());
+     Preconditions.checkArgument(partitionVals.size() == partitionFields.size(),
+     "#partition-fields != #partition-values-extracted");
+     List<Object> rowObjs = new ArrayList<>(scala.collection.JavaConversions.seqAsJavaList(row.toSeq()));
+     rowObjs.addAll(partitionVals);
+     return RowFactory.create(rowObjs.toArray());
+     }
+     return row;
+     }, RowEncoder.apply(newSchema));
 
-    log.info("Validated Source Schema :" + validated.schema());
-    **/
+     log.info("Validated Source Schema :" + validated.schema());
+     **/
 
     // Remove Hoodie meta columns except partition path from input source
     final Dataset<Row> src = source.drop(HoodieRecord.HOODIE_META_COLUMNS.stream()

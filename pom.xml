@@ -129,9 +129,9 @@
     <mockito.version>1.9.5</mockito.version>
     <log4j.version>1.2.17</log4j.version>
     <joda.version>2.9.9</joda.version>
-    <hadoop.version>2.8.2.7</hadoop.version>
+    <hadoop.version>2.8.2.8-SNAPSHOT</hadoop.version>
     <hive.groupid>io.hops.hive</hive.groupid>
-    <hive.version>2.3.0.1</hive.version>
+    <hive.version>3.0.0.1</hive.version>
     <metrics.version>3.1.1</metrics.version>
     <spark.version>2.4.0</spark.version>
     <avro.version>1.7.7</avro.version>
@@ -500,7 +500,8 @@
       </dependency>
 
       <!-- Storage formats -->
-      <!-- Spark parquet version 1.7.0 does not play well with the hive 1.1.0 installed in cluster (which requires twitter parquet 1.5.0) -->
+      <!-- Spark parquet version 1.7.0 does not play well with the hive 1.1.0 installed in cluster
+       (which requires twitter parquet 1.5.0) -->
       <dependency>
         <groupId>com.twitter</groupId>
         <artifactId>parquet-hadoop-bundle</artifactId>
@@ -685,7 +686,7 @@
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-databind</artifactId>
-        <version>${fasterxml.version}.1</version>
+        <version>${fasterxml.version}</version>
       </dependency>
 
       <dependency>

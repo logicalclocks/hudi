@@ -31,11 +31,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hive.conf.HiveConf;
-import org.apache.hadoop.hive.metastore.HiveMetaStore;
-import org.apache.hadoop.hive.metastore.HiveMetaStoreClient;
-import org.apache.hadoop.hive.metastore.IHMSHandler;
-import org.apache.hadoop.hive.metastore.TSetIpAddressProcessor;
-import org.apache.hadoop.hive.metastore.TUGIBasedProcessor;
+import org.apache.hadoop.hive.metastore.*;
 import org.apache.hadoop.hive.metastore.api.MetaException;
 import org.apache.hadoop.hive.thrift.TUGIContainingTransport;
 import org.apache.hive.service.server.HiveServer2;
@@ -282,9 +278,9 @@ public class HiveTestService {
       TProcessor processor;
       TTransportFactory transFactory;
 
-      IHMSHandler handler = (IHMSHandler) HiveMetaStore
-          .newRetryingHMSHandler("new db based metaserver",
-              conf, true);
+      HiveMetaStore.HMSHandler backingHandler =
+          new HiveMetaStore.HMSHandler("new db based metaserver", conf, false);
+      IHMSHandler handler = RetryingHMSHandler.getProxy(conf, backingHandler, true);
 
       if (conf.getBoolVar(HiveConf.ConfVars.METASTORE_EXECUTE_SET_UGI)) {
         transFactory =

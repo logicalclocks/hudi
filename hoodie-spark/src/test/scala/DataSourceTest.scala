@@ -41,8 +41,8 @@ class DataSourceTest extends AssertionsForJUnit {
   var spark: SparkSession = null
   var dataGen: HoodieTestDataGenerator = null
   val commonOpts = Map(
-    "hoodie.insert.shuffle.parallelism" -> "4",
-    "hoodie.upsert.shuffle.parallelism" -> "4",
+    "hoodie.insert.shuffle.parallelism" -> "1500",
+    "hoodie.upsert.shuffle.parallelism" -> "1500",
     DataSourceWriteOptions.RECORDKEY_FIELD_OPT_KEY -> "_row_key",
     DataSourceWriteOptions.PARTITIONPATH_FIELD_OPT_KEY -> "partition",
     DataSourceWriteOptions.PRECOMBINE_FIELD_OPT_KEY -> "timestamp",

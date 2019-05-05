@@ -46,14 +46,13 @@ public class MercifulJsonConverter {
 
   public GenericRecord convert(String json) throws IOException {
     try {
-        log.info("This is String to be parsed as JSON:>  " +json);
-        if(json.length() >=2 && json.charAt(0) == '"' && json.charAt(json.length()-1) == '"'){
-            json = json.substring(1, json.length()-1);
-            json = json.replaceAll("\\\\n|\\n|\\r|\n|\n\n", "");
-            json = json.replaceAll("\\\\", "");
-        }
+      //log.info("This is String to be parsed as JSON:>  " +json);
+      if (json.length() >= 2 && json.charAt(0) == '"' && json.charAt(json.length() - 1) == '"') {
+        json = json.substring(1, json.length() - 1);
+        json = json.replaceAll("\\\\n|\\n|\\r|\n|\n\n", "");
+        json = json.replaceAll("\\\\", "");
+      }
 
-       //String test= "{\"volume\": 483951, \"symbol\": \"MSFT\", \"ts\": \"2018-08-31 09:30:00\", \"month\": \"08\", \"high\": 111.74, \"low\": 111.55, \"key\": \"MSFT_2018-08-31 09\", \"year\": 2018, \"date\": \"2018/08/31\", \"close\": 111.72, \"open\": 111.55, \"day\": \"31\"}\n";
       return convert(mapper.readValue(json, Map.class), baseSchema);
     } catch (IOException e) {
       throw new IOException("Failed to parse as Json: " + json + "\n\n" + e.getMessage());

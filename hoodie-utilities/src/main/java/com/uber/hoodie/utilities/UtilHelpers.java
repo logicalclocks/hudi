@@ -120,7 +120,7 @@ public class UtilHelpers {
     return new String(buf.array());
   }
 
-  private static SparkConf buildSparkConf(String appName, String defaultMaster) {
+  public static SparkConf buildSparkConf(String appName, String defaultMaster) {
     SparkConf sparkConf = new SparkConf().setAppName(appName);
     String master = sparkConf.get("spark.master", defaultMaster);
     sparkConf.setMaster(master);
@@ -142,6 +142,11 @@ public class UtilHelpers {
 
   public static JavaSparkContext buildSparkContext(String appName, String defaultMaster) {
     return new JavaSparkContext(buildSparkConf(appName, defaultMaster));
+  }
+
+  public static JavaSparkContext buildSparkContextHiveSupport(SparkConf sparkConf) {
+    SparkSession sparkSession = SparkSession.builder().config(sparkConf).enableHiveSupport().getOrCreate();
+    return JavaSparkContext.fromSparkContext(sparkSession.sparkContext());
   }
 
   /**

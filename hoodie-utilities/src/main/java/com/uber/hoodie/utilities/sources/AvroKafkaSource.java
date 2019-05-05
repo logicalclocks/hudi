@@ -22,9 +22,7 @@ import com.uber.hoodie.common.util.TypedProperties;
 import com.uber.hoodie.utilities.schema.SchemaProvider;
 import com.uber.hoodie.utilities.sources.helpers.KafkaOffsetGen;
 import com.uber.hoodie.utilities.sources.helpers.KafkaOffsetGen.CheckpointUtils;
-import io.confluent.kafka.serializers.KafkaAvroDecoder;
 import java.util.Optional;
-//import kafka.serializer.StringDecoder;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -57,25 +55,19 @@ public class AvroKafkaSource extends AvroSource {
     long totalNewMsgs = CheckpointUtils.totalNewMessages(offsetRanges);
     if (totalNewMsgs <= 0) {
       return new InputBatch<>(Optional.empty(),
-              lastCheckpointStr.isPresent() ? lastCheckpointStr.get() : "");
+          lastCheckpointStr.isPresent() ? lastCheckpointStr.get() : "");
     } else {
       log.info("About to read " + totalNewMsgs + " from Kafka for topic :" + offsetGen.getTopicName());
     }
     JavaRDD<GenericRecord> newDataRDD = toRDD(offsetRanges);
     return new InputBatch<>(Optional.of(newDataRDD),
-            KafkaOffsetGen.CheckpointUtils.offsetsToStr(offsetRanges));
+        KafkaOffsetGen.CheckpointUtils.offsetsToStr(offsetRanges));
   }
 
- /* private JavaRDD<GenericRecord> toRDD(OffsetRange[] offsetRanges) {
-    JavaRDD<GenericRecord> recordRDD = KafkaUtils
-        .createRDD(sparkContext, String.class, Object.class, StringDecoder.class, KafkaAvroDecoder.class,
-            offsetGen.getKafkaParams(), offsetRanges).values().map(obj -> (GenericRecord) obj);
-    return recordRDD;
-  }*/
 
   private JavaRDD<GenericRecord> toRDD(OffsetRange[] offsetRanges) {
     JavaRDD<GenericRecord> recordRDD = KafkaUtils
-            .createRDD(sparkContext, offsetGen.getKafkaParams(), offsetRanges, LocationStrategies.PreferConsistent()).map(obj -> (GenericRecord) obj);
+        .createRDD(sparkContext, offsetGen.getKafkaParams(), offsetRanges, LocationStrategies.PreferConsistent()).map(obj -> (GenericRecord) obj);
     return recordRDD;
   }
 }

@@ -20,30 +20,28 @@ package com.uber.hoodie.utilities.sources;
 
 import static org.junit.Assert.assertEquals;
 
+import com.uber.hoodie.utilities.UtilitiesTestBase;
+import com.uber.hoodie.utilities.schema.FilebasedSchemaProvider;
+import com.uber.hoodie.utilities.sources.helpers.KafkaOffsetGen.CheckpointUtils;
+import java.util.HashMap;
+import org.apache.kafka.common.TopicPartition;
+import org.apache.spark.streaming.kafka010.OffsetRange;
+import org.junit.Test;
+/*import java.util.Optional;
 import com.uber.hoodie.AvroConversionUtils;
 import com.uber.hoodie.common.HoodieTestDataGenerator;
 import com.uber.hoodie.common.util.TypedProperties;
-import com.uber.hoodie.utilities.UtilitiesTestBase;
 import com.uber.hoodie.utilities.deltastreamer.SourceFormatAdapter;
-import com.uber.hoodie.utilities.schema.FilebasedSchemaProvider;
-import com.uber.hoodie.utilities.sources.helpers.KafkaOffsetGen.CheckpointUtils;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Optional;
-import org.apache.kafka.common.TopicPartition;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
-//import org.apache.spark.streaming.kafka.KafkaCluster.LeaderOffset;
-//import org.apache.spark.streaming.kafka.KafkaTestUtils;
-//import org.apache.spark.streaming.kafka010
-import org.apache.spark.streaming.kafka010.OffsetRange;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.BeforeClass;*/
+
 
 /**
  * Tests against {@link AvroKafkaSource}
@@ -53,87 +51,88 @@ public class TestKafkaSource extends UtilitiesTestBase {
   private static String TEST_TOPIC_NAME = "hoodie_test";
 
   private FilebasedSchemaProvider schemaProvider;
- /* private KafkaTestUtils testUtils;
 
-  @BeforeClass
-  public static void initClass() throws Exception {
-    UtilitiesTestBase.initClass();
-  }
+  /* private KafkaTestUtils testUtils;
 
-  @AfterClass
-  public static void cleanupClass() throws Exception {
-    UtilitiesTestBase.cleanupClass();
-  }
+   @BeforeClass
+   public static void initClass() throws Exception {
+     UtilitiesTestBase.initClass();
+   }
 
-  @Before
-  public void setup() throws Exception {
-    super.setup();
-    schemaProvider = new FilebasedSchemaProvider(Helpers.setupSchemaOnDFS(), jsc);
-   testUtils = new KafkaTestUtils();
-    testUtils.setup();
-  }
+   @AfterClass
+   public static void cleanupClass() throws Exception {
+     UtilitiesTestBase.cleanupClass();
+   }
 
-  @After
-  public void teardown() throws Exception {
-    super.teardown();
-    testUtils.teardown();
-  }
+   @Before
+   public void setup() throws Exception {
+     super.setup();
+     schemaProvider = new FilebasedSchemaProvider(Helpers.setupSchemaOnDFS(), jsc);
+    testUtils = new KafkaTestUtils();
+     testUtils.setup();
+   }
+
+   @After
+   public void teardown() throws Exception {
+     super.teardown();
+     testUtils.teardown();
+   }
 
 
-  @Test
-  public void testJsonKafkaSource() throws IOException {
+   @Test
+   public void testJsonKafkaSource() throws IOException {
 
-    // topic setup.
-    testUtils.createTopic(TEST_TOPIC_NAME, 2);
-    HoodieTestDataGenerator dataGenerator = new HoodieTestDataGenerator();
-    TypedProperties props = new TypedProperties();
-    props.setProperty("hoodie.deltastreamer.source.kafka.topic", TEST_TOPIC_NAME);
-    props.setProperty("metadata.broker.list", testUtils.brokerAddress());
-    props.setProperty("auto.offset.reset", "smallest");
-    props.setProperty("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-    props.setProperty("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+     // topic setup.
+     testUtils.createTopic(TEST_TOPIC_NAME, 2);
+     HoodieTestDataGenerator dataGenerator = new HoodieTestDataGenerator();
+     TypedProperties props = new TypedProperties();
+     props.setProperty("hoodie.deltastreamer.source.kafka.topic", TEST_TOPIC_NAME);
+     props.setProperty("metadata.broker.list", testUtils.brokerAddress());
+     props.setProperty("auto.offset.reset", "smallest");
+     props.setProperty("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+     props.setProperty("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
 
-    Source jsonSource = new JsonKafkaSource(props, jsc, sparkSession, schemaProvider);
-    SourceFormatAdapter kafkaSource = new SourceFormatAdapter(jsonSource);
+     Source jsonSource = new JsonKafkaSource(props, jsc, sparkSession, schemaProvider);
+     SourceFormatAdapter kafkaSource = new SourceFormatAdapter(jsonSource);
 
-    // 1. Extract without any checkpoint => get all the data, respecting sourceLimit
-    assertEquals(Optional.empty(), kafkaSource.fetchNewDataInAvroFormat(Optional.empty(), Long.MAX_VALUE).getBatch());
-    testUtils.sendMessages(TEST_TOPIC_NAME, Helpers.jsonifyRecords(dataGenerator.generateInserts("000", 1000)));
-    InputBatch<JavaRDD<GenericRecord>> fetch1 = kafkaSource.fetchNewDataInAvroFormat(Optional.empty(), 900);
-    assertEquals(900, fetch1.getBatch().get().count());
-    // Test Avro To DataFrame<Row> path
-    Dataset<Row> fetch1AsRows = AvroConversionUtils.createDataFrame(JavaRDD.toRDD(fetch1.getBatch().get()),
-        schemaProvider.getSourceSchema().toString(), jsonSource.getSparkSession());
-    assertEquals(900, fetch1AsRows.count());
+     // 1. Extract without any checkpoint => get all the data, respecting sourceLimit
+     assertEquals(Optional.empty(), kafkaSource.fetchNewDataInAvroFormat(Optional.empty(), Long.MAX_VALUE).getBatch());
+     testUtils.sendMessages(TEST_TOPIC_NAME, Helpers.jsonifyRecords(dataGenerator.generateInserts("000", 1000)));
+     InputBatch<JavaRDD<GenericRecord>> fetch1 = kafkaSource.fetchNewDataInAvroFormat(Optional.empty(), 900);
+     assertEquals(900, fetch1.getBatch().get().count());
+     // Test Avro To DataFrame<Row> path
+     Dataset<Row> fetch1AsRows = AvroConversionUtils.createDataFrame(JavaRDD.toRDD(fetch1.getBatch().get()),
+         schemaProvider.getSourceSchema().toString(), jsonSource.getSparkSession());
+     assertEquals(900, fetch1AsRows.count());
 
-    // 2. Produce new data, extract new data
-    testUtils.sendMessages(TEST_TOPIC_NAME, Helpers.jsonifyRecords(dataGenerator.generateInserts("001", 1000)));
-    InputBatch<Dataset<Row>> fetch2 = kafkaSource.fetchNewDataInRowFormat(
-        Optional.of(fetch1.getCheckpointForNextBatch()), Long.MAX_VALUE);
-    assertEquals(1100, fetch2.getBatch().get().count());
+     // 2. Produce new data, extract new data
+     testUtils.sendMessages(TEST_TOPIC_NAME, Helpers.jsonifyRecords(dataGenerator.generateInserts("001", 1000)));
+     InputBatch<Dataset<Row>> fetch2 = kafkaSource.fetchNewDataInRowFormat(
+         Optional.of(fetch1.getCheckpointForNextBatch()), Long.MAX_VALUE);
+     assertEquals(1100, fetch2.getBatch().get().count());
 
-    // 3. Extract with previous checkpoint => gives same data back (idempotent)
-    InputBatch<JavaRDD<GenericRecord>> fetch3 = kafkaSource.fetchNewDataInAvroFormat(
-        Optional.of(fetch1.getCheckpointForNextBatch()), Long.MAX_VALUE);
-    assertEquals(fetch2.getBatch().get().count(), fetch3.getBatch().get().count());
-    assertEquals(fetch2.getCheckpointForNextBatch(), fetch3.getCheckpointForNextBatch());
-    // Same using Row API
-    InputBatch<Dataset<Row>> fetch3AsRows =
-        kafkaSource.fetchNewDataInRowFormat(Optional.of(fetch1.getCheckpointForNextBatch()), Long.MAX_VALUE);
-    assertEquals(fetch2.getBatch().get().count(), fetch3AsRows.getBatch().get().count());
-    assertEquals(fetch2.getCheckpointForNextBatch(), fetch3AsRows.getCheckpointForNextBatch());
+     // 3. Extract with previous checkpoint => gives same data back (idempotent)
+     InputBatch<JavaRDD<GenericRecord>> fetch3 = kafkaSource.fetchNewDataInAvroFormat(
+         Optional.of(fetch1.getCheckpointForNextBatch()), Long.MAX_VALUE);
+     assertEquals(fetch2.getBatch().get().count(), fetch3.getBatch().get().count());
+     assertEquals(fetch2.getCheckpointForNextBatch(), fetch3.getCheckpointForNextBatch());
+     // Same using Row API
+     InputBatch<Dataset<Row>> fetch3AsRows =
+         kafkaSource.fetchNewDataInRowFormat(Optional.of(fetch1.getCheckpointForNextBatch()), Long.MAX_VALUE);
+     assertEquals(fetch2.getBatch().get().count(), fetch3AsRows.getBatch().get().count());
+     assertEquals(fetch2.getCheckpointForNextBatch(), fetch3AsRows.getCheckpointForNextBatch());
 
-    // 4. Extract with latest checkpoint => no new data returned
-    InputBatch<JavaRDD<GenericRecord>> fetch4 = kafkaSource.fetchNewDataInAvroFormat(
-        Optional.of(fetch2.getCheckpointForNextBatch()), Long.MAX_VALUE);
-    assertEquals(Optional.empty(), fetch4.getBatch());
-    // Same using Row API
-    InputBatch<Dataset<Row>> fetch4AsRows =
-        kafkaSource.fetchNewDataInRowFormat(Optional.of(fetch2.getCheckpointForNextBatch()), Long.MAX_VALUE);
-    assertEquals(Optional.empty(), fetch4AsRows.getBatch());
-  }
+     // 4. Extract with latest checkpoint => no new data returned
+     InputBatch<JavaRDD<GenericRecord>> fetch4 = kafkaSource.fetchNewDataInAvroFormat(
+         Optional.of(fetch2.getCheckpointForNextBatch()), Long.MAX_VALUE);
+     assertEquals(Optional.empty(), fetch4.getBatch());
+     // Same using Row API
+     InputBatch<Dataset<Row>> fetch4AsRows =
+         kafkaSource.fetchNewDataInRowFormat(Optional.of(fetch2.getCheckpointForNextBatch()), Long.MAX_VALUE);
+     assertEquals(Optional.empty(), fetch4AsRows.getBatch());
+   }
 
-*/
+ */
   private static HashMap<TopicPartition, Long> makeOffsetMap(int[] partitions, long[] offsets) {
     HashMap<TopicPartition, Long> map = new HashMap<>();
     for (int i = 0; i < partitions.length; i++) {
@@ -145,7 +144,7 @@ public class TestKafkaSource extends UtilitiesTestBase {
   @Test
   public void testComputeOffsetRanges() {
     // test totalNewMessages()
-    long totalMsgs = CheckpointUtils.totalNewMessages(new OffsetRange[]{
+    long totalMsgs = CheckpointUtils.totalNewMessages(new OffsetRange[] {
         OffsetRange.apply(TEST_TOPIC_NAME, 0, 0, 100),
         OffsetRange.apply(TEST_TOPIC_NAME, 0, 100, 200)
     });
@@ -153,16 +152,16 @@ public class TestKafkaSource extends UtilitiesTestBase {
 
     // should consume all the full data
     OffsetRange[] ranges = CheckpointUtils.computeOffsetRanges(
-        makeOffsetMap(new int[]{0, 1}, new long[]{200000, 250000}),
-        makeOffsetMap(new int[]{0, 1}, new long[]{300000, 350000}),
+        makeOffsetMap(new int[] {0, 1}, new long[] {200000, 250000}),
+        makeOffsetMap(new int[] {0, 1}, new long[] {300000, 350000}),
         1000000L
     );
     assertEquals(200000, CheckpointUtils.totalNewMessages(ranges));
 
     // should only consume upto limit
     ranges = CheckpointUtils.computeOffsetRanges(
-        makeOffsetMap(new int[]{0, 1}, new long[]{200000, 250000}),
-        makeOffsetMap(new int[]{0, 1}, new long[]{300000, 350000}),
+        makeOffsetMap(new int[] {0, 1}, new long[] {200000, 250000}),
+        makeOffsetMap(new int[] {0, 1}, new long[] {300000, 350000}),
         10000
     );
     assertEquals(10000, CheckpointUtils.totalNewMessages(ranges));
@@ -173,8 +172,8 @@ public class TestKafkaSource extends UtilitiesTestBase {
 
     // should also consume from new partitions.
     ranges = CheckpointUtils.computeOffsetRanges(
-        makeOffsetMap(new int[]{0, 1}, new long[]{200000, 250000}),
-        makeOffsetMap(new int[]{0, 1, 2}, new long[]{300000, 350000, 100000}),
+        makeOffsetMap(new int[] {0, 1}, new long[] {200000, 250000}),
+        makeOffsetMap(new int[] {0, 1, 2}, new long[] {300000, 350000, 100000}),
         1000000L
     );
     assertEquals(300000, CheckpointUtils.totalNewMessages(ranges));
@@ -182,8 +181,8 @@ public class TestKafkaSource extends UtilitiesTestBase {
 
     // for skewed offsets, does not starve any partition & can catch up
     ranges = CheckpointUtils.computeOffsetRanges(
-        makeOffsetMap(new int[]{0, 1}, new long[]{200000, 250000}),
-        makeOffsetMap(new int[]{0, 1, 2}, new long[]{200010, 350000, 10000}),
+        makeOffsetMap(new int[] {0, 1}, new long[] {200000, 250000}),
+        makeOffsetMap(new int[] {0, 1, 2}, new long[] {200010, 350000, 10000}),
         100000
     );
     assertEquals(100000, CheckpointUtils.totalNewMessages(ranges));
@@ -192,8 +191,8 @@ public class TestKafkaSource extends UtilitiesTestBase {
     assertEquals(10000, ranges[2].count());
 
     ranges = CheckpointUtils.computeOffsetRanges(
-        makeOffsetMap(new int[]{0, 1}, new long[]{200000, 250000}),
-        makeOffsetMap(new int[]{0, 1, 2}, new long[]{200010, 350000, 10000}),
+        makeOffsetMap(new int[] {0, 1}, new long[] {200000, 250000}),
+        makeOffsetMap(new int[] {0, 1, 2}, new long[] {200010, 350000, 10000}),
         1000000
     );
     assertEquals(110010, CheckpointUtils.totalNewMessages(ranges));

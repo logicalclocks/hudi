@@ -43,9 +43,9 @@ public class HoodieWriteConfig extends DefaultHoodieConfig {
   private static final String BASE_PATH_PROP = "hoodie.base.path";
   private static final String AVRO_SCHEMA = "hoodie.avro.schema";
   private static final String DEFAULT_PARALLELISM = "1500";
-  private static final String INSERT_PARALLELISM = "hoodie.insert.shuffle.parallelism";
-  private static final String BULKINSERT_PARALLELISM = "hoodie.bulkinsert.shuffle.parallelism";
-  private static final String UPSERT_PARALLELISM = "hoodie.upsert.shuffle.parallelism";
+  public static final String INSERT_PARALLELISM = "hoodie.insert.shuffle.parallelism";
+  public static final String BULKINSERT_PARALLELISM = "hoodie.bulkinsert.shuffle.parallelism";
+  public static final String UPSERT_PARALLELISM = "hoodie.upsert.shuffle.parallelism";
   private static final String WRITE_BUFFER_LIMIT_BYTES = "hoodie.write.buffer.limit.bytes";
   private static final String DEFAULT_WRITE_BUFFER_LIMIT_BYTES = String.valueOf(4 * 1024 * 1024);
   private static final String COMBINE_BEFORE_INSERT_PROP = "hoodie.combine.before.insert";

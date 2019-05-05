@@ -30,8 +30,8 @@ import com.uber.hoodie.exception.DatasetNotFoundException;
 import com.uber.hoodie.exception.HoodieException;
 import com.uber.hoodie.exception.HoodieNotSupportedException;
 import com.uber.hoodie.hive.HiveSyncConfig;
+import com.uber.hoodie.hive.MultiPartKeysValueExtractor;
 import com.uber.hoodie.hive.PartitionValueExtractor;
-import com.uber.hoodie.hive.SlashEncodedDayPartitionValueExtractor;
 import com.uber.hoodie.index.HoodieIndex;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -56,7 +56,7 @@ public class DataSourceUtils {
     String[] parts = fieldName.split("\\.");
     GenericRecord valueNode = record;
     int i = 0;
-    for (;i < parts.length; i++) {
+    for (; i < parts.length; i++) {
       String part = parts[i];
       Object val = valueNode.get(part);
       if (val == null) {
@@ -83,7 +83,7 @@ public class DataSourceUtils {
    * Create a key generator class via reflection, passing in any configs needed
    */
   public static KeyGenerator createKeyGenerator(String keyGeneratorClass,
-      TypedProperties props) throws IOException {
+                                                TypedProperties props) throws IOException {
     try {
       return (KeyGenerator) ReflectionUtils.loadClass(keyGeneratorClass, props);
     } catch (Throwable e) {
@@ -94,7 +94,7 @@ public class DataSourceUtils {
   /**
    * Create a partition value extractor class via reflection, passing in any configs needed
    */
-  public static PartitionValueExtractor createPartitionExtractor(String partitionExtractorClass)  {
+  public static PartitionValueExtractor createPartitionExtractor(String partitionExtractorClass) {
     try {
       return (PartitionValueExtractor) ReflectionUtils.loadClass(partitionExtractorClass);
     } catch (Throwable e) {
@@ -106,17 +106,17 @@ public class DataSourceUtils {
    * Create a payload class via reflection, passing in an ordering/precombine value.
    */
   public static HoodieRecordPayload createPayload(String payloadClass, GenericRecord record,
-      Comparable orderingVal) throws IOException {
+                                                  Comparable orderingVal) throws IOException {
     try {
       return (HoodieRecordPayload) ReflectionUtils
-          .loadClass(payloadClass, new Class<?>[]{GenericRecord.class, Comparable.class}, record, orderingVal);
+          .loadClass(payloadClass, new Class<?>[] {GenericRecord.class, Comparable.class}, record, orderingVal);
     } catch (Throwable e) {
       throw new IOException("Could not create payload for class: " + payloadClass, e);
     }
   }
 
   public static void checkRequiredProperties(TypedProperties props,
-      List<String> checkPropNames) {
+                                             List<String> checkPropNames) {
     checkPropNames.stream().forEach(prop -> {
       if (!props.containsKey(prop)) {
         throw new HoodieNotSupportedException("Required property " + prop + " is missing");
@@ -125,7 +125,7 @@ public class DataSourceUtils {
   }
 
   public static HoodieWriteClient createHoodieClient(JavaSparkContext jssc, String schemaStr,
-      String basePath, String tblName, Map<String, String> parameters) throws Exception {
+                                                     String basePath, String tblName, Map<String, String> parameters) throws Exception {
 
     // inline compaction is on by default for MOR
     boolean inlineCompact = parameters.get(DataSourceWriteOptions.STORAGE_TYPE_OPT_KEY())
@@ -154,7 +154,7 @@ public class DataSourceUtils {
 
 
   public static JavaRDD<WriteStatus> doWriteOperation(HoodieWriteClient client,
-      JavaRDD<HoodieRecord> hoodieRecords, String commitTime, String operation) {
+                                                      JavaRDD<HoodieRecord> hoodieRecords, String commitTime, String operation) {
     if (operation.equals(DataSourceWriteOptions.BULK_INSERT_OPERATION_OPT_VAL())) {
       return client.bulkInsert(hoodieRecords, commitTime);
     } else if (operation.equals(DataSourceWriteOptions.INSERT_OPERATION_OPT_VAL())) {
@@ -166,15 +166,15 @@ public class DataSourceUtils {
   }
 
   public static HoodieRecord createHoodieRecord(GenericRecord gr, Comparable orderingVal,
-      HoodieKey hKey, String payloadClass) throws IOException {
+                                                HoodieKey hKey, String payloadClass) throws IOException {
     HoodieRecordPayload payload = DataSourceUtils.createPayload(payloadClass, gr, orderingVal);
     return new HoodieRecord<>(hKey, payload);
   }
 
   @SuppressWarnings("unchecked")
   public static JavaRDD<HoodieRecord> dropDuplicates(JavaSparkContext jssc,
-      JavaRDD<HoodieRecord> incomingHoodieRecords,
-      HoodieWriteConfig writeConfig) throws Exception {
+                                                     JavaRDD<HoodieRecord> incomingHoodieRecords,
+                                                     HoodieWriteConfig writeConfig) throws Exception {
     try {
       HoodieReadClient client = new HoodieReadClient<>(jssc, writeConfig);
       return client.tagLocation(incomingHoodieRecords)
@@ -214,10 +214,12 @@ public class DataSourceUtils {
     hiveSyncConfig.jdbcUrl = props.getString(DataSourceWriteOptions.HIVE_URL_OPT_KEY(),
         DataSourceWriteOptions.DEFAULT_HIVE_URL_OPT_VAL());
     hiveSyncConfig.partitionFields =
-        props.getStringList(DataSourceWriteOptions.HIVE_PARTITION_FIELDS_OPT_KEY(), ",",  new ArrayList<>());
+        props.getStringList(DataSourceWriteOptions.HIVE_PARTITION_FIELDS_OPT_KEY(), ",", new ArrayList<>());
     hiveSyncConfig.partitionValueExtractorClass =
-          props.getString(DataSourceWriteOptions.HIVE_PARTITION_EXTRACTOR_CLASS_OPT_KEY(),
-              SlashEncodedDayPartitionValueExtractor.class.getName());
+        props.getString(DataSourceWriteOptions.HIVE_PARTITION_EXTRACTOR_CLASS_OPT_KEY(),
+            MultiPartKeysValueExtractor.class.getName());
+    // props.getString(DataSourceWriteOptions.HIVE_PARTITION_EXTRACTOR_CLASS_OPT_KEY(),
+    // SlashEncodedDayPartitionValueExtractor.class.getName());
     return hiveSyncConfig;
   }
 }

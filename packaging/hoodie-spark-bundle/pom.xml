@@ -64,7 +64,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-shade-plugin</artifactId>
-        <version>2.4</version>
+        <version>3.2.1</version>
         <executions>
           <execution>
             <phase>package</phase>
@@ -96,6 +96,7 @@
                     <exclude>com.databricks.spark.**</exclude>
                     <exclude>org.apache.avro.**</exclude>
                     <exclude>org.apache.derby.**</exclude>
+                      <exclude>org.apache.parquet.**</exclude>
                     <exclude>org.apache.hadoop.**</exclude>
                     <!--<exclude>org.apache.hive.**</exclude>-->
                     <exclude>org.apache.logging.log4j.**</exclude>
@@ -148,6 +149,18 @@
                   <pattern>org.apache.hadoop.hive.service.</pattern>
                   <shadedPattern>com.uber.hoodie.org.apache.hadoop_hive.service.</shadedPattern>
                 </relocation>-->
+                <relocation>
+                 <pattern>com.esotericsoftware.kryo.</pattern>
+                 <shadedPattern>com.uber.hoodie.com.esotericsoftware.kryo.</shadedPattern>
+                </relocation>
+                <relocation>
+                  <pattern>org.objenesis.</pattern>
+                  <shadedPattern>com.uber.hoodie.org.objenesis.</shadedPattern>
+                </relocation>
+                <relocation>
+                  <pattern>com.esotericsoftware.minlog.</pattern>
+                  <shadedPattern>com.uber.hoodie.com.esotericsoftware.minlog.</shadedPattern>
+                </relocation>
               </relocations>
               <createDependencyReducedPom>false</createDependencyReducedPom>
               <artifactSet>

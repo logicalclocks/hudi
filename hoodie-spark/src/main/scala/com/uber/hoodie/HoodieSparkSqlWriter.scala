@@ -151,6 +151,7 @@ private[hoodie] object HoodieSparkSqlWriter {
       log.info("No errors. Proceeding to commit the write.")
       val metaMap = parameters.filter(kv =>
         kv._1.startsWith(parameters(COMMIT_METADATA_KEYPREFIX_OPT_KEY)))
+      log.info("metaMap for checkpoint is: " + metaMap)
       val commitSuccess = if (metaMap.isEmpty) {
         client.commit(commitTime, writeStatuses)
       } else {
@@ -233,7 +234,7 @@ private[hoodie] object HoodieSparkSqlWriter {
 
   private def syncHive(basePath: Path, fs: FileSystem, parameters: Map[String, String]): Boolean = {
     val hiveSyncConfig: HiveSyncConfig = buildSyncConfig(basePath, parameters)
-    val hiveConf: HiveConf = new HiveConf()
+    val hiveConf: HiveConf = new HiveConf(true)
     hiveConf.addResource(fs.getConf)
     new HiveSyncTool(hiveSyncConfig, hiveConf, fs).syncHoodieTable()
     true

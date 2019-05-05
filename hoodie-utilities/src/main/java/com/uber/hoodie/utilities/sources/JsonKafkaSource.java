@@ -22,14 +22,8 @@ import com.uber.hoodie.common.util.TypedProperties;
 import com.uber.hoodie.utilities.schema.SchemaProvider;
 import com.uber.hoodie.utilities.sources.helpers.KafkaOffsetGen;
 import com.uber.hoodie.utilities.sources.helpers.KafkaOffsetGen.CheckpointUtils;
-
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Optional;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.apache.kafka.clients.consumer.ConsumerRecords;
-import org.apache.kafka.common.serialization.ByteArrayDeserializer;
-import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.spark.api.java.JavaPairRDD;
@@ -41,6 +35,12 @@ import org.apache.spark.streaming.kafka010.KafkaUtils;
 import org.apache.spark.streaming.kafka010.LocationStrategies;
 import org.apache.spark.streaming.kafka010.OffsetRange;
 import scala.Tuple2;
+
+/*import java.util.Arrays;
+import java.util.HashSet;
+import org.apache.kafka.clients.consumer.ConsumerRecords;
+import org.apache.kafka.common.serialization.ByteArrayDeserializer;
+import org.apache.kafka.common.serialization.StringDeserializer; */
 
 /**
  * Read json kafka data
@@ -65,7 +65,7 @@ public class JsonKafkaSource extends JsonSource {
     long totalNewMsgs = CheckpointUtils.totalNewMessages(offsetRanges);
     if (totalNewMsgs <= 0) {
       return new InputBatch<>(Optional.empty(),
-              lastCheckpointStr.isPresent() ? lastCheckpointStr.get() : "");
+          lastCheckpointStr.isPresent() ? lastCheckpointStr.get() : "");
     }
     log.info("About to read " + totalNewMsgs + " from Kafka for topic :" + offsetGen.getTopicName());
     JavaRDD<String> newDataRDD = toRDD(offsetRanges);
@@ -79,22 +79,10 @@ public class JsonKafkaSource extends JsonSource {
 
   private JavaRDD<String> toRDD(OffsetRange[] offsetRanges) {
 
-   // return KafkaUtils.createRDD(sparkContext, offsetGen.getKafkaParams(), offsetRanges, LocationStrategies.PreferConsistent()).map( s -> s.value().toString());
 
-  /*  Function<ConsumerRecord<String, String>, String> handler= new Function<ConsumerRecord<String, String>, String>(){
-      @Override
-      public String call(ConsumerRecord<String, String> r){
-        return r.value();
-      }
-    };
-    return  KafkaUtils.<String, String>createRDD(sparkContext, offsetGen.getKafkaParams(), offsetRanges, LocationStrategies.PreferConsistent()).map(handler);
-  */
-
-  JavaRDD<ConsumerRecord<String, String>> consumerRecord = KafkaUtils.createRDD(sparkContext, offsetGen.getKafkaParams(), offsetRanges, LocationStrategies.PreferConsistent());
+    JavaRDD<ConsumerRecord<String, String>> consumerRecord = KafkaUtils.createRDD(sparkContext, offsetGen.getKafkaParams(), offsetRanges, LocationStrategies.PreferConsistent());
     JavaPairRDD<String, String> pair = consumerRecord.mapToPair(new PairFunction<ConsumerRecord<String, String>, String, String>() {
       public Tuple2<String, String> call(ConsumerRecord<String, String> record) {
-        log.info(" record key: " + record.key());
-        log.info(" record value: " + record.value());
         return new Tuple2<>(record.key(), record.value());
       }
     });
