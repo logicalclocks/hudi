@@ -235,8 +235,8 @@ public class HoodieJavaStreamingApp {
     DataStreamWriter<Row> writer = streamingInput
         .writeStream()
         .format("com.uber.hoodie")
-        .option("hoodie.insert.shuffle.parallelism", "2")
-        .option("hoodie.upsert.shuffle.parallelism", "2")
+        .option("hoodie.insert.shuffle.parallelism", "1500")
+        .option("hoodie.upsert.shuffle.parallelism", "1500")
         .option(DataSourceWriteOptions.STORAGE_TYPE_OPT_KEY(), tableType)
         .option(DataSourceWriteOptions.RECORDKEY_FIELD_OPT_KEY(), "_row_key")
         .option(DataSourceWriteOptions.PARTITIONPATH_FIELD_OPT_KEY(), "partition")

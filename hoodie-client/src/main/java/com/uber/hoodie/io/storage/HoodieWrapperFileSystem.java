@@ -157,60 +157,60 @@ public class HoodieWrapperFileSystem extends FileSystem {
 
   @Override
   public FSDataOutputStream create(Path f, Progressable progress) throws IOException {
-    return fileSystem.create(convertToDefaultPath(f), progress);
+    return wrapOutputStream(f, fileSystem.create(convertToDefaultPath(f), progress));
   }
 
   @Override
   public FSDataOutputStream create(Path f, short replication) throws IOException {
-    return fileSystem.create(convertToDefaultPath(f), replication);
+    return wrapOutputStream(f, fileSystem.create(convertToDefaultPath(f), replication));
   }
 
   @Override
   public FSDataOutputStream create(Path f, short replication, Progressable progress)
       throws IOException {
-    return fileSystem.create(convertToDefaultPath(f), replication, progress);
+    return wrapOutputStream(f, fileSystem.create(convertToDefaultPath(f), replication, progress));
   }
 
   @Override
   public FSDataOutputStream create(Path f, boolean overwrite, int bufferSize) throws IOException {
-    return fileSystem.create(convertToDefaultPath(f), overwrite, bufferSize);
+    return wrapOutputStream(f, fileSystem.create(convertToDefaultPath(f), overwrite, bufferSize));
   }
 
   @Override
   public FSDataOutputStream create(Path f, boolean overwrite, int bufferSize, Progressable progress)
       throws IOException {
-    return fileSystem.create(convertToDefaultPath(f), overwrite, bufferSize, progress);
+    return wrapOutputStream(f, fileSystem.create(convertToDefaultPath(f), overwrite, bufferSize, progress));
   }
 
   @Override
   public FSDataOutputStream create(Path f, boolean overwrite, int bufferSize, short replication,
       long blockSize, Progressable progress) throws IOException {
-    return fileSystem
-        .create(convertToDefaultPath(f), overwrite, bufferSize, replication, blockSize, progress);
+    return wrapOutputStream(f, fileSystem
+        .create(convertToDefaultPath(f), overwrite, bufferSize, replication, blockSize, progress));
   }
 
   @Override
   public FSDataOutputStream create(Path f, FsPermission permission, EnumSet<CreateFlag> flags,
       int bufferSize, short replication, long blockSize, Progressable progress) throws IOException {
-    return fileSystem
+    return wrapOutputStream(f, fileSystem
         .create(convertToDefaultPath(f), permission, flags, bufferSize, replication, blockSize,
-            progress);
+            progress));
   }
 
   @Override
   public FSDataOutputStream create(Path f, FsPermission permission, EnumSet<CreateFlag> flags,
       int bufferSize, short replication, long blockSize, Progressable progress,
       Options.ChecksumOpt checksumOpt) throws IOException {
-    return fileSystem
+    return wrapOutputStream(f, fileSystem
         .create(convertToDefaultPath(f), permission, flags, bufferSize, replication, blockSize,
-            progress, checksumOpt);
+            progress, checksumOpt));
   }
 
   @Override
   public FSDataOutputStream create(Path f, boolean overwrite, int bufferSize, short replication,
       long blockSize) throws IOException {
-    return fileSystem
-        .create(convertToDefaultPath(f), overwrite, bufferSize, replication, blockSize);
+    return wrapOutputStream(f, fileSystem
+        .create(convertToDefaultPath(f), overwrite, bufferSize, replication, blockSize));
   }
 
   @Override

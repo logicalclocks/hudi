@@ -22,17 +22,11 @@ import static com.uber.hoodie.utilities.schema.RowBasedSchemaProvider.HOODIE_REC
 import static com.uber.hoodie.utilities.schema.RowBasedSchemaProvider.HOODIE_RECORD_STRUCT_NAME;
 
 import com.beust.jcommander.IStringConverter;
-import com.beust.jcommander.JCommander;
+//import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
 import com.codahale.metrics.Timer;
-import com.uber.hoodie.AvroConversionUtils;
-import com.uber.hoodie.DataSourceUtils;
-import com.uber.hoodie.HoodieWriteClient;
-import com.uber.hoodie.KeyGenerator;
-import com.uber.hoodie.OverwriteWithLatestAvroPayload;
-import com.uber.hoodie.SimpleKeyGenerator;
-import com.uber.hoodie.WriteStatus;
+import com.uber.hoodie.*;
 import com.uber.hoodie.common.model.HoodieCommitMetadata;
 import com.uber.hoodie.common.model.HoodieRecord;
 import com.uber.hoodie.common.model.HoodieRecordPayload;
@@ -56,13 +50,10 @@ import com.uber.hoodie.utilities.schema.SchemaProvider;
 import com.uber.hoodie.utilities.sources.InputBatch;
 import com.uber.hoodie.utilities.sources.JsonDFSSource;
 import com.uber.hoodie.utilities.transform.Transformer;
+import io.hops.util.Hops;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.hadoop.conf.Configuration;
@@ -76,6 +67,7 @@ import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
+//import scala.Tuple2;
 import scala.collection.JavaConversions;
 
 /**
@@ -88,7 +80,7 @@ public class HoodieDeltaStreamer implements Serializable {
 
   private static volatile Logger log = LogManager.getLogger(HoodieDeltaStreamer.class);
 
-  public static String CHECKPOINT_KEY = "deltastreamer.checkpoint.key";
+  public static String CHECKPOINT_KEY = "_deltastreamer.checkpoint.key";
 
   private final Config cfg;
 
@@ -138,10 +130,17 @@ public class HoodieDeltaStreamer implements Serializable {
    */
   private transient HiveConf hiveConf;
 
+  private String checkpoint;
+
   /**
    * Bag of properties with source, hoodie client, key generator etc.
    */
   TypedProperties props;
+
+  private transient HoodieDeltaStreamerMetrics metrics;
+
+  private transient Timer.Context overallTimerContext;
+
 
   public HoodieDeltaStreamer(Config cfg, JavaSparkContext jssc) throws IOException {
     this(cfg, jssc, FSUtils.getFs(cfg.targetBasePath, jssc.hadoopConfiguration()),
@@ -176,14 +175,15 @@ public class HoodieDeltaStreamer implements Serializable {
   }
 
   private static HiveConf getDefaultHiveConf(Configuration cfg) {
-    HiveConf hiveConf = new HiveConf();
+    HiveConf hiveConf = new HiveConf(true);
     hiveConf.addResource(cfg);
     return hiveConf;
   }
 
-  public void sync() throws Exception {
-    HoodieDeltaStreamerMetrics metrics = new HoodieDeltaStreamerMetrics(getHoodieClientConfig(null));
-    Timer.Context overallTimerContext = metrics.getOverallTimerContext();
+  public Optional<JavaRDD<GenericRecord>> createRDD() throws Exception {
+    metrics = new HoodieDeltaStreamerMetrics(getHoodieClientConfig(null));
+    overallTimerContext = metrics.getOverallTimerContext();
+
     // Retrieve the previous round checkpoints, if any
     Optional<String> resumeCheckpointStr = Optional.empty();
     if (commitTimelineOpt.isPresent()) {
@@ -217,26 +217,31 @@ public class HoodieDeltaStreamer implements Serializable {
       Optional<Dataset<Row>> transformed =
           dataAndCheckpoint.getBatch().map(data -> transformer.apply(jssc, sparkSession, data, props));
       checkpointStr = dataAndCheckpoint.getCheckpointForNextBatch();
+      checkpoint = checkpointStr;
       avroRDDOptional = transformed.map(t ->
-         AvroConversionUtils.createRdd(t, HOODIE_RECORD_STRUCT_NAME, HOODIE_RECORD_NAMESPACE).toJavaRDD()
+          AvroConversionUtils.createRdd(t, HOODIE_RECORD_STRUCT_NAME, HOODIE_RECORD_NAMESPACE).toJavaRDD()
       );
       // Use Transformed Row's schema if not overridden
       schemaProvider =
-          this.schemaProvider == null ? transformed.map(r -> (SchemaProvider)new RowBasedSchemaProvider(r.schema()))
+          this.schemaProvider == null ? transformed.map(r -> (SchemaProvider) new RowBasedSchemaProvider(r.schema()))
               .orElse(dataAndCheckpoint.getSchemaProvider()) : this.schemaProvider;
+
+      return avroRDDOptional;
     } else {
       // Pull the data from the source & prepare the write
       InputBatch<JavaRDD<GenericRecord>> dataAndCheckpoint =
           formatAdapter.fetchNewDataInAvroFormat(resumeCheckpointStr, cfg.sourceLimit);
       avroRDDOptional = dataAndCheckpoint.getBatch();
       checkpointStr = dataAndCheckpoint.getCheckpointForNextBatch();
+      checkpoint = checkpointStr;
       schemaProvider = dataAndCheckpoint.getSchemaProvider();
+
+      return avroRDDOptional;
     }
 
-    if ((!avroRDDOptional.isPresent()) || (avroRDDOptional.get().isEmpty())) {
-      log.info("No new data, nothing to commit.. ");
-      return;
-    }
+  }
+
+  public JavaRDD<HoodieRecord> createPayload(Optional<JavaRDD<GenericRecord>> avroRDDOptional) throws Exception {
 
     registerAvroSchemas(schemaProvider);
 
@@ -247,6 +252,12 @@ public class HoodieDeltaStreamer implements Serializable {
       return new HoodieRecord<>(keyGenerator.getKey(gr), payload);
     });
 
+    return records;
+  }
+
+
+  public JavaRDD<HoodieRecord> filterDuplicateRecords(JavaRDD<HoodieRecord> records) throws Exception {
+
     // filter dupes if needed
     HoodieWriteConfig hoodieCfg = getHoodieClientConfig(schemaProvider);
     if (cfg.filterDupes) {
@@ -254,16 +265,20 @@ public class HoodieDeltaStreamer implements Serializable {
       cfg.operation = cfg.operation == Operation.UPSERT ? Operation.INSERT : cfg.operation;
       records = DataSourceUtils.dropDuplicates(jssc, records, hoodieCfg);
 
-      if (records.isEmpty()) {
-        log.info("No new data, nothing to commit.. ");
-        return;
-      }
+      return records;
+
     }
+    return records;
+  }
+
+  public void writeIntoHoodieTable(JavaRDD<HoodieRecord> records) throws Exception {
 
     // Perform the write
+    HoodieWriteConfig hoodieCfg = getHoodieClientConfig(schemaProvider);
     HoodieWriteClient client = new HoodieWriteClient<>(jssc, hoodieCfg, true);
     String commitTime = client.startCommit();
     log.info("Starting commit  : " + commitTime);
+
 
     JavaRDD<WriteStatus> writeStatusRDD;
     if (cfg.operation == Operation.INSERT) {
@@ -282,7 +297,7 @@ public class HoodieDeltaStreamer implements Serializable {
     long hiveSyncTimeMs = 0;
     if (!hasErrors || cfg.commitOnErrors) {
       HashMap<String, String> checkpointCommitMetadata = new HashMap<>();
-      checkpointCommitMetadata.put(CHECKPOINT_KEY, checkpointStr);
+      checkpointCommitMetadata.put(CHECKPOINT_KEY, checkpoint);
 
       if (hasErrors) {
         log.warn("Some records failed to be merged but forcing commit since commitOnErrors set. Errors/Total="
@@ -303,8 +318,8 @@ public class HoodieDeltaStreamer implements Serializable {
     } else {
       log.error("There are errors when ingesting records. Errors/Total="
           + totalErrorRecords + "/" + totalRecords);
-      log.error("Printing out the top 100 errors");
-      writeStatusRDD.filter(ws -> ws.hasErrors()).take(100).forEach(ws -> {
+      log.error("Printing out the top 10 errors");
+      writeStatusRDD.filter(ws -> ws.hasErrors()).take(10).forEach(ws -> {
         log.error("Global error :", ws.getGlobalError());
         if (ws.getErrors().size() > 0) {
           ws.getErrors().entrySet().forEach(r ->
@@ -312,6 +327,7 @@ public class HoodieDeltaStreamer implements Serializable {
         }
       });
     }
+
     client.close();
     long overallTimeMs = overallTimerContext != null ? overallTimerContext.stop() : 0;
 
@@ -329,8 +345,41 @@ public class HoodieDeltaStreamer implements Serializable {
     }
   }
 
+  public void createFeatureGroup(Optional<JavaRDD<GenericRecord>> avroRDDOptional) throws Exception {
+
+    registerAvroSchemas(schemaProvider);
+    JavaRDD<GenericRecord> avroRDD = avroRDDOptional.get();
+
+    String featureGroupName = cfg.targetTableName;
+    Map<String, String> hudiArgs = new HashMap<String, String>();
+    hudiArgs.put(DataSourceWriteOptions.STORAGE_TYPE_OPT_KEY(), cfg.storageType);
+    hudiArgs.put(DataSourceWriteOptions.OPERATION_OPT_KEY(), props.getProperty(DataSourceWriteOptions.OPERATION_OPT_KEY()));
+    hudiArgs.put(DataSourceWriteOptions.RECORDKEY_FIELD_OPT_KEY(), props.getProperty(DataSourceWriteOptions.RECORDKEY_FIELD_OPT_KEY()));
+    hudiArgs.put(DataSourceWriteOptions.PARTITIONPATH_FIELD_OPT_KEY(), props.getProperty(DataSourceWriteOptions.PARTITIONPATH_FIELD_OPT_KEY()));
+    hudiArgs.put(DataSourceWriteOptions.PRECOMBINE_FIELD_OPT_KEY(), props.getProperty(DataSourceWriteOptions.PRECOMBINE_FIELD_OPT_KEY()));
+    hudiArgs.put(DataSourceWriteOptions.HIVE_USER_OPT_KEY(), props.getProperty(DataSourceWriteOptions.HIVE_USER_OPT_KEY()));
+    hudiArgs.put(DataSourceWriteOptions.HIVE_PASS_OPT_KEY(), props.getProperty(DataSourceWriteOptions.HIVE_PASS_OPT_KEY()));
+    hudiArgs.put(DataSourceWriteOptions.HIVE_URL_OPT_KEY(), props.getProperty(DataSourceWriteOptions.HIVE_URL_OPT_KEY()));
+    hudiArgs.put(DataSourceWriteOptions.HIVE_PARTITION_FIELDS_OPT_KEY(), props.getProperty(DataSourceWriteOptions.HIVE_PARTITION_FIELDS_OPT_KEY()));
+    hudiArgs.put(HoodieWriteConfig.INSERT_PARALLELISM, props.getProperty(HoodieWriteConfig.INSERT_PARALLELISM));
+    hudiArgs.put(HoodieWriteConfig.UPSERT_PARALLELISM, props.getProperty(HoodieWriteConfig.UPSERT_PARALLELISM));
+    hudiArgs.put(HoodieWriteConfig.BULKINSERT_PARALLELISM, props.getProperty(HoodieWriteConfig.BULKINSERT_PARALLELISM));
+    hudiArgs.put(CHECKPOINT_KEY, checkpoint);
+
+
+    Dataset<Row> df = AvroConversionUtils.createDataFrame(avroRDD.rdd(), schemaProvider.getSourceSchema().toString(), sparkSession);
+
+    Hops.createFeaturegroup(featureGroupName).setDataframe(df).setDescription("Feature Group of ")
+        .setDescriptiveStats(false).setFeatureCorr(false).setFeatureHistograms(false).setClusterAnalysis(false)
+        .setHudi(true).setHudiArgs(hudiArgs).setHudiTableBasePath(cfg.targetBasePath).write();
+
+    log.info("Succesfully created Featuregroup: " + cfg.targetTableName);
+
+  }
+
   /**
    * Register Avro Schemas
+   *
    * @param schemaProvider Schema Provider
    */
   private void registerAvroSchemas(SchemaProvider schemaProvider) {
@@ -426,7 +475,7 @@ public class HoodieDeltaStreamer implements Serializable {
 
     @Parameter(names = {"--transformer-class"},
         description = "subclass of com.uber.hoodie.utilities.transform.Transformer"
-        + ". Allows transforming raw source dataset to a target dataset (conforming to target schema) before writing."
+            + ". Allows transforming raw source dataset to a target dataset (conforming to target schema) before writing."
             + " Default : Not set. E:g - com.uber.hoodie.utilities.transform.SqlQueryBasedTransformer (which allows"
             + "a SQL query templated to be passed as a transformation function)")
     public String transformerClassName = null;
@@ -447,8 +496,11 @@ public class HoodieDeltaStreamer implements Serializable {
     @Parameter(names = {"--enable-hive-sync"}, description = "Enable syncing to hive")
     public Boolean enableHiveSync = false;
 
+    @Parameter(names = {"--enable-feature-store"}, description = "Enable creation of feature store")
+    public Boolean enableFeatureStore = false;
+
     @Parameter(names = {"--spark-master"}, description = "spark master to use.")
-    public String sparkMaster = "local[2]";
+    public String sparkMaster = "yarn";
 
     @Parameter(names = {"--commit-on-errors"}, description = "Commit even when some records failed to be written")
     public Boolean commitOnErrors = false;
@@ -457,18 +509,18 @@ public class HoodieDeltaStreamer implements Serializable {
     public Boolean help = false;
   }
 
-  public static void main(String[] args) throws Exception {
-    final Config cfg = new Config();
-    JCommander cmd = new JCommander(cfg, args);
-    if (cfg.help || args.length == 0) {
-      cmd.usage();
-      System.exit(1);
-    }
+  /* public static void main(String[] args) throws Exception {
+     final Config cfg = new Config();
+     JCommander cmd = new JCommander(cfg, args);
+     if (cfg.help || args.length == 0) {
+       cmd.usage();
+       System.exit(1);
+     }
 
-    JavaSparkContext jssc = UtilHelpers.buildSparkContext("delta-streamer-" + cfg.targetTableName, cfg.sparkMaster);
-    new HoodieDeltaStreamer(cfg, jssc).sync();
-  }
-
+     JavaSparkContext jssc = UtilHelpers.buildSparkContext("delta-streamer-" + cfg.targetTableName, cfg.sparkMaster);
+     new HoodieDeltaStreamer(cfg, jssc).sync();
+   }
+ */
   public SourceFormatAdapter getFormatAdapter() {
     return formatAdapter;
   }

@@ -28,18 +28,19 @@ import java.util.Optional;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.avro.generic.IndexedRecord;
 import org.apache.hadoop.io.ArrayWritable;
+import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Writable;
 import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.mapred.RecordReader;
 
 class RealtimeCompactedRecordReader extends AbstractRealtimeRecordReader implements
-    RecordReader<Void, ArrayWritable> {
+    RecordReader<NullWritable, ArrayWritable> {
 
-  protected final RecordReader<Void, ArrayWritable> parquetReader;
+  protected final RecordReader<NullWritable, ArrayWritable> parquetReader;
   private final HashMap<String, ArrayWritable> deltaRecordMap;
 
   public RealtimeCompactedRecordReader(HoodieRealtimeFileSplit split, JobConf job,
-      RecordReader<Void, ArrayWritable> realReader) throws IOException {
+      RecordReader<NullWritable, ArrayWritable> realReader) throws IOException {
     super(split, job);
     this.parquetReader = realReader;
     this.deltaRecordMap = new HashMap<>();
@@ -83,7 +84,7 @@ class RealtimeCompactedRecordReader extends AbstractRealtimeRecordReader impleme
   }
 
   @Override
-  public boolean next(Void aVoid, ArrayWritable arrayWritable) throws IOException {
+  public boolean next(NullWritable aVoid, ArrayWritable arrayWritable) throws IOException {
     // Call the underlying parquetReader.next - which may replace the passed in ArrayWritable
     // with a new block of values
     boolean result = this.parquetReader.next(aVoid, arrayWritable);
@@ -124,7 +125,7 @@ class RealtimeCompactedRecordReader extends AbstractRealtimeRecordReader impleme
   }
 
   @Override
-  public Void createKey() {
+  public NullWritable createKey() {
     return parquetReader.createKey();
   }
 

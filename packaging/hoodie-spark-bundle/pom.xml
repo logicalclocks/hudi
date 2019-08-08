@@ -64,7 +64,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-shade-plugin</artifactId>
-        <version>2.4</version>
+        <version>3.2.1</version>
         <executions>
           <execution>
             <phase>package</phase>
@@ -96,8 +96,9 @@
                     <exclude>com.databricks.spark.**</exclude>
                     <exclude>org.apache.avro.**</exclude>
                     <exclude>org.apache.derby.**</exclude>
+                      <exclude>org.apache.parquet.**</exclude>
                     <exclude>org.apache.hadoop.**</exclude>
-                    <exclude>org.apache.hive.**</exclude>
+                    <!--<exclude>org.apache.hive.**</exclude>-->
                     <exclude>org.apache.logging.log4j.**</exclude>
                     <exclude>org.apache.log4j.**</exclude>
                     <exclude>org.apache.spark.**</exclude>
@@ -120,7 +121,7 @@
                   <pattern>parquet.schema</pattern>
                   <shadedPattern>com.uber.hoodie.parquet.schema</shadedPattern>
                 </relocation>
-                <relocation>
+               <!-- <relocation>
                   <pattern>org.apache.hive.jdbc.</pattern>
                   <shadedPattern>com.uber.hoodie.org.apache.hive.jdbc.</shadedPattern>
                 </relocation>
@@ -147,10 +148,10 @@
                 <relocation>
                   <pattern>org.apache.hadoop.hive.service.</pattern>
                   <shadedPattern>com.uber.hoodie.org.apache.hadoop_hive.service.</shadedPattern>
-                </relocation>
+                </relocation>-->
                 <relocation>
-                  <pattern>com.esotericsoftware.kryo.</pattern>
-                  <shadedPattern>com.uber.hoodie.com.esotericsoftware.kryo.</shadedPattern>
+                 <pattern>com.esotericsoftware.kryo.</pattern>
+                 <shadedPattern>com.uber.hoodie.com.esotericsoftware.kryo.</shadedPattern>
                 </relocation>
                 <relocation>
                   <pattern>org.objenesis.</pattern>
@@ -236,7 +237,7 @@
       <artifactId>jackson-annotations</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.hadoop</groupId>
+      <groupId>io.hops</groupId>
       <artifactId>hadoop-client</artifactId>
       <exclusions>
         <exclusion>
@@ -247,7 +248,7 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.apache.hadoop</groupId>
+      <groupId>io.hops</groupId>
       <artifactId>hadoop-common</artifactId>
       <scope>provided</scope>
     </dependency>

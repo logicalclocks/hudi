@@ -41,6 +41,7 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat;
 import org.apache.hadoop.io.ArrayWritable;
+import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.mapred.InputSplit;
 import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.mapred.RecordReader;
@@ -185,7 +186,7 @@ public class HoodieInputFormat extends MapredParquetInputFormat implements Confi
   }
 
   @Override
-  public RecordReader<Void, ArrayWritable> getRecordReader(final InputSplit split,
+  public RecordReader<NullWritable, ArrayWritable> getRecordReader(final InputSplit split,
       final JobConf job, final Reporter reporter) throws IOException {
     // TODO enable automatic predicate pushdown after fixing issues
     //        FileSplit fileSplit = (FileSplit) split;

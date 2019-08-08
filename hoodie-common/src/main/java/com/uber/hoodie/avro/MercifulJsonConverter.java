@@ -25,6 +25,8 @@ import java.util.Map;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.GenericRecord;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 /**
  * Marjority of this is copied from
@@ -35,6 +37,7 @@ public class MercifulJsonConverter {
 
   private final ObjectMapper mapper = new ObjectMapper();
   private final Schema baseSchema;
+  private static Logger log = LogManager.getLogger(MercifulJsonConverter.class);
 
   public MercifulJsonConverter(Schema schema) {
     this.baseSchema = schema;
@@ -43,6 +46,13 @@ public class MercifulJsonConverter {
 
   public GenericRecord convert(String json) throws IOException {
     try {
+      //log.info("This is String to be parsed as JSON:>  " +json);
+      if (json.length() >= 2 && json.charAt(0) == '"' && json.charAt(json.length() - 1) == '"') {
+        json = json.substring(1, json.length() - 1);
+        json = json.replaceAll("\\\\n|\\n|\\r|\n|\n\n", "");
+        json = json.replaceAll("\\\\", "");
+      }
+
       return convert(mapper.readValue(json, Map.class), baseSchema);
     } catch (IOException e) {
       throw new IOException("Failed to parse as Json: " + json + "\n\n" + e.getMessage());

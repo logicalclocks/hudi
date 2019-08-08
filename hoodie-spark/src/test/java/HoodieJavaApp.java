@@ -123,9 +123,9 @@ public class HoodieJavaApp {
     // Save as hoodie dataset (copy on write)
     DataFrameWriter<Row> writer = inputDF1.write().format("com.uber.hoodie") // specify the hoodie source
         .option("hoodie.insert.shuffle.parallelism",
-            "2") // any hoodie client config can be passed like this
+            "1500") // any hoodie client config can be passed like this
         .option("hoodie.upsert.shuffle.parallelism",
-            "2") // full list in HoodieWriteConfig & its package
+            "1500") // full list in HoodieWriteConfig & its package
         .option(DataSourceWriteOptions.STORAGE_TYPE_OPT_KEY(), tableType) // Hoodie Table Type
         .option(DataSourceWriteOptions.OPERATION_OPT_KEY(),
             DataSourceWriteOptions.INSERT_OPERATION_OPT_VAL()) // insert
@@ -155,7 +155,7 @@ public class HoodieJavaApp {
         dataGen.generateUpdates("002"/* ignore */, 100));
     Dataset<Row> inputDF2 = spark.read().json(jssc.parallelize(records2, 2));
     writer = inputDF2.write().format("com.uber.hoodie").option("hoodie.insert.shuffle.parallelism", "2")
-        .option("hoodie.upsert.shuffle.parallelism", "2")
+        .option("hoodie.upsert.shuffle.parallelism", "1500")
         .option(DataSourceWriteOptions.STORAGE_TYPE_OPT_KEY(), tableType) // Hoodie Table Type
         .option(DataSourceWriteOptions.RECORDKEY_FIELD_OPT_KEY(), "_row_key")
         .option(DataSourceWriteOptions.PARTITIONPATH_FIELD_OPT_KEY(), "partition")
