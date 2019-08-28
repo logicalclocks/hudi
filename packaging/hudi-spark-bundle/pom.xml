@@ -69,7 +69,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-shade-plugin</artifactId>
-        <version>2.4</version>
+        <version>3.2.1</version>
         <executions>
           <execution>
             <phase>package</phase>
@@ -102,8 +102,9 @@
                     <exclude>com.databricks.spark.**</exclude>
                     <exclude>org.apache.avro.**</exclude>
                     <exclude>org.apache.derby.**</exclude>
+                    <exclude>org.apache.parquet.**</exclude>
                     <exclude>org.apache.hadoop.**</exclude>
-                    <exclude>org.apache.hive.**</exclude>
+                    <!--<exclude>org.apache.hive.**</exclude>-->
                     <exclude>org.apache.hudi.**</exclude>
                     <exclude>org.apache.logging.log4j.**</exclude>
                     <exclude>org.apache.log4j.**</exclude>
@@ -134,32 +135,32 @@
                   <shadedPattern>org.apache.hudi.org.apache.hive.jdbc.</shadedPattern>
                 </relocation>
                 <relocation>
-                  <pattern>org.apache.hadoop.hive.metastore.</pattern>
-                  <shadedPattern>org.apache.hudi.org.apache.hadoop_hive.metastore.</shadedPattern>
+                  <pattern>io.hops.hive.metastore.</pattern>
+                  <shadedPattern>org.apache.hudi.io.hops_hive.metastore.</shadedPattern>
                 </relocation>
                 <relocation>
                   <pattern>org.apache.hive.common.</pattern>
                   <shadedPattern>org.apache.hudi.org.apache.hive.common.</shadedPattern>
                 </relocation>
                 <relocation>
-                  <pattern>org.apache.hadoop.hive.common.</pattern>
-                  <shadedPattern>org.apache.hudi.org.apache.hadoop_hive.common.</shadedPattern>
+                  <pattern>io.hops.hive.common.</pattern>
+                  <shadedPattern>org.apache.hudi.io.hops_hive.common.</shadedPattern>
                 </relocation>
                 <relocation>
-                  <pattern>org.apache.hadoop.hive.conf.</pattern>
-                  <shadedPattern>org.apache.hudi.org.apache.hadoop_hive.conf.</shadedPattern>
+                  <pattern>io.hops.hive.conf.</pattern>
+                  <shadedPattern>org.apache.hudi.io.hops_hive.conf.</shadedPattern>
                 </relocation>
                 <relocation>
                   <pattern>org.apache.hive.service.</pattern>
                   <shadedPattern>org.apache.hudi.org.apache.hive.service.</shadedPattern>
                 </relocation>
                 <relocation>
-                  <pattern>org.apache.hadoop.hive.service.</pattern>
-                  <shadedPattern>org.apache.hudi.org.apache.hadoop_hive.service.</shadedPattern>
+                  <pattern>io.hops.hive.service.</pattern>
+                  <shadedPattern>org.apache.hudi.io.hops_hive.service.</shadedPattern>
                 </relocation>
                 <relocation>
-                  <pattern>org.apache.hadoop.hive.serde2.</pattern>
-                  <shadedPattern>org.apache.hudi.org.apache.hadoop_hive.serde2.</shadedPattern>
+                  <pattern>io.hops.hive.serde2.</pattern>
+                  <shadedPattern>org.apache.hudi.io.hops_hive.serde2.</shadedPattern>
                 </relocation>
                 -->
                 <relocation>
@@ -182,7 +183,7 @@
                   <exclude>log4j:*</exclude>
                   <exclude>org.apache.avro:*</exclude>
                   <exclude>org.apache.derby:derby</exclude>
-                  <exclude>org.apache.hadoop:*</exclude>
+                  <exclude>io.hops:*</exclude>
                   <exclude>org.apache.hbase:*</exclude>
                   <!-- Just include hive-common, hive-serde, hive-service, hive-metastore and hive-jdbc -->
                   <exclude>org.apache.hive:hive-exec</exclude>
@@ -299,7 +300,7 @@
 
     <!-- Hadoop -->
     <dependency>
-      <groupId>org.apache.hadoop</groupId>
+      <groupId>io.hops</groupId>
       <artifactId>hadoop-client</artifactId>
       <exclusions>
         <exclusion>
@@ -310,7 +311,7 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.apache.hadoop</groupId>
+      <groupId>io.hops</groupId>
       <artifactId>hadoop-common</artifactId>
       <scope>provided</scope>
     </dependency>

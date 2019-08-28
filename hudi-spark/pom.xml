@@ -221,7 +221,7 @@
 
     <!-- Hadoop -->
     <dependency>
-      <groupId>org.apache.hadoop</groupId>
+      <groupId>io.hops</groupId>
       <artifactId>hadoop-client</artifactId>
       <exclusions>
         <exclusion>
@@ -232,31 +232,31 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.apache.hadoop</groupId>
+      <groupId>io.hops</groupId>
       <artifactId>hadoop-common</artifactId>
       <scope>provided</scope>
     </dependency>
 
     <!-- Hive -->
     <dependency>
-      <groupId>${hive.groupid}</groupId>
+      <groupId>io.hops.hive</groupId>
       <artifactId>hive-service</artifactId>
-      <version>${hive.version}</version>
+      <version>3.0.0.1</version>
     </dependency>
     <dependency>
-      <groupId>${hive.groupid}</groupId>
+      <groupId>io.hops.hive</groupId>
       <artifactId>hive-jdbc</artifactId>
-      <version>${hive.version}</version>
+      <version>3.0.0.1</version>
     </dependency>
     <dependency>
-      <groupId>${hive.groupid}</groupId>
+      <groupId>io.hops.hive</groupId>
       <artifactId>hive-metastore</artifactId>
-      <version>${hive.version}</version>
+      <version>3.0.0.1</version>
     </dependency>
     <dependency>
-      <groupId>${hive.groupid}</groupId>
+      <groupId>io.hops.hive</groupId>
       <artifactId>hive-common</artifactId>
-      <version>${hive.version}</version>
+      <version>3.0.0.1</version>
     </dependency>
 
     <!-- Hoodie - Test -->

@@ -18,19 +18,23 @@
 
 package org.apache.hudi.utilities.sources;
 
-import kafka.serializer.StringDecoder;
 import org.apache.hudi.common.util.Option;
 import org.apache.hudi.common.util.TypedProperties;
 import org.apache.hudi.utilities.schema.SchemaProvider;
 import org.apache.hudi.utilities.sources.helpers.KafkaOffsetGen;
 import org.apache.hudi.utilities.sources.helpers.KafkaOffsetGen.CheckpointUtils;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
+import org.apache.spark.api.java.function.PairFunction;
 import org.apache.spark.sql.SparkSession;
-import org.apache.spark.streaming.kafka.KafkaUtils;
-import org.apache.spark.streaming.kafka.OffsetRange;
+import org.apache.spark.streaming.kafka010.KafkaUtils;
+import org.apache.spark.streaming.kafka010.OffsetRange;
+import org.apache.spark.streaming.kafka010.LocationStrategies;
+import scala.Tuple2;
 
 /**
  * Read json kafka data
@@ -62,7 +66,16 @@ public class JsonKafkaSource extends JsonSource {
   }
 
   private JavaRDD<String> toRDD(OffsetRange[] offsetRanges) {
-    return KafkaUtils.createRDD(sparkContext, String.class, String.class, StringDecoder.class, StringDecoder.class,
-        offsetGen.getKafkaParams(), offsetRanges).values();
+    JavaRDD<ConsumerRecord<String, String>> consumerRecord = KafkaUtils.createRDD(sparkContext,
+      offsetGen.getKafkaParams(), offsetRanges, LocationStrategies.PreferConsistent());
+    JavaPairRDD<String, String> pair =
+      consumerRecord.mapToPair(new PairFunction<ConsumerRecord<String, String>, String, String>() {
+      public Tuple2<String, String> call(ConsumerRecord<String, String> record) {
+        log.info(" record key: " + record.key());
+        log.info(" record value: " + record.value());
+        return new Tuple2<>(record.key(), record.value());
+      }
+    });
+    return pair.values();
   }
 }

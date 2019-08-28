@@ -18,16 +18,7 @@
 
 package org.apache.hudi.common.table.log;
 
-import static org.apache.hudi.common.util.SchemaTestUtil.getSimpleSchema;
-
 import com.google.common.collect.Maps;
-import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.concurrent.TimeoutException;
 import org.apache.avro.generic.IndexedRecord;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
@@ -49,6 +40,16 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.TimeoutException;
+
+import static org.apache.hudi.common.util.SchemaTestUtil.getSimpleSchema;
 
 /**
  * This class is intentionally using a different way of setting up the MiniDFSCluster and not relying on
@@ -77,7 +78,7 @@ public class HoodieLogFormatAppendFailureTest {
 
   @AfterClass
   public static void tearDownClass() {
-    cluster.shutdown(true);
+    cluster.shutdown();
     // Force clean up the directory under which the cluster was created
     FileUtil.fullyDelete(baseDir);
   }

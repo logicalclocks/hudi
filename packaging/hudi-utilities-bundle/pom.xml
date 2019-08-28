@@ -97,7 +97,7 @@
                   <include>io.confluent:kafka-schema-registry-client</include>
                   <include>io.dropwizard.metrics:metrics-core</include>
                   <include>io.dropwizard.metrics:metrics-graphite</include>
-                  <include>org.apache.spark:spark-streaming-kafka-0-8_2.11</include>
+                  <include>org.apache.spark:spark-streaming-kafka-0-10_2.11</include>
                   <include>org.apache.kafka:kafka_2.11</include>
                   <include>com.101tec:zkclient</include>
                   <include>org.apache.kafka:kafka-clients</include>
@@ -133,28 +133,28 @@
                   <shadedPattern>org.apache.hudi.org.apache.hive.jdbc.</shadedPattern>
                 </relocation>
                 <relocation>
-                  <pattern>org.apache.hadoop.hive.metastore.</pattern>
-                  <shadedPattern>org.apache.hudi.org.apache.hadoop_hive.metastore.</shadedPattern>
+                  <pattern>io.hops.hive.metastore.</pattern>
+                  <shadedPattern>org.apache.hudi.io.hops_hive.metastore.</shadedPattern>
                 </relocation>
                 <relocation>
                   <pattern>org.apache.hive.common.</pattern>
                   <shadedPattern>org.apache.hudi.org.apache.hive.common.</shadedPattern>
                 </relocation>
                 <relocation>
-                  <pattern>org.apache.hadoop.hive.common.</pattern>
-                  <shadedPattern>org.apache.hudi.org.apache.hadoop_hive.common.</shadedPattern>
+                  <pattern>io.hops.hive.common.</pattern>
+                  <shadedPattern>org.apache.hudi.io.hops_hive.common.</shadedPattern>
                 </relocation>
                 <relocation>
-                  <pattern>org.apache.hadoop.hive.conf.</pattern>
-                  <shadedPattern>org.apache.hudi.org.apache.hadoop_hive.conf.</shadedPattern>
+                  <pattern>io.hops.hive.conf.</pattern>
+                  <shadedPattern>org.apache.hudi.io.hops_hive.conf.</shadedPattern>
                 </relocation>
                 <relocation>
                   <pattern>org.apache.hive.service.</pattern>
                   <shadedPattern>org.apache.hudi.org.apache.hive.service.</shadedPattern>
                 </relocation>
                 <relocation>
-                  <pattern>org.apache.hadoop.hive.service.</pattern>
-                  <shadedPattern>org.apache.hudi.org.apache.hadoop_hive.service.</shadedPattern>
+                  <pattern>io.hops.hive.service.</pattern>
+                  <shadedPattern>org.apache.hudi.io.hops_hive.service.</shadedPattern>
                 </relocation>
                 <relocation>
                   <pattern>com.esotericsoftware.kryo.</pattern>
@@ -376,11 +376,11 @@
 
     <!-- Hadoop -->
     <dependency>
-      <groupId>org.apache.hadoop</groupId>
+      <groupId>io.hops</groupId>
       <artifactId>hadoop-client</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.hadoop</groupId>
+      <groupId>io.hops</groupId>
       <artifactId>hadoop-mapreduce-client-common</artifactId>
       <exclusions>
         <exclusion>
@@ -436,7 +436,7 @@
 
     <!-- Hadoop - Test -->
     <dependency>
-      <groupId>org.apache.hadoop</groupId>
+      <groupId>io.hops</groupId>
       <artifactId>hadoop-common</artifactId>
       <classifier>tests</classifier>
       <exclusions>
@@ -455,7 +455,7 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.apache.hadoop</groupId>
+      <groupId>io.hops</groupId>
       <artifactId>hadoop-hdfs</artifactId>
       <classifier>tests</classifier>
     </dependency>
