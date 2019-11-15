@@ -273,9 +273,9 @@
 
     <!-- Hive -->
     <dependency>
-      <groupId>${spark.hive.groupid}</groupId>
+      <groupId>${hive.groupid}</groupId>
       <artifactId>hive-jdbc</artifactId>
-      <version>${spark.hive.version}</version>
+      <version>${hive.version}</version>
       <exclusions>
         <exclusion>
           <groupId>org.slf4j</groupId>
@@ -292,9 +292,9 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>${spark.hive.groupid}</groupId>
+      <groupId>${hive.groupid}</groupId>
       <artifactId>hive-service</artifactId>
-      <version>${spark.hive.version}</version>
+      <version>${hive.version}</version>
     </dependency>
 
     <!-- Hoodie - Test -->
@@ -325,9 +325,9 @@
 
     <!-- Hive - Test -->
     <dependency>
-      <groupId>${spark.hive.groupid}</groupId>
+      <groupId>${hive.groupid}</groupId>
       <artifactId>hive-exec</artifactId>
-      <version>${spark.hive.version}</version>
+      <version>${hive.version}</version>
       <scope>test</scope>
     </dependency>
 
