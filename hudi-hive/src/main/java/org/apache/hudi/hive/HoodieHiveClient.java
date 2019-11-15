@@ -21,20 +21,6 @@ package org.apache.hudi.hive;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hive.conf.HiveConf;
@@ -67,6 +53,21 @@ import org.apache.parquet.hadoop.ParquetFileReader;
 import org.apache.parquet.hadoop.metadata.ParquetMetadata;
 import org.apache.parquet.schema.MessageType;
 import org.apache.thrift.TException;
+
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @SuppressWarnings("ConstantConditions")
 public class HoodieHiveClient {
@@ -181,7 +182,7 @@ public class HoodieHiveClient {
             + ". Check partition strategy. ");
     List<String> partBuilder = new ArrayList<>();
     for (int i = 0; i < syncConfig.partitionFields.size(); i++) {
-      partBuilder.add("`" + syncConfig.partitionFields.get(i) + "`=" + "'" + partitionValues.get(i) + "'");
+      partBuilder.add("`" + syncConfig.partitionFields.get(i) + "`" + "=" + "'" + partitionValues.get(i) + "'");
     }
     return partBuilder.stream().collect(Collectors.joining(","));
   }
@@ -558,9 +559,6 @@ public class HoodieHiveClient {
     if (hiveJdbcUrl.contains(";")) {
       urlAppend = hiveJdbcUrl.substring(hiveJdbcUrl.indexOf(";"));
       hiveJdbcUrl = hiveJdbcUrl.substring(0, hiveJdbcUrl.indexOf(";"));
-    }
-    if (!hiveJdbcUrl.endsWith("/")) {
-      hiveJdbcUrl = hiveJdbcUrl + "/";
     }
     return hiveJdbcUrl + (urlAppend == null ? "" : urlAppend);
   }

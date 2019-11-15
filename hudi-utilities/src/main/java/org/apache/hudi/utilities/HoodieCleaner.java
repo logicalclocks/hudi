@@ -20,10 +20,6 @@ package org.apache.hudi.utilities;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
-import java.io.IOException;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hudi.HoodieWriteClient;
@@ -33,6 +29,11 @@ import org.apache.hudi.config.HoodieWriteConfig;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.spark.api.java.JavaSparkContext;
+
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class HoodieCleaner {
 
@@ -93,7 +94,7 @@ public class HoodieCleaner {
     public List<String> configs = new ArrayList<>();
 
     @Parameter(names = {"--spark-master"}, description = "spark master to use.")
-    public String sparkMaster = "local[2]";
+    public String sparkMaster = "yarn";
 
     @Parameter(names = {"--help", "-h"}, help = true)
     public Boolean help = false;

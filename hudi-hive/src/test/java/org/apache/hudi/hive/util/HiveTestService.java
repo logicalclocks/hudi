@@ -21,19 +21,13 @@ package org.apache.hudi.hive.util;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.google.common.io.Files;
-import java.io.File;
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.SocketException;
-import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hive.conf.HiveConf;
 import org.apache.hadoop.hive.metastore.HiveMetaStore;
 import org.apache.hadoop.hive.metastore.HiveMetaStoreClient;
 import org.apache.hadoop.hive.metastore.IHMSHandler;
+import org.apache.hadoop.hive.metastore.RetryingHMSHandler;
 import org.apache.hadoop.hive.metastore.TSetIpAddressProcessor;
 import org.apache.hadoop.hive.metastore.TUGIBasedProcessor;
 import org.apache.hadoop.hive.metastore.api.MetaException;
@@ -54,6 +48,14 @@ import org.apache.thrift.transport.TSocket;
 import org.apache.thrift.transport.TTransport;
 import org.apache.thrift.transport.TTransportException;
 import org.apache.thrift.transport.TTransportFactory;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.SocketException;
+import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class HiveTestService {
 
@@ -156,7 +158,7 @@ public class HiveTestService {
     conf.set("hive.metastore.schema.verification", "false");
     setSystemProperty("derby.stream.error.file", derbyLogFile.getPath());
 
-    return new HiveConf(conf, this.getClass());
+    return new HiveConf(conf, this.getClass(), true);
   }
 
   private boolean waitForServerUp(HiveConf serverConf, String hostname, int port, int timeout) {
@@ -284,7 +286,9 @@ public class HiveTestService {
       TProcessor processor;
       TTransportFactory transFactory;
 
-      IHMSHandler handler = (IHMSHandler) HiveMetaStore.newRetryingHMSHandler("new db based metaserver", conf, true);
+
+      HiveMetaStore.HMSHandler baseHandler = new HiveMetaStore.HMSHandler("new db based metaserver", conf, false);
+      IHMSHandler handler = (IHMSHandler) RetryingHMSHandler.getProxy(conf, baseHandler, true);
 
       if (conf.getBoolVar(HiveConf.ConfVars.METASTORE_EXECUTE_SET_UGI)) {
         transFactory = useFramedTransport

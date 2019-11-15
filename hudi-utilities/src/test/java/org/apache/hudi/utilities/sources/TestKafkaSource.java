@@ -18,11 +18,6 @@
 
 package org.apache.hudi.utilities.sources;
 
-import static org.junit.Assert.assertEquals;
-
-import java.io.IOException;
-import java.util.HashMap;
-import kafka.common.TopicAndPartition;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.hudi.AvroConversionUtils;
 import org.apache.hudi.common.HoodieTestDataGenerator;
@@ -32,17 +27,21 @@ import org.apache.hudi.utilities.UtilitiesTestBase;
 import org.apache.hudi.utilities.deltastreamer.SourceFormatAdapter;
 import org.apache.hudi.utilities.schema.FilebasedSchemaProvider;
 import org.apache.hudi.utilities.sources.helpers.KafkaOffsetGen.CheckpointUtils;
+import org.apache.kafka.common.TopicPartition;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
-import org.apache.spark.streaming.kafka.KafkaCluster.LeaderOffset;
-import org.apache.spark.streaming.kafka.KafkaTestUtils;
-import org.apache.spark.streaming.kafka.OffsetRange;
+import org.apache.spark.streaming.kafka010.OffsetRange;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import java.io.IOException;
+import java.util.HashMap;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Tests against {@link AvroKafkaSource}
@@ -52,7 +51,6 @@ public class TestKafkaSource extends UtilitiesTestBase {
   private static String TEST_TOPIC_NAME = "hoodie_test";
 
   private FilebasedSchemaProvider schemaProvider;
-  private KafkaTestUtils testUtils;
 
   @BeforeClass
   public static void initClass() throws Exception {
@@ -68,14 +66,11 @@ public class TestKafkaSource extends UtilitiesTestBase {
   public void setup() throws Exception {
     super.setup();
     schemaProvider = new FilebasedSchemaProvider(Helpers.setupSchemaOnDFS(), jsc);
-    testUtils = new KafkaTestUtils();
-    testUtils.setup();
   }
 
   @After
   public void teardown() throws Exception {
     super.teardown();
-    testUtils.teardown();
   }
 
 
@@ -83,11 +78,9 @@ public class TestKafkaSource extends UtilitiesTestBase {
   public void testJsonKafkaSource() throws IOException {
 
     // topic setup.
-    testUtils.createTopic(TEST_TOPIC_NAME, 2);
     HoodieTestDataGenerator dataGenerator = new HoodieTestDataGenerator();
     TypedProperties props = new TypedProperties();
     props.setProperty("hoodie.deltastreamer.source.kafka.topic", TEST_TOPIC_NAME);
-    props.setProperty("metadata.broker.list", testUtils.brokerAddress());
     props.setProperty("auto.offset.reset", "smallest");
     props.setProperty("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
     props.setProperty("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
@@ -97,7 +90,6 @@ public class TestKafkaSource extends UtilitiesTestBase {
 
     // 1. Extract without any checkpoint => get all the data, respecting sourceLimit
     assertEquals(Option.empty(), kafkaSource.fetchNewDataInAvroFormat(Option.empty(), Long.MAX_VALUE).getBatch());
-    testUtils.sendMessages(TEST_TOPIC_NAME, Helpers.jsonifyRecords(dataGenerator.generateInserts("000", 1000)));
     InputBatch<JavaRDD<GenericRecord>> fetch1 = kafkaSource.fetchNewDataInAvroFormat(Option.empty(), 900);
     assertEquals(900, fetch1.getBatch().get().count());
     // Test Avro To DataFrame<Row> path
@@ -106,9 +98,8 @@ public class TestKafkaSource extends UtilitiesTestBase {
     assertEquals(900, fetch1AsRows.count());
 
     // 2. Produce new data, extract new data
-    testUtils.sendMessages(TEST_TOPIC_NAME, Helpers.jsonifyRecords(dataGenerator.generateInserts("001", 1000)));
-    InputBatch<Dataset<Row>> fetch2 =
-        kafkaSource.fetchNewDataInRowFormat(Option.of(fetch1.getCheckpointForNextBatch()), Long.MAX_VALUE);
+    InputBatch<Dataset<Row>> fetch2 = kafkaSource.fetchNewDataInRowFormat(
+        Option.of(fetch1.getCheckpointForNextBatch()), Long.MAX_VALUE);
     assertEquals(1100, fetch2.getBatch().get().count());
 
     // 3. Extract with previous checkpoint => gives same data back (idempotent)
@@ -133,10 +124,10 @@ public class TestKafkaSource extends UtilitiesTestBase {
   }
 
 
-  private static HashMap<TopicAndPartition, LeaderOffset> makeOffsetMap(int[] partitions, long[] offsets) {
-    HashMap<TopicAndPartition, LeaderOffset> map = new HashMap<>();
+  private static HashMap<TopicPartition, Long> makeOffsetMap(int[] partitions, long[] offsets) {
+    HashMap<TopicPartition, Long> map = new HashMap<>();
     for (int i = 0; i < partitions.length; i++) {
-      map.put(new TopicAndPartition(TEST_TOPIC_NAME, partitions[i]), new LeaderOffset("", -1, offsets[i]));
+      map.put(new TopicPartition(TEST_TOPIC_NAME, partitions[i]), offsets[i]);
     }
     return map;
   }

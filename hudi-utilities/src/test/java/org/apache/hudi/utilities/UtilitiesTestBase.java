@@ -19,12 +19,6 @@
 package org.apache.hudi.utilities;
 
 import com.google.common.collect.ImmutableList;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.List;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.avro.generic.IndexedRecord;
 import org.apache.hadoop.fs.FileSystem;
@@ -55,6 +49,13 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Abstract test that provides a dfs & spark contexts.
@@ -143,7 +144,7 @@ public class UtilitiesTestBase {
    * @throws IOException
    */
   private static void clearHiveDb() throws IOException {
-    HiveConf hiveConf = new HiveConf();
+    HiveConf hiveConf = new HiveConf(true);
     // Create Dummy hive sync config
     HiveSyncConfig hiveSyncConfig = getHiveSyncConfig("/dummy", "dummy");
     hiveConf.addResource(hiveServer.getHiveConf());
