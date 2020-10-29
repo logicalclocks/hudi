@@ -26,7 +26,7 @@
     <version>21</version>
   </parent>
 
-  <groupId>org.apache.hudi</groupId>
+  <groupId>io.hops.hudi</groupId>
   <artifactId>hudi</artifactId>
   <packaging>pom</packaging>
   <version>0.6.1-SNAPSHOT</version>
