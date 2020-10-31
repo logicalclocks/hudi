@@ -64,10 +64,10 @@
               </transformers>
               <artifactSet>
                 <includes>
-                  <include>org.apache.hudi:hudi-common</include>
-                  <include>org.apache.hudi:hudi-hadoop-mr</include>
-                  <include>org.apache.hudi:hudi-sync-common</include>
-		          <include>org.apache.hudi:hudi-hive-sync</include>
+                  <include>io.hops.hudi:hudi-common</include>
+                  <include>io.hops.hudi:hudi-hadoop-mr</include>
+                  <include>io.hops.hudi:hudi-sync-common</include>
+		          <include>io.hops.hudi:hudi-hive-sync</include>
 
                   <include>com.beust:jcommander</include>
                   <include>org.apache.avro:avro</include>
@@ -80,11 +80,11 @@
               <relocations>
                 <relocation>
                   <pattern>org.apache.avro.</pattern>
-                  <shadedPattern>org.apache.hudi.org.apache.avro.</shadedPattern>
+                  <shadedPattern>io.hops.hudi.org.apache.avro.</shadedPattern>
                 </relocation>
                 <relocation>
                   <pattern>org.eclipse.jetty.</pattern>
-                  <shadedPattern>org.apache.hudi.org.apache.jetty.</shadedPattern>
+                  <shadedPattern>io.hops.hudi.org.apache.jetty.</shadedPattern>
                 </relocation>
               </relocations>
               <createDependencyReducedPom>false</createDependencyReducedPom>
@@ -118,17 +118,17 @@
   <dependencies>
     <!-- Hoodie -->
     <dependency>
-      <groupId>org.apache.hudi</groupId>
+      <groupId>io.hops.hudi</groupId>
       <artifactId>hudi-common</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.apache.hudi</groupId>
+      <groupId>io.hops.hudi</groupId>
       <artifactId>hudi-hadoop-mr-bundle</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.apache.hudi</groupId>
+      <groupId>io.hops.hudi</groupId>
       <artifactId>hudi-hive-sync</artifactId>
       <version>${project.version}</version>
     </dependency>

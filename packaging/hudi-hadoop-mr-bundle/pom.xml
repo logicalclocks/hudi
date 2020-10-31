@@ -64,8 +64,8 @@
               </transformers>
               <artifactSet>
                 <includes>
-                  <include>org.apache.hudi:hudi-common</include>
-                  <include>org.apache.hudi:hudi-hadoop-mr</include>
+                  <include>io.hops.hudi:hudi-common</include>
+                  <include>io.hops.hudi:hudi-hadoop-mr</include>
 
                   <include>org.apache.parquet:parquet-avro</include>
                   <include>com.esotericsoftware:kryo-shaded</include>
@@ -84,31 +84,31 @@
               <relocations>
                 <relocation>
                   <pattern>com.yammer.metrics.</pattern>
-                  <shadedPattern>org.apache.hudi.com.yammer.metrics.</shadedPattern>
+                  <shadedPattern>io.hops.hudi.com.yammer.metrics.</shadedPattern>
                 </relocation>
                 <relocation>
                   <pattern>com.esotericsoftware.kryo.</pattern>
-                  <shadedPattern>org.apache.hudi.com.esotericsoftware.kryo.</shadedPattern>
+                  <shadedPattern>io.hops.hudi.com.esotericsoftware.kryo.</shadedPattern>
                 </relocation>
                 <relocation>
                   <pattern>org.objenesis.</pattern>
-                  <shadedPattern>org.apache.hudi.org.objenesis.</shadedPattern>
+                  <shadedPattern>io.hops.hudi.org.objenesis.</shadedPattern>
                 </relocation>
                 <relocation>
                   <pattern>com.esotericsoftware.minlog.</pattern>
-                  <shadedPattern>org.apache.hudi.com.esotericsoftware.minlog.</shadedPattern>
+                  <shadedPattern>io.hops.hudi.com.esotericsoftware.minlog.</shadedPattern>
                 </relocation>
                 <relocation>
                   <pattern>org.apache.avro.</pattern>
-                  <shadedPattern>org.apache.hudi.org.apache.avro.</shadedPattern>
+                  <shadedPattern>io.hops.hudi.org.apache.avro.</shadedPattern>
                 </relocation>
                 <relocation>
                   <pattern>com.google.common.</pattern>
-                  <shadedPattern>org.apache.hudi.com.google.common.</shadedPattern>
+                  <shadedPattern>io.hops.hudi.com.google.common.</shadedPattern>
                 </relocation>
                 <relocation>
                   <pattern>org.eclipse.jetty.</pattern>
-                  <shadedPattern>org.apache.hudi.org.apache.jetty.</shadedPattern>
+                  <shadedPattern>io.hops.hudi.org.apache.jetty.</shadedPattern>
                 </relocation>
               </relocations>
               <createDependencyReducedPom>false</createDependencyReducedPom>
@@ -142,12 +142,12 @@
   <dependencies>
     <!-- Hoodie -->
     <dependency>
-      <groupId>org.apache.hudi</groupId>
+      <groupId>io.hops.hudi</groupId>
       <artifactId>hudi-common</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.apache.hudi</groupId>
+      <groupId>io.hops.hudi</groupId>
       <artifactId>hudi-hadoop-mr</artifactId>
       <version>${project.version}</version>
     </dependency>
