@@ -34,12 +34,12 @@
     <dependencies>
         <!-- Hoodie -->
         <dependency>
-            <groupId>org.apache.hudi</groupId>
+            <groupId>io.hops.hudi</groupId>
             <artifactId>hudi-common</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.hudi</groupId>
+            <groupId>io.hops.hudi</groupId>
             <artifactId>hudi-timeline-service</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -166,8 +166,8 @@
                          Include hudi-timeline-server with javalin dependencies. 
                          hadoop deps are to be provided at runtime. see run_server.sh 
                       -->
-                      <include>org.apache.hudi:hudi-common</include>
-                      <include>org.apache.hudi:hudi-timeline-service</include>
+                      <include>io.hops.hudi:hudi-common</include>
+                      <include>io.hops.hudi:hudi-timeline-service</include>
                       <include>org.apache.httpcomponents:httpclient</include>
                       <include>org.apache.httpcomponents:httpcore</include>
                       <include>org.mortbay.jetty:jetty</include>
@@ -212,7 +212,7 @@
 
                     <relocation>
                         <pattern>org.eclipse.jetty.</pattern>
-                        <shadedPattern>org.apache.hudi.org.apache.jetty.</shadedPattern>
+                        <shadedPattern>io.hops.hudi.org.apache.jetty.</shadedPattern>
                     </relocation>
                 </relocations>
 
@@ -227,7 +227,7 @@
                         <transformers>
                             <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
                             <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                <mainClass>org.apache.hudi.timeline.service.TimelineService</mainClass>
+                                <mainClass>io.hops.hudi.timeline.service.TimelineService</mainClass>
                             </transformer>
                         </transformers>
                     </configuration>
