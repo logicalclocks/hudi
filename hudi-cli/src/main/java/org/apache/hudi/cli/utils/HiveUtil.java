@@ -33,7 +33,7 @@ import java.sql.Statement;
  */
 public class HiveUtil {
 
-  private static final String DRIVER_NAME = "org.apache.hive.jdbc.HiveDriver";
+  private static final String DRIVER_NAME = "io.hops.hive.jdbc.HiveDriver";
 
   static {
     try {

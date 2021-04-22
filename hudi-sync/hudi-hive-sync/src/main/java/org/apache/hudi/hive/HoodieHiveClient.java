@@ -426,7 +426,7 @@ public class HoodieHiveClient extends AbstractSyncHoodieClient {
   private void createHiveConnection() {
     if (connection == null) {
       try {
-        Class.forName("org.apache.hive.jdbc.HiveDriver");
+        Class.forName("io.hops.hive.jdbc.HiveDriver");
       } catch (ClassNotFoundException e) {
         LOG.error("Unable to load Hive driver class", e);
         return;
