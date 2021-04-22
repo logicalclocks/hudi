@@ -19,12 +19,12 @@
     <parent>
         <artifactId>hudi-client</artifactId>
         <groupId>io.hops.hudi</groupId>
-        <version>0.7.0</version>
+        <version>0.7.0.1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>hudi-java-client</artifactId>
-    <version>0.7.0</version>
+    <version>0.7.0.1</version>
 
     <name>hudi-java-client</name>
     <packaging>jar</packaging>
@@ -32,14 +32,14 @@
     <dependencies>
         <!-- Hudi  -->
         <dependency>
-            <groupId>org.apache.hudi</groupId>
+            <groupId>io.hops.hudi</groupId>
             <artifactId>hudi-client-common</artifactId>
             <version>${parent.version}</version>
         </dependency>
 
         <!-- Hoodie - Test -->
         <dependency>
-            <groupId>org.apache.hudi</groupId>
+            <groupId>io.hops.hudi</groupId>
             <artifactId>hudi-common</artifactId>
             <version>${project.version}</version>
             <classifier>tests</classifier>
@@ -47,7 +47,7 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.hudi</groupId>
+            <groupId>io.hops.hudi</groupId>
             <artifactId>hudi-client-common</artifactId>
             <version>${project.version}</version>
             <classifier>tests</classifier>
@@ -55,7 +55,7 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.hudi</groupId>
+            <groupId>io.hops.hudi</groupId>
             <artifactId>hudi-hadoop-mr</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
