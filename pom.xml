@@ -103,7 +103,7 @@
     <hive.version>3.0.0.8-SNAPSHOT</hive.version>
     <hive.exec.classifier>core</hive.exec.classifier>
     <metrics.version>4.1.1</metrics.version>
-    <prometheus.version>0.8.0</prometheus.version>
+    <prometheus.version>0.9.0</prometheus.version>
     <http.version>4.4.1</http.version>
     <spark.version>${spark2.version}</spark.version>
     <sparkbundle.version>${spark2bundle.version}</sparkbundle.version>
