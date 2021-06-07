@@ -21,6 +21,8 @@ package org.apache.hudi.hive;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+
+import org.apache.hadoop.hive.metastore.RetryingMetaStoreClient;
 import org.apache.hadoop.hive.metastore.api.FieldSchema;
 import org.apache.hadoop.hive.metastore.api.MetaException;
 import org.apache.hadoop.hive.metastore.api.Partition;
@@ -37,8 +39,6 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hive.conf.HiveConf;
 import org.apache.hadoop.hive.metastore.IMetaStoreClient;
-import org.apache.hadoop.hive.ql.metadata.Hive;
-import org.apache.hadoop.hive.ql.metadata.HiveException;
 import org.apache.hadoop.hive.ql.processors.CommandProcessorResponse;
 import org.apache.hadoop.hive.ql.session.SessionState;
 import org.apache.hudi.sync.common.AbstractSyncHoodieClient;
@@ -88,8 +88,8 @@ public class HoodieHiveClient extends AbstractSyncHoodieClient {
       createHiveConnection();
     }
     try {
-      this.client = Hive.get(configuration).getMSC();
-    } catch (MetaException | HiveException e) {
+      this.client = RetryingMetaStoreClient.getProxy(configuration,false);
+    } catch (MetaException e) {
       throw new HoodieHiveSyncException("Failed to create HiveMetaStoreClient", e);
     }
 
@@ -472,7 +472,7 @@ public class HoodieHiveClient extends AbstractSyncHoodieClient {
         connection.close();
       }
       if (client != null) {
-        Hive.closeCurrent();
+        client.close();
         client = null;
       }
     } catch (SQLException e) {

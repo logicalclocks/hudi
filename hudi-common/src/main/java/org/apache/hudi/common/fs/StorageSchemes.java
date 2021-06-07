@@ -53,7 +53,9 @@ public enum StorageSchemes {
   // Databricks file system
   DBFS("dbfs", false),
   // IBM Cloud Object Storage
-  COS("cos", false);
+  COS("cos", false),
+  // HopsFS handle Hopsworks external clients
+  HOPSFS("hopsfs", true);
 
   private String scheme;
   private boolean supportsAppend;

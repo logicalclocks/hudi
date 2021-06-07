@@ -22,6 +22,7 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hive.conf.HiveConf;
 import org.apache.hadoop.hive.metastore.IMetaStoreClient;
 import org.apache.hadoop.hive.metastore.LockRequestBuilder;
+import org.apache.hadoop.hive.metastore.RetryingMetaStoreClient;
 import org.apache.hadoop.hive.metastore.api.LockComponent;
 import org.apache.hadoop.hive.metastore.api.LockLevel;
 import org.apache.hadoop.hive.metastore.api.LockRequest;
@@ -29,8 +30,6 @@ import org.apache.hadoop.hive.metastore.api.LockResponse;
 import org.apache.hadoop.hive.metastore.api.LockState;
 import org.apache.hadoop.hive.metastore.api.LockType;
 import org.apache.hadoop.hive.metastore.api.MetaException;
-import org.apache.hadoop.hive.ql.metadata.Hive;
-import org.apache.hadoop.hive.ql.metadata.HiveException;
 import org.apache.hudi.common.config.LockConfiguration;
 import org.apache.hudi.common.lock.LockProvider;
 import org.apache.hudi.common.util.StringUtils;
@@ -86,8 +85,8 @@ public class HiveMetastoreBasedLockProvider implements LockProvider<LockResponse
       HiveConf hiveConf = new HiveConf();
       setHiveLockConfs(hiveConf);
       hiveConf.addResource(conf);
-      this.hiveClient = Hive.get(hiveConf).getMSC();
-    } catch (MetaException | HiveException e) {
+      this.hiveClient = RetryingMetaStoreClient.getProxy(hiveConf, false);
+    } catch (MetaException e) {
       throw new HoodieLockException("Failed to create HiveMetaStoreClient", e);
     }
   }
