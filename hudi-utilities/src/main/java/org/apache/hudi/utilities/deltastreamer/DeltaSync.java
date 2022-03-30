@@ -45,7 +45,6 @@ import org.apache.hudi.common.util.ReflectionUtils;
 import org.apache.hudi.common.util.StringUtils;
 import org.apache.hudi.common.util.ValidationUtils;
 import org.apache.hudi.common.util.collection.Pair;
-import org.apache.hudi.common.util.collection.Triple;
 import org.apache.hudi.config.HoodieClusteringConfig;
 import org.apache.hudi.config.HoodieCompactionConfig;
 import org.apache.hudi.config.HoodiePayloadConfig;
@@ -274,8 +273,8 @@ public class DeltaSync implements Serializable {
   /**
    * Run one round of delta sync and return new compaction instant if one got scheduled.
    */
-  public Triple<Option<String>, Option<TypedProperties>, JavaRDD<WriteStatus>> syncOnce() throws IOException {
-    Triple<Option<String>, Option<TypedProperties>, JavaRDD<WriteStatus>> result = null;
+  public Pair<Option<String>, JavaRDD<WriteStatus>> syncOnce() throws IOException {
+    Pair<Option<String>, JavaRDD<WriteStatus>> result = null;
     Timer.Context overallTimerContext = metrics.getOverallTimerContext();
 
     // Refresh Timeline
@@ -478,8 +477,9 @@ public class DeltaSync implements Serializable {
    * @param overallTimerContext Timer Context
    * @return Option Compaction instant if one is scheduled
    */
-  private Triple<Option<String>, Option<TypedProperties>, JavaRDD<WriteStatus>> writeToSink(JavaRDD<HoodieRecord> records,
-      String checkpointStr, HoodieDeltaStreamerMetrics metrics, Timer.Context overallTimerContext) {
+  private Pair<Option<String>, JavaRDD<WriteStatus>> writeToSink(JavaRDD<HoodieRecord> records, String checkpointStr,
+                                                                 HoodieDeltaStreamerMetrics metrics,
+                                                                 Timer.Context overallTimerContext) {
     Option<String> scheduledCompactionInstant = Option.empty();
     // filter dupes if needed
     if (cfg.filterDupes) {
@@ -563,8 +563,7 @@ public class DeltaSync implements Serializable {
 
     // Send DeltaStreamer Metrics
     metrics.updateDeltaStreamerMetrics(overallTimeMs);
-    return Triple.of(scheduledCompactionInstant, Option.of(this.getProps()),
-      writeStatusRDD);
+    return Pair.of(scheduledCompactionInstant, writeStatusRDD);
   }
 
   /**

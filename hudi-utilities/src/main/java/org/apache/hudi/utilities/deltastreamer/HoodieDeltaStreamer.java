@@ -44,7 +44,6 @@ import org.apache.hudi.common.util.CompactionUtils;
 import org.apache.hudi.common.util.Option;
 import org.apache.hudi.common.util.ValidationUtils;
 import org.apache.hudi.common.util.collection.Pair;
-import org.apache.hudi.common.util.collection.Triple;
 import org.apache.hudi.config.HoodieClusteringConfig;
 import org.apache.hudi.config.HoodieWriteConfig;
 import org.apache.hudi.exception.HoodieClusteringUpdateException;
@@ -170,9 +169,8 @@ public class HoodieDeltaStreamer implements Serializable {
    * Main method to start syncing.
    *
    * @throws Exception
-   * @return
    */
-  public TypedProperties sync() throws Exception {
+  public void sync() throws Exception {
     if (bootstrapExecutor.isPresent()) {
       LOG.info("Performing bootstrap. Source=" + bootstrapExecutor.get().getBootstrapConfig().getBootstrapSourceBasePath());
       bootstrapExecutor.get().execute();
@@ -192,7 +190,7 @@ public class HoodieDeltaStreamer implements Serializable {
         try {
           deltaSyncService.ifPresent(ds -> {
             try {
-              this.properties.putAll(ds.getDeltaSync().syncOnce().getMiddle().orElseGet(null));
+              ds.getDeltaSync().syncOnce();
             } catch (IOException e) {
               throw new HoodieIOException(e.getMessage(), e);
             }
@@ -206,7 +204,6 @@ public class HoodieDeltaStreamer implements Serializable {
         }
       }
     }
-    return this.properties;
   }
 
   public Config getConfig() {
@@ -637,8 +634,7 @@ public class HoodieDeltaStreamer implements Serializable {
           while (!isShutdownRequested()) {
             try {
               long start = System.currentTimeMillis();
-              Option<Triple<Option<String>, Option<TypedProperties>, JavaRDD<WriteStatus>>>
-                    scheduledCompactionInstantAndRDD = Option.ofNullable(deltaSync.syncOnce());
+              Option<Pair<Option<String>, JavaRDD<WriteStatus>>> scheduledCompactionInstantAndRDD = Option.ofNullable(deltaSync.syncOnce());
               if (scheduledCompactionInstantAndRDD.isPresent() && scheduledCompactionInstantAndRDD.get().getLeft().isPresent()) {
                 LOG.info("Enqueuing new pending compaction instant (" + scheduledCompactionInstantAndRDD.get().getLeft() + ")");
                 asyncCompactService.get().enqueuePendingAsyncServiceInstant(new HoodieInstant(State.REQUESTED,
