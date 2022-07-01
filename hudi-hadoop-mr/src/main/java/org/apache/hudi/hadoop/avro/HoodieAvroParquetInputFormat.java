@@ -37,8 +37,8 @@ public class HoodieAvroParquetInputFormat extends ParquetInputFormat<ArrayWritab
   
   @Override
   public RecordReader<Void, ArrayWritable> createRecordReader(
-      InputSplit inputSplit,
-      TaskAttemptContext taskAttemptContext) throws IOException, InterruptedException {
+    InputSplit inputSplit,
+    TaskAttemptContext taskAttemptContext) throws IOException, InterruptedException {
     Configuration conf = ContextUtil.getConfiguration(taskAttemptContext);
     return new HoodieAvroParquetReader(inputSplit, conf);
   }

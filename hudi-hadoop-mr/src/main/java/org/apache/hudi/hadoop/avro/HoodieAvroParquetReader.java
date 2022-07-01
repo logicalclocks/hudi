@@ -59,16 +59,16 @@ public class HoodieAvroParquetReader extends RecordReader<Void, ArrayWritable> {
     if (!readColNames.isEmpty()) {
       // get base schema
       ParquetMetadata fileFooter =
-          ParquetFileReader.readFooter(conf, ((ParquetInputSplit) inputSplit).getPath(), ParquetMetadataConverter.NO_FILTER);
+        ParquetFileReader.readFooter(conf, ((ParquetInputSplit) inputSplit).getPath(), ParquetMetadataConverter.NO_FILTER);
       MessageType messageType = fileFooter.getFileMetaData().getSchema();
       Schema baseSchema = new AvroSchemaConverter(conf).convert(messageType);
       // filter schema for reading
       final Schema filterSchema = Schema.createRecord(baseSchema.getName(),
-          baseSchema.getDoc(), baseSchema.getNamespace(), baseSchema.isError(),
-          baseSchema.getFields().stream()
-            .filter(f -> readColNames.contains(f.name()))
-            .map(f -> new Schema.Field(f.name(), f.schema(), f.doc(), f.defaultVal()))
-            .collect(Collectors.toList()));
+        baseSchema.getDoc(), baseSchema.getNamespace(), baseSchema.isError(),
+        baseSchema.getFields().stream()
+          .filter(f -> readColNames.contains(f.name()))
+          .map(f -> new Schema.Field(f.name(), f.schema(), f.doc(), f.defaultVal()))
+          .collect(Collectors.toList()));
       avroReadSupport.setAvroReadSchema(conf, filterSchema);
       avroReadSupport.setRequestedProjection(conf, filterSchema);
     }

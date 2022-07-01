@@ -91,7 +91,7 @@ public class HoodieParquetInputFormat extends MapredParquetInputFormat implement
     try {
       Constructor[] constructors = ParquetRecordReaderWrapper.class.getConstructors();
       if (Arrays.stream(constructors)
-          .anyMatch(c -> c.getParameterCount() > 0 && c.getParameterTypes()[0]
+        .anyMatch(c -> c.getParameterCount() > 0 && c.getParameterTypes()[0]
           .getName().equals(ParquetInputFormat.class.getName()))) {
         supportAvroRead = true;
       }
