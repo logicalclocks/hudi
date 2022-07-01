@@ -24,7 +24,6 @@ import org.apache.hudi.common.table.log.LogReaderUtils;
 import org.apache.hudi.exception.HoodieIOException;
 import org.apache.hudi.hadoop.InputSplitUtils;
 import org.apache.hudi.hadoop.utils.HoodieRealtimeRecordReaderUtils;
-import org.apache.hudi.hadoop.HoodieColumnProjectionUtils;
 
 import org.apache.avro.Schema;
 import org.apache.avro.Schema.Field;
@@ -55,7 +54,6 @@ public abstract class AbstractRealtimeRecordReader {
   private Schema readerSchema;
   private Schema writerSchema;
   private Schema hiveSchema;
-  private boolean supportTimestamp;
 
   public AbstractRealtimeRecordReader(RealtimeSplit split, JobConf job) {
     this.split = split;
@@ -109,9 +107,6 @@ public abstract class AbstractRealtimeRecordReader {
     readerSchema = HoodieRealtimeRecordReaderUtils.generateProjectionSchema(writerSchema, schemaFieldsMap, projectionFields);
     LOG.info(String.format("About to read compacted logs %s for base split %s, projecting cols %s",
         split.getDeltaLogPaths(), split.getPath(), projectionFields));
-  
-    // get timestamp columns
-    supportTimestamp = HoodieColumnProjectionUtils.supportTimestamp(jobConf);
   }
 
   private Schema constructHiveOrderedSchema(Schema writerSchema, Map<String, Field> schemaFieldsMap) {
@@ -152,11 +147,7 @@ public abstract class AbstractRealtimeRecordReader {
   public Schema getHiveSchema() {
     return hiveSchema;
   }
-  
-  public boolean isSupportTimestamp() {
-    return supportTimestamp;
-  }
-  
+
   public RealtimeSplit getSplit() {
     return split;
   }

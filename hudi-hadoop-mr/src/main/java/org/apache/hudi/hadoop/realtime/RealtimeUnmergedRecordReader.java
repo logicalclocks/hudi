@@ -89,7 +89,7 @@ class RealtimeUnmergedRecordReader extends AbstractRealtimeRecordReader
         .withLogRecordScannerCallback(record -> {
           // convert Hoodie log record to Hadoop AvroWritable and buffer
           GenericRecord rec = (GenericRecord) record.getData().getInsertValue(getReaderSchema()).get();
-          ArrayWritable aWritable = (ArrayWritable) HoodieRealtimeRecordReaderUtils.avroToArrayWritable(rec, getHiveSchema(), isSupportTimestamp());
+          ArrayWritable aWritable = (ArrayWritable) HoodieRealtimeRecordReaderUtils.avroToArrayWritable(rec, getHiveSchema());
           this.executor.getQueue().insertRecord(aWritable);
         })
         .build();

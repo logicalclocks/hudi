@@ -25,7 +25,6 @@ import org.apache.hudi.exception.HoodieIOException;
 import org.apache.hudi.hadoop.config.HoodieRealtimeConfig;
 import org.apache.hudi.io.storage.HoodieFileReader;
 import org.apache.hudi.io.storage.HoodieFileReaderFactory;
-import org.apache.avro.LogicalType;
 import org.apache.avro.LogicalTypes;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericArray;
@@ -157,10 +156,7 @@ public class HoodieRealtimeRecordReaderUtils {
    * Convert the projected read from delta record into an array writable.
    */
   public static Writable avroToArrayWritable(Object value, Schema schema) {
-    return avroToArrayWritable(value, schema, false);
-  }
-  
-  public static Writable avroToArrayWritable(Object value, Schema schema, boolean supportTimestamp) {
+
     if (value == null) {
       return null;
     }
@@ -172,19 +168,10 @@ public class HoodieRealtimeRecordReaderUtils {
         return new BytesWritable(((ByteBuffer)value).array());
       case INT:
         if (schema.getLogicalType() != null && schema.getLogicalType().getName().equals("date")) {
-          return HoodieHiveUtils.getDateWriteable((Integer) value);
+          return new DateWritable((Integer) value);
         }
         return new IntWritable((Integer) value);
       case LONG:
-        LogicalType logicalType = schema.getLogicalType();
-        // If there is a specified timestamp or under normal cases, we will process it
-        if (supportTimestamp) {
-          if (LogicalTypes.timestampMillis().equals(logicalType)) {
-            return HoodieHiveUtils.getTimestampWriteable((Long) value, true);
-          } else if (LogicalTypes.timestampMicros().equals(logicalType)) {
-            return HoodieHiveUtils.getTimestampWriteable((Long) value, false);
-          }
-        }
         return new LongWritable((Long) value);
       case FLOAT:
         return new FloatWritable((Float) value);
@@ -199,7 +186,7 @@ public class HoodieRealtimeRecordReaderUtils {
         Writable[] recordValues = new Writable[schema.getFields().size()];
         int recordValueIndex = 0;
         for (Schema.Field field : schema.getFields()) {
-          recordValues[recordValueIndex++] = avroToArrayWritable(record.get(field.name()), field.schema(), supportTimestamp);
+          recordValues[recordValueIndex++] = avroToArrayWritable(record.get(field.name()), field.schema());
         }
         return new ArrayWritable(Writable.class, recordValues);
       case ENUM:
@@ -234,9 +221,9 @@ public class HoodieRealtimeRecordReaderUtils {
         Schema s1 = types.get(0);
         Schema s2 = types.get(1);
         if (s1.getType() == Schema.Type.NULL) {
-          return avroToArrayWritable(value, s2, supportTimestamp);
+          return avroToArrayWritable(value, s2);
         } else if (s2.getType() == Schema.Type.NULL) {
-          return avroToArrayWritable(value, s1, supportTimestamp);
+          return avroToArrayWritable(value, s1);
         } else {
           throw new IllegalArgumentException("Only support union with null");
         }

@@ -22,29 +22,18 @@ import org.apache.hudi.common.table.HoodieTableMetaClient;
 import org.apache.hudi.common.table.timeline.HoodieTimeline;
 import org.apache.hudi.common.util.CollectionUtils;
 import org.apache.hudi.exception.HoodieIOException;
-import org.apache.hudi.common.util.Option;
 
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.hive.serde2.io.DateWritable;
-import org.apache.hadoop.hive.serde2.io.TimestampWritable;
-import org.apache.hadoop.io.Writable;
 import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.mapreduce.JobContext;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.apache.hudi.common.util.collection.ImmutableTriple;
-import org.apache.hudi.exception.HoodieException;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -185,102 +174,5 @@ public class HoodieHiveUtils {
       throw new HoodieIOException("Valid timestamp is required for " + HOODIE_CONSUME_COMMIT + " in snapshot mode");
     }
     return timeline.findInstantsBeforeOrEquals(maxCommit);
-  }
-  
-  public static final String HIVE_TIMESTAMP_TYPE_CLASS = "org.apache.hadoop.hive.common.type.Timestamp";
-  public static final String TIMESTAMP_WRITEABLE_V2_CLASS = "org.apache.hadoop.hive.serde2.io.TimestampWritableV2";
-  public static final boolean SUPPORT_TIMESTAMP_WRITEABLE_V2;
-  private static final Class TIMESTAMP_CLASS;
-  private static final Method SET_TIME_IN_MILLIS;
-  private static final Constructor TIMESTAMP_WRITEABLE_V2_CONSTRUCTOR;
-  
-  public static final String DATE_WRITEABLE_V2_CLASS = "org.apache.hadoop.hive.serde2.io.DateWritableV2";
-  public static final boolean SUPPORT_DATE_WRITEABLE_V2;
-  private static final Constructor DATE_WRITEABLE_V2_CONSTRUCTOR;
-  
-  static {
-    // timestamp
-    Supplier<ImmutableTriple<Class, Method, Constructor>> timestampSupplier = () -> {
-      try {
-        Class timestampClass = Class.forName(HIVE_TIMESTAMP_TYPE_CLASS);
-        Method setTimeInMillis = timestampClass.getDeclaredMethod("setTimeInMillis", long.class);
-        Class twV2Class = Class.forName(TIMESTAMP_WRITEABLE_V2_CLASS);
-        return ImmutableTriple.of(timestampClass, setTimeInMillis, twV2Class.getConstructor(timestampClass));
-      } catch (ClassNotFoundException | NoSuchMethodException e) {
-        LOG.trace("can not find hive3 timestampv2 class or method, use hive2 class!", e);
-        return null;
-      }
-    };
-    Option<ImmutableTriple<Class, Method, Constructor>> timestampTriple = Option.ofNullable(timestampSupplier.get());
-    SUPPORT_TIMESTAMP_WRITEABLE_V2 = timestampTriple.isPresent();
-    if (SUPPORT_TIMESTAMP_WRITEABLE_V2) {
-      LOG.trace("use org.apache.hadoop.hive.serde2.io.TimestampWritableV2 to read hudi timestamp columns");
-      ImmutableTriple<Class, Method, Constructor> triple = timestampTriple.get();
-      TIMESTAMP_CLASS = triple.left;
-      SET_TIME_IN_MILLIS = triple.middle;
-      TIMESTAMP_WRITEABLE_V2_CONSTRUCTOR = triple.right;
-    } else {
-      LOG.trace("use org.apache.hadoop.hive.serde2.io.TimestampWritable to read hudi timestamp columns");
-      TIMESTAMP_CLASS = null;
-      SET_TIME_IN_MILLIS = null;
-      TIMESTAMP_WRITEABLE_V2_CONSTRUCTOR = null;
-    }
-    
-    // date
-    Supplier<Constructor> dateSupplier = () -> {
-      try {
-        Class dateV2Class = Class.forName(DATE_WRITEABLE_V2_CLASS);
-        return dateV2Class.getConstructor(int.class);
-      } catch (ClassNotFoundException | NoSuchMethodException e) {
-        LOG.trace("can not find hive3 datev2 class or method, use hive2 class!", e);
-        return null;
-      }
-    };
-    Option<Constructor> dateConstructor = Option.ofNullable(dateSupplier.get());
-    SUPPORT_DATE_WRITEABLE_V2 = dateConstructor.isPresent();
-    if (SUPPORT_DATE_WRITEABLE_V2) {
-      LOG.trace("use org.apache.hadoop.hive.serde2.io.DateWritableV2 to read hudi date columns");
-      DATE_WRITEABLE_V2_CONSTRUCTOR = dateConstructor.get();
-    } else {
-      LOG.trace("use org.apache.hadoop.hive.serde2.io.DateWritable to read hudi date columns");
-      DATE_WRITEABLE_V2_CONSTRUCTOR = null;
-    }
-  }
-  
-  /**
-   * Get timestamp writeable object from long value.
-   * Hive3 use TimestampWritableV2 to build timestamp objects and Hive2 use TimestampWritable.
-   * So that we need to initialize timestamp according to the version of Hive.
-   */
-  public static Writable getTimestampWriteable(long value, boolean timestampMillis) {
-    if (SUPPORT_TIMESTAMP_WRITEABLE_V2) {
-      try {
-        Object timestamp = TIMESTAMP_CLASS.newInstance();
-        SET_TIME_IN_MILLIS.invoke(timestamp, timestampMillis ? value : value / 1000);
-        return (Writable) TIMESTAMP_WRITEABLE_V2_CONSTRUCTOR.newInstance(timestamp);
-      } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
-        throw new HoodieException("can not create writable v2 class!", e);
-      }
-    } else {
-      Timestamp timestamp = new Timestamp(timestampMillis ? value : value / 1000);
-      return new TimestampWritable(timestamp);
-    }
-  }
-  
-  /**
-   * Get date writeable object from int value.
-   * Hive3 use DateWritableV2 to build date objects and Hive2 use DateWritable.
-   * So that we need to initialize date according to the version of Hive.
-   */
-  public static Writable getDateWriteable(int value) {
-    if (SUPPORT_DATE_WRITEABLE_V2) {
-      try {
-        return (Writable) DATE_WRITEABLE_V2_CONSTRUCTOR.newInstance(value);
-      } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
-        throw new HoodieException("can not create writable v2 class!", e);
-      }
-    } else {
-      return new DateWritable(value);
-    }
   }
 }

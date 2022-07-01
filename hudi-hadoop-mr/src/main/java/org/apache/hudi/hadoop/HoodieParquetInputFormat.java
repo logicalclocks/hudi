@@ -28,11 +28,7 @@ import org.apache.hudi.common.util.collection.Pair;
 import org.apache.hudi.exception.HoodieIOException;
 import org.apache.hudi.hadoop.utils.HoodieHiveUtils;
 import org.apache.hudi.hadoop.utils.HoodieInputFormatUtils;
-import org.apache.hudi.exception.HoodieException;
-import org.apache.hudi.hadoop.avro.HoodieAvroParquetInputFormat;
-import org.apache.parquet.hadoop.ParquetInputFormat;
 
-import org.apache.hadoop.hive.ql.io.parquet.read.ParquetRecordReaderWrapper;
 import org.apache.hadoop.conf.Configurable;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileStatus;
@@ -51,7 +47,6 @@ import org.apache.hadoop.mapred.Reporter;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import java.lang.reflect.Constructor;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -71,34 +66,8 @@ import java.util.stream.IntStream;
 public class HoodieParquetInputFormat extends MapredParquetInputFormat implements Configurable {
 
   private static final Logger LOG = LogManager.getLogger(HoodieParquetInputFormat.class);
-  
-  private boolean supportAvroRead = false;
-  
+
   protected Configuration conf;
-  
-  public HoodieParquetInputFormat() {
-    initAvroInputFormat();
-  }
-  
-  /**
-   * Spark2 use `parquet.hadoopParquetInputFormat` in `com.twitter:parquet-hadoop-bundle`.
-   * So that we need to distinguish the constructions of classes with
-   *  `parquet.hadoopParquetInputFormat` or `org.apache.parquet.hadoop.ParquetInputFormat`.
-   * If we use `org.apache.parquet:parquet-hadoop`, we can use `HudiAvroParquetInputFormat`
-   *  in Hive or Spark3 to get timestamp with correct type.
-   */
-  private void initAvroInputFormat() {
-    try {
-      Constructor[] constructors = ParquetRecordReaderWrapper.class.getConstructors();
-      if (Arrays.stream(constructors)
-        .anyMatch(c -> c.getParameterCount() > 0 && c.getParameterTypes()[0]
-          .getName().equals(ParquetInputFormat.class.getName()))) {
-        supportAvroRead = true;
-      }
-    } catch (SecurityException e) {
-      throw new HoodieException("Failed to check if support avro reader: " + e.getMessage(), e);
-    }
-  }
 
   protected HoodieDefaultTimeline filterInstantsTimeline(HoodieDefaultTimeline timeline) {
     return HoodieInputFormatUtils.filterInstantsTimeline(timeline);
@@ -252,16 +221,7 @@ public class HoodieParquetInputFormat extends MapredParquetInputFormat implement
     if (LOG.isDebugEnabled()) {
       LOG.debug("EMPLOYING DEFAULT RECORD READER - " + split);
     }
-  
-    try {
-      if (supportAvroRead && HoodieColumnProjectionUtils.supportTimestamp(job)) {
-        return new ParquetRecordReaderWrapper(new HoodieAvroParquetInputFormat(), split, job, reporter);
-      } else {
-        return super.getRecordReader(split, job, reporter);
-      }
-    } catch (final InterruptedException | IOException e) {
-      throw new RuntimeException("Cannot create a RecordReaderWrapper", e);
-    }
+    return super.getRecordReader(split, job, reporter);
   }
 
   @Override
