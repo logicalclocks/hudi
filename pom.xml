@@ -26,7 +26,7 @@
     <version>21</version>
   </parent>
 
-  <groupId>org.apache.hudi</groupId>
+  <groupId>io.hops.hudi</groupId>
   <artifactId>hudi</artifactId>
   <packaging>pom</packaging>
   <version>0.14.0.0</version>
@@ -206,9 +206,9 @@
     <argLine>-Xmx2g</argLine>
     <jacoco.version>0.8.8</jacoco.version>
     <presto.bundle.bootstrap.scope>compile</presto.bundle.bootstrap.scope>
-    <presto.bundle.bootstrap.shade.prefix>org.apache.hudi.</presto.bundle.bootstrap.shade.prefix>
+    <presto.bundle.bootstrap.shade.prefix>io.hops.hudi.</presto.bundle.bootstrap.shade.prefix>
     <trino.bundle.bootstrap.scope>compile</trino.bundle.bootstrap.scope>
-    <trino.bundle.bootstrap.shade.prefix>org.apache.hudi.</trino.bundle.bootstrap.shade.prefix>
+    <trino.bundle.bootstrap.shade.prefix>io.hops.hudi.</trino.bundle.bootstrap.shade.prefix>
     <shadeSources>true</shadeSources>
     <zk-curator.version>2.7.1</zk-curator.version>
     <disruptor.version>3.4.2</disruptor.version>
@@ -302,7 +302,7 @@
           </sourceDirectories>
           <!-- NOTE: This property is only available in Maven >= 3.3.1 -->
           <propertyExpansion>basedir=${maven.multiModuleProjectDirectory}</propertyExpansion>
-          <excludes>**\/generated-sources\/,org/apache/hudi/metaserver/thrift/*</excludes>
+          <excludes>**\/generated-sources\/,io.hops.hudi/metaserver/thrift/*</excludes>
         </configuration>
         <executions>
           <execution>
@@ -472,23 +472,23 @@
             <!-- org.apache.httpcomponents -->
             <relocation>
               <pattern>org.apache.http.</pattern>
-              <shadedPattern>org.apache.hudi.org.apache.http.</shadedPattern>
+              <shadedPattern>io.hops.hudi.org.apache.http.</shadedPattern>
             </relocation>
             <!-- hbase -->
             <relocation>
               <pattern>org.apache.hadoop.hbase.</pattern>
-              <shadedPattern>org.apache.hudi.org.apache.hadoop.hbase.</shadedPattern>
+              <shadedPattern>io.hops.hudi.org.apache.hadoop.hbase.</shadedPattern>
               <excludes>
                 <exclude>org.apache.hadoop.hbase.KeyValue$KeyComparator</exclude>
               </excludes>
             </relocation>
             <relocation>
               <pattern>org.apache.hbase.</pattern>
-              <shadedPattern>org.apache.hudi.org.apache.hbase.</shadedPattern>
+              <shadedPattern>io.hops.hudi.org.apache.hbase.</shadedPattern>
             </relocation>
             <relocation>
               <pattern>org.apache.htrace.</pattern>
-              <shadedPattern>org.apache.hudi.org.apache.htrace.</shadedPattern>
+              <shadedPattern>io.hops.hudi.org.apache.htrace.</shadedPattern>
             </relocation>
             <!-- hbase
                  The classes below in org.apache.hadoop.metrics2 package come from
@@ -497,68 +497,68 @@
                  from hadoop. -->
             <relocation>
               <pattern>org.apache.hadoop.metrics2.MetricHistogram</pattern>
-              <shadedPattern>org.apache.hudi.org.apache.hadoop.metrics2.MetricHistogram
+              <shadedPattern>io.hops.hudi.org.apache.hadoop.metrics2.MetricHistogram
               </shadedPattern>
             </relocation>
             <relocation>
               <pattern>org.apache.hadoop.metrics2.MetricsExecutor</pattern>
-              <shadedPattern>org.apache.hudi.org.apache.hadoop.metrics2.MetricsExecutor
+              <shadedPattern>io.hops.hudi.org.apache.hadoop.metrics2.MetricsExecutor
               </shadedPattern>
             </relocation>
             <relocation>
               <pattern>org.apache.hadoop.metrics2.impl.JmxCacheBuster</pattern>
-              <shadedPattern>org.apache.hudi.org.apache.hadoop.metrics2.impl.JmxCacheBuster
+              <shadedPattern>io.hops.hudi.org.apache.hadoop.metrics2.impl.JmxCacheBuster
               </shadedPattern>
             </relocation>
             <relocation>
               <pattern>org.apache.hadoop.metrics2.lib.DefaultMetricsSystemHelper</pattern>
               <shadedPattern>
-                org.apache.hudi.org.apache.hadoop.metrics2.lib.DefaultMetricsSystemHelper
+                io.hops.hudi.org.apache.hadoop.metrics2.lib.DefaultMetricsSystemHelper
               </shadedPattern>
             </relocation>
             <relocation>
               <pattern>org.apache.hadoop.metrics2.lib.DynamicMetricsRegistry</pattern>
-              <shadedPattern>org.apache.hudi.org.apache.hadoop.metrics2.lib.DynamicMetricsRegistry
+              <shadedPattern>io.hops.hudi.org.apache.hadoop.metrics2.lib.DynamicMetricsRegistry
               </shadedPattern>
             </relocation>
             <relocation>
               <pattern>org.apache.hadoop.metrics2.lib.MetricsExecutorImpl</pattern>
-              <shadedPattern>org.apache.hudi.org.apache.hadoop.metrics2.lib.MetricsExecutorImpl
+              <shadedPattern>io.hops.hudi.org.apache.hadoop.metrics2.lib.MetricsExecutorImpl
               </shadedPattern>
             </relocation>
             <relocation>
               <pattern>org.apache.hadoop.metrics2.lib.MutableFastCounter</pattern>
-              <shadedPattern>org.apache.hudi.org.apache.hadoop.metrics2.lib.MutableFastCounter
+              <shadedPattern>io.hops.hudi.org.apache.hadoop.metrics2.lib.MutableFastCounter
               </shadedPattern>
             </relocation>
             <relocation>
               <pattern>org.apache.hadoop.metrics2.lib.MutableHistogram</pattern>
-              <shadedPattern>org.apache.hudi.org.apache.hadoop.metrics2.lib.MutableHistogram
+              <shadedPattern>io.hops.hudi.org.apache.hadoop.metrics2.lib.MutableHistogram
               </shadedPattern>
             </relocation>
             <relocation>
               <pattern>org.apache.hadoop.metrics2.lib.MutableRangeHistogram</pattern>
-              <shadedPattern>org.apache.hudi.org.apache.hadoop.metrics2.lib.MutableRangeHistogram
+              <shadedPattern>io.hops.hudi.org.apache.hadoop.metrics2.lib.MutableRangeHistogram
               </shadedPattern>
             </relocation>
             <relocation>
               <pattern>org.apache.hadoop.metrics2.lib.MutableSizeHistogram</pattern>
-              <shadedPattern>org.apache.hudi.org.apache.hadoop.metrics2.lib.MutableSizeHistogram
+              <shadedPattern>io.hops.hudi.org.apache.hadoop.metrics2.lib.MutableSizeHistogram
               </shadedPattern>
             </relocation>
             <relocation>
               <pattern>org.apache.hadoop.metrics2.lib.MutableTimeHistogram</pattern>
-              <shadedPattern>org.apache.hudi.org.apache.hadoop.metrics2.lib.MutableTimeHistogram
+              <shadedPattern>io.hops.hudi.org.apache.hadoop.metrics2.lib.MutableTimeHistogram
               </shadedPattern>
             </relocation>
             <relocation>
               <pattern>org.apache.hadoop.metrics2.util.MetricQuantile</pattern>
-              <shadedPattern>org.apache.hudi.org.apache.hadoop.metrics2.util.MetricQuantile
+              <shadedPattern>io.hops.hudi.org.apache.hadoop.metrics2.util.MetricQuantile
               </shadedPattern>
             </relocation>
             <relocation>
               <pattern>org.apache.hadoop.metrics2.util.MetricSampleQuantiles</pattern>
-              <shadedPattern>org.apache.hudi.org.apache.hadoop.metrics2.util.MetricSampleQuantiles
+              <shadedPattern>io.hops.hudi.org.apache.hadoop.metrics2.util.MetricSampleQuantiles
               </shadedPattern>
             </relocation>
           </relocations>

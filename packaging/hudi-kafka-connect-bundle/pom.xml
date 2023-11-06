@@ -19,7 +19,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>hudi</artifactId>
-        <groupId>org.apache.hudi</groupId>
+        <groupId>io.hops.hudi</groupId>
         <version>0.14.0.0</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
@@ -31,7 +31,7 @@
         <checkstyle.skip>true</checkstyle.skip>
         <main.basedir>${project.parent.basedir}</main.basedir>
         <skipTests>true</skipTests>
-        <kafka.connect.bundle.shade.prefix>org.apache.hudi.</kafka.connect.bundle.shade.prefix>
+        <kafka.connect.bundle.shade.prefix>io.hops.hudi.</kafka.connect.bundle.shade.prefix>
     </properties>
 
     <build>
@@ -72,21 +72,21 @@
                             </transformers>
                             <artifactSet>
                                 <includes combine.children="append">
-                                    <include>org.apache.hudi:hudi-common</include>
-                                    <include>org.apache.hudi:hudi-client-common</include>
-                                    <include>org.apache.hudi:hudi-java-client</include>
-                                    <include>org.apache.hudi:hudi-kafka-connect</include>
-                                    <include>org.apache.hudi:hudi-utilities_${scala.binary.version}</include>
-                                    <include>org.apache.hudi:hudi-hive-sync</include>
-                                    <include>org.apache.hudi:hudi-sync-common</include>
-                                    <include>org.apache.hudi:hudi-hadoop-mr</include>
-                                    <include>org.apache.hudi:hudi-timeline-service</include>
-                                    <include>org.apache.hudi:hudi-aws</include>
+                                    <include>io.hops.hudi:hudi-common</include>
+                                    <include>io.hops.hudi:hudi-client-common</include>
+                                    <include>io.hops.hudi:hudi-java-client</include>
+                                    <include>io.hops.hudi:hudi-kafka-connect</include>
+                                    <include>io.hops.hudi:hudi-utilities_${scala.binary.version}</include>
+                                    <include>io.hops.hudi:hudi-hive-sync</include>
+                                    <include>io.hops.hudi:hudi-sync-common</include>
+                                    <include>io.hops.hudi:hudi-hadoop-mr</include>
+                                    <include>io.hops.hudi:hudi-timeline-service</include>
+                                    <include>io.hops.hudi:hudi-aws</include>
 
                                     <!-- NOTE: This is temp (SchemaProvide dep) until PR3162 lands -->
-                                    <include>org.apache.hudi:hudi-flink</include>
-                                    <include>org.apache.hudi:flink-core</include>
-                                    <include>org.apache.hudi:hudi-flink-client</include>
+                                    <include>io.hops.hudi:hudi-flink</include>
+                                    <include>io.hops.hudi:flink-core</include>
+                                    <include>io.hops.hudi:hudi-flink-client</include>
                                     <include>org.apache.flink:flink-core</include>
                                     <include>${flink.hadoop.compatibility.artifactId}</include>
 
@@ -134,19 +134,19 @@
                                 <!-- Kryo -->
                                 <relocation>
                                     <pattern>com.esotericsoftware.kryo.</pattern>
-                                    <shadedPattern>org.apache.hudi.com.esotericsoftware.kryo.</shadedPattern>
+                                    <shadedPattern>io.hops.hudi.com.esotericsoftware.kryo.</shadedPattern>
                                 </relocation>
                                 <relocation>
                                     <pattern>com.esotericsoftware.reflectasm.</pattern>
-                                    <shadedPattern>org.apache.hudi.com.esotericsoftware.reflectasm.</shadedPattern>
+                                    <shadedPattern>io.hops.hudi.com.esotericsoftware.reflectasm.</shadedPattern>
                                 </relocation>
                                 <relocation>
                                     <pattern>com.esotericsoftware.minlog.</pattern>
-                                    <shadedPattern>org.apache.hudi.com.esotericsoftware.minlog.</shadedPattern>
+                                    <shadedPattern>io.hops.hudi.com.esotericsoftware.minlog.</shadedPattern>
                                 </relocation>
                                 <relocation>
                                     <pattern>org.objenesis.</pattern>
-                                    <shadedPattern>org.apache.hudi.org.objenesis.</shadedPattern>
+                                    <shadedPattern>io.hops.hudi.org.objenesis.</shadedPattern>
                                 </relocation>
 
                                 <relocation>
@@ -170,15 +170,15 @@
                                 </relocation>
                                 <relocation>
                                     <pattern>org.apache.commons.io.</pattern>
-                                    <shadedPattern>org.apache.hudi.org.apache.commons.io.</shadedPattern>
+                                    <shadedPattern>io.hops.hudi.org.apache.commons.io.</shadedPattern>
                                 </relocation>
                                 <relocation>
                                     <pattern>org.openjdk.jol.</pattern>
-                                    <shadedPattern>org.apache.hudi.org.openjdk.jol.</shadedPattern>
+                                    <shadedPattern>io.hops.hudi.org.openjdk.jol.</shadedPattern>
                                 </relocation>
                                 <relocation>
                                     <pattern>com.fasterxml.jackson.</pattern>
-                                    <shadedPattern>org.apache.hudi.com.fasterxml.jackson.</shadedPattern>
+                                    <shadedPattern>io.hops.hudi.com.fasterxml.jackson.</shadedPattern>
                                 </relocation>
                             </relocations>
                             <filters>
@@ -213,23 +213,23 @@
     <dependencies>
         <!-- Hoodie -->
         <dependency>
-            <groupId>org.apache.hudi</groupId>
+            <groupId>io.hops.hudi</groupId>
             <artifactId>hudi-kafka-connect</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.hudi</groupId>
+            <groupId>io.hops.hudi</groupId>
             <artifactId>hudi-java-client</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.hudi</groupId>
+            <groupId>io.hops.hudi</groupId>
             <artifactId>hudi-utilities_${scala.binary.version}</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.hudi</groupId>
+            <groupId>io.hops.hudi</groupId>
             <artifactId>hudi-common</artifactId>
             <version>${project.version}</version>
             <exclusions>
@@ -248,7 +248,7 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.apache.hudi</groupId>
+            <groupId>io.hops.hudi</groupId>
             <artifactId>hudi-hive-sync</artifactId>
             <version>${project.version}</version>
             <exclusions>
