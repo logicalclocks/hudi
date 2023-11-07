@@ -74,7 +74,8 @@ public enum StorageSchemes {
   // Volcengine Object Storage
   TOS("tos", false, null, null),
   // Volcengine Cloud HDFS
-  CFS("cfs", true, null, null);
+  CFS("cfs", true, null, null),
+  HOPSFS("hopsfs", true, false, true);
 
   private String scheme;
   private boolean supportsAppend;
