@@ -53,7 +53,7 @@
       <version>${project.version}</version>
       <exclusions>
         <exclusion>
-          <groupId>org.apache.hadoop</groupId>
+          <groupId>io.hops</groupId>
           <artifactId>hadoop-hdfs</artifactId>
         </exclusion>
         <exclusion>
@@ -79,7 +79,7 @@
     </dependency>
 
     <dependency>
-      <groupId>org.apache.hadoop</groupId>
+      <groupId>io.hops</groupId>
       <artifactId>hadoop-aliyun</artifactId>
       <version>${hadoop.aliyun.version}</version>
     </dependency>
@@ -117,7 +117,7 @@
 
     <!-- Hadoop -->
     <dependency>
-      <groupId>org.apache.hadoop</groupId>
+      <groupId>io.hops</groupId>
       <artifactId>hadoop-common</artifactId>
     </dependency>
     <dependency>

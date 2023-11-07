@@ -248,11 +248,11 @@
       <artifactId>spark-core_${scala.binary.version}</artifactId>
       <exclusions>
         <exclusion>
-          <groupId>org.apache.hadoop</groupId>
+          <groupId>io.hops</groupId>
           <artifactId>hadoop-client-api</artifactId>
         </exclusion>
         <exclusion>
-          <groupId>org.apache.hadoop</groupId>
+          <groupId>io.hops</groupId>
           <artifactId>hadoop-client-runtime</artifactId>
         </exclusion>
         <exclusion>
@@ -292,11 +292,11 @@
       <version>${spark.version}</version>
       <exclusions>
         <exclusion>
-          <groupId>org.apache.hadoop</groupId>
+          <groupId>io.hops</groupId>
           <artifactId>hadoop-client-api</artifactId>
         </exclusion>
         <exclusion>
-          <groupId>org.apache.hadoop</groupId>
+          <groupId>io.hops</groupId>
           <artifactId>hadoop-client-runtime</artifactId>
         </exclusion>
       </exclusions>
@@ -377,11 +377,11 @@
 
     <!-- Hadoop -->
     <dependency>
-      <groupId>org.apache.hadoop</groupId>
+      <groupId>io.hops</groupId>
       <artifactId>hadoop-client</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.hadoop</groupId>
+      <groupId>io.hops</groupId>
       <artifactId>hadoop-mapreduce-client-common</artifactId>
       <exclusions>
         <exclusion>

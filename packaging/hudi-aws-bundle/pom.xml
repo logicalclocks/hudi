@@ -156,7 +156,7 @@
                 <!--hadoop-common brings its own version of avro which can cause conflict.
                 Moreover hadoop-* artifacts are not needed in this bundle-->
                 <exclusion>
-                    <groupId>org.apache.hadoop</groupId>
+                    <groupId>io.hops</groupId>
                     <artifactId>*</artifactId>
                 </exclusion>
             </exclusions>

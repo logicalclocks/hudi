@@ -399,7 +399,7 @@
       <scope>compile</scope>
       <exclusions>
         <exclusion>
-          <groupId>org.apache.hadoop</groupId>
+          <groupId>io.hops</groupId>
           <artifactId>hadoop-client</artifactId>
         </exclusion>
         <exclusion>

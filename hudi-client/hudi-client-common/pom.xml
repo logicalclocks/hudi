@@ -191,6 +191,12 @@
       </exclusions>
     </dependency>
 
+    <dependency>
+      <groupId>io.hops</groupId>
+      <artifactId>hadoop-mapreduce-client-core</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
   </dependencies>
 
   <build>
