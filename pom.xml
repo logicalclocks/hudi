@@ -2644,4 +2644,17 @@
 
   </profiles>
 
+  <distributionManagement>
+    <repository>
+      <id>Hops</id>
+      <name>Hops Repo</name>
+      <url>https://archiva.hops.works/repository/Hops/</url>
+    </repository>
+    <snapshotRepository>
+      <id>Hops</id>
+      <name>Hops Repo</name>
+      <url>https://archiva.hops.works/repository/Hops/</url>
+    </snapshotRepository>
+  </distributionManagement>
+
 </project>
