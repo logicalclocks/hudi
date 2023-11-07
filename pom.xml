@@ -59,7 +59,7 @@
     <module>hudi-examples</module>
     <module>hudi-flink-datasource</module>
     <module>hudi-kafka-connect</module>
-    <module>packaging/hudi-flink-bundle</module>
+    <!-- <module>packaging/hudi-flink-bundle</module> -->
     <module>packaging/hudi-kafka-connect-bundle</module>
     <module>packaging/hudi-cli-bundle</module>
     <module>hudi-tests-common</module>
@@ -116,8 +116,8 @@
     <slf4j.version>1.7.36</slf4j.version>
     <joda.version>2.9.9</joda.version>
     <hadoop.version>3.2.0.11-RC0</hadoop.version>
-    <hive.groupid>org.apache.hive</hive.groupid>
-    <hive.version>2.3.1</hive.version>
+    <hive.groupid>io.hops.hive</hive.groupid>
+    <hive.version>3.0.0.13.3</hive.version>
     <hive.parquet.version>1.10.1</hive.parquet.version>
     <hive.avro.version>1.8.2</hive.avro.version>
     <presto.version>0.273</presto.version>
@@ -1554,6 +1554,12 @@
             <artifactId>*</artifactId>
           </exclusion>
         </exclusions>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.thrift</groupId>
+        <artifactId>libthrift</artifactId>
+        <version>${thrift.version}</version>
       </dependency>
 
       <dependency>
