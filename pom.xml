@@ -29,7 +29,7 @@
   <groupId>io.hops.hudi</groupId>
   <artifactId>hudi</artifactId>
   <packaging>pom</packaging>
-  <version>0.12.3.0</version>
+  <version>0.12.3.1</version>
   <description>Apache Hudi brings stream style processing on big data</description>
   <url>https://github.com/apache/hudi</url>
   <name>Hudi</name>
@@ -60,8 +60,8 @@
     <module>hudi-flink-datasource</module>
     <!-- <module>hudi-kafka-connect</module>
     <module>packaging/hudi-flink-bundle</module>
-    <module>packaging/hudi-kafka-connect-bundle</module>
-    <module>hudi-tests-common</module> -->
+    <module>packaging/hudi-kafka-connect-bundle</module> -->
+    <module>hudi-tests-common</module>
   </modules>
 
   <licenses>
@@ -1286,6 +1286,10 @@
           <exclusion>
             <groupId>org.apache.hbase</groupId>
             <artifactId>*</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
