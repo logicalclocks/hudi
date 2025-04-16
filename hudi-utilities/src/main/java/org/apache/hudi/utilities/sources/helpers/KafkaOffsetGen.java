@@ -292,10 +292,14 @@ public class KafkaOffsetGen {
     // Obtain current metadata for the topic
     Map<TopicPartition, Long> fromOffsets;
     Map<TopicPartition, Long> toOffsets;
+    boolean connected = false;
     try (KafkaConsumer consumer = new HoodieRetryingKafkaConsumer(props, kafkaParams)) {
       if (!checkTopicExists(consumer)) {
         throw new HoodieException("Kafka topic:" + topicName + " does not exist");
       }
+      connected = true;
+      LOG.info("Kafka topic {} has {} partitions", topicName, consumer.partitionsFor(topicName).size());
+      LOG.info("Connection to Kafka cluster established successfully");
       List<PartitionInfo> partitionInfoList = fetchPartitionInfos(consumer, topicName);
       Set<TopicPartition> topicPartitions = partitionInfoList.stream()
               .map(x -> new TopicPartition(x.topic(), x.partition())).collect(Collectors.toSet());
@@ -341,6 +345,11 @@ public class KafkaOffsetGen {
 
       // Obtain the latest offsets.
       toOffsets = consumer.endOffsets(topicPartitions);
+    }
+    if (connected) {
+      LOG.info("Connection to Kafka cluster closed successfully");
+    } else {
+      LOG.warn("Connection to Kafka cluster was not established");
     }
     return CheckpointUtils.computeOffsetRanges(fromOffsets, toOffsets, numEvents, minPartitions);
   }
@@ -556,7 +565,9 @@ public class KafkaOffsetGen {
    * @return
    */
   public boolean checkTopicExists(KafkaConsumer consumer)  {
+    LOG.info("Checking if topic {} exists", topicName);
     Map<String, List<PartitionInfo>> result = consumer.listTopics();
+    LOG.info("Topic {} exists", topicName);
     return result.containsKey(topicName);
   }
 

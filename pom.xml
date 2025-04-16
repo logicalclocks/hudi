@@ -26,7 +26,7 @@
     <version>21</version>
   </parent>
 
-  <groupId>org.apache.hudi</groupId>
+  <groupId>io.hops.hudi</groupId>
   <artifactId>hudi</artifactId>
   <packaging>pom</packaging>
   <version>1.0.2</version>
@@ -110,7 +110,7 @@
     <confluent.version>5.5.0</confluent.version>
     <glassfish.version>2.17</glassfish.version>
     <glassfish.el.version>3.0.1-b12</glassfish.el.version>
-    <parquet.version>1.10.1</parquet.version>
+    <parquet.version>1.13.1</parquet.version>
     <junit.jupiter.version>5.8.2</junit.jupiter.version>
     <junit.vintage.version>5.8.2</junit.vintage.version>
     <junit.platform.version>1.8.2</junit.platform.version>
@@ -118,10 +118,11 @@
     <log4j2.version>2.17.2</log4j2.version>
     <slf4j.version>1.7.36</slf4j.version>
     <joda.version>2.9.9</joda.version>
-    <hadoop.version>2.10.2</hadoop.version>
-    <hive.groupid>org.apache.hive</hive.groupid>
-    <hive.version>2.3.4</hive.version>
-    <hive.parquet.version>1.10.1</hive.parquet.version>
+    <hadoop.groupid>io.hops</hadoop.groupid>
+    <hadoop.version>3.2.0.16-EE-SNAPSHOT</hadoop.version>
+    <hive.groupid>io.hops.hive</hive.groupid>
+    <hive.version>3.0.0.11</hive.version>
+    <hive.parquet.version>1.13.1</hive.parquet.version>
     <hive.avro.version>1.11.4</hive.avro.version>
     <presto.version>0.273</presto.version>
     <trino.version>390</trino.version>
@@ -138,7 +139,7 @@
     <httpcore.version>4.4.16</httpcore.version>
     <httpclient.version>4.5.14</httpclient.version>
     <spark.version>${spark3.version}</spark.version>
-    <spark3.version>3.5.1</spark3.version>
+    <spark3.version>3.5.5</spark3.version>
     <sparkbundle.version></sparkbundle.version>
     <flink1.20.version>1.20.0</flink1.20.version>
     <flink1.19.version>1.19.1</flink1.19.version>
@@ -168,7 +169,7 @@
     <rocksdbjni.version>7.5.3</rocksdbjni.version>
     <spark33.version>3.3.4</spark33.version>
     <spark34.version>3.4.3</spark34.version>
-    <spark35.version>3.5.4</spark35.version>
+    <spark35.version>3.5.5</spark35.version>
     <hudi.spark.module>hudi-spark3.5.x</hudi.spark.module>
     <hudi.spark.common.module>hudi-spark3-common</hudi.spark.common.module>
     <avro.version>1.11.4</avro.version>
@@ -498,10 +499,10 @@
             </relocation>
             <!-- hbase -->
             <relocation>
-              <pattern>org.apache.hadoop.hbase.</pattern>
-              <shadedPattern>org.apache.hudi.org.apache.hadoop.hbase.</shadedPattern>
+              <pattern>${hadoop.groupid}.hbase.</pattern>
+              <shadedPattern>io.hops.hudi.${hadoop.groupid}.hbase.</shadedPattern>
               <excludes>
-                <exclude>org.apache.hadoop.hbase.KeyValue$KeyComparator</exclude>
+                <exclude>${hadoop.groupid}.hbase.KeyValue$KeyComparator</exclude>
               </excludes>
             </relocation>
             <relocation>
@@ -513,74 +514,74 @@
               <shadedPattern>org.apache.hudi.org.apache.htrace.</shadedPattern>
             </relocation>
             <!-- hbase
-                 The classes below in org.apache.hadoop.metrics2 package come from
+                 The classes below in ${hadoop.groupid}.metrics2 package come from
                  hbase-hadoop-compat and hbase-hadoop2-compat, which have to be shaded one by one,
-                 instead of shading all classes under org.apache.hadoop.metrics2 including ones
+                 instead of shading all classes under ${hadoop.groupid}.metrics2 including ones
                  from hadoop. -->
             <relocation>
-              <pattern>org.apache.hadoop.metrics2.MetricHistogram</pattern>
-              <shadedPattern>org.apache.hudi.org.apache.hadoop.metrics2.MetricHistogram
+              <pattern>${hadoop.groupid}.metrics2.MetricHistogram</pattern>
+              <shadedPattern>io.hops.hudi.${hadoop.groupid}.metrics2.MetricHistogram
               </shadedPattern>
             </relocation>
             <relocation>
-              <pattern>org.apache.hadoop.metrics2.MetricsExecutor</pattern>
-              <shadedPattern>org.apache.hudi.org.apache.hadoop.metrics2.MetricsExecutor
+              <pattern>${hadoop.groupid}.metrics2.MetricsExecutor</pattern>
+              <shadedPattern>io.hops.hudi.${hadoop.groupid}.metrics2.MetricsExecutor
               </shadedPattern>
             </relocation>
             <relocation>
-              <pattern>org.apache.hadoop.metrics2.impl.JmxCacheBuster</pattern>
-              <shadedPattern>org.apache.hudi.org.apache.hadoop.metrics2.impl.JmxCacheBuster
+              <pattern>${hadoop.groupid}.metrics2.impl.JmxCacheBuster</pattern>
+              <shadedPattern>io.hops.hudi.${hadoop.groupid}.metrics2.impl.JmxCacheBuster
               </shadedPattern>
             </relocation>
             <relocation>
-              <pattern>org.apache.hadoop.metrics2.lib.DefaultMetricsSystemHelper</pattern>
+              <pattern>${hadoop.groupid}.metrics2.lib.DefaultMetricsSystemHelper</pattern>
               <shadedPattern>
-                org.apache.hudi.org.apache.hadoop.metrics2.lib.DefaultMetricsSystemHelper
+                io.hops.hudi.${hadoop.groupid}.metrics2.lib.DefaultMetricsSystemHelper
               </shadedPattern>
             </relocation>
             <relocation>
-              <pattern>org.apache.hadoop.metrics2.lib.DynamicMetricsRegistry</pattern>
-              <shadedPattern>org.apache.hudi.org.apache.hadoop.metrics2.lib.DynamicMetricsRegistry
+              <pattern>${hadoop.groupid}.metrics2.lib.DynamicMetricsRegistry</pattern>
+              <shadedPattern>io.hops.hudi.${hadoop.groupid}.metrics2.lib.DynamicMetricsRegistry
               </shadedPattern>
             </relocation>
             <relocation>
-              <pattern>org.apache.hadoop.metrics2.lib.MetricsExecutorImpl</pattern>
-              <shadedPattern>org.apache.hudi.org.apache.hadoop.metrics2.lib.MetricsExecutorImpl
+              <pattern>${hadoop.groupid}.metrics2.lib.MetricsExecutorImpl</pattern>
+              <shadedPattern>io.hops.hudi.${hadoop.groupid}.metrics2.lib.MetricsExecutorImpl
               </shadedPattern>
             </relocation>
             <relocation>
-              <pattern>org.apache.hadoop.metrics2.lib.MutableFastCounter</pattern>
-              <shadedPattern>org.apache.hudi.org.apache.hadoop.metrics2.lib.MutableFastCounter
+              <pattern>${hadoop.groupid}.metrics2.lib.MutableFastCounter</pattern>
+              <shadedPattern>io.hops.hudi.${hadoop.groupid}.metrics2.lib.MutableFastCounter
               </shadedPattern>
             </relocation>
             <relocation>
-              <pattern>org.apache.hadoop.metrics2.lib.MutableHistogram</pattern>
-              <shadedPattern>org.apache.hudi.org.apache.hadoop.metrics2.lib.MutableHistogram
+              <pattern>${hadoop.groupid}.metrics2.lib.MutableHistogram</pattern>
+              <shadedPattern>io.hops.hudi.${hadoop.groupid}.metrics2.lib.MutableHistogram
               </shadedPattern>
             </relocation>
             <relocation>
-              <pattern>org.apache.hadoop.metrics2.lib.MutableRangeHistogram</pattern>
-              <shadedPattern>org.apache.hudi.org.apache.hadoop.metrics2.lib.MutableRangeHistogram
+              <pattern>${hadoop.groupid}.metrics2.lib.MutableRangeHistogram</pattern>
+              <shadedPattern>io.hops.hudi.${hadoop.groupid}.metrics2.lib.MutableRangeHistogram
               </shadedPattern>
             </relocation>
             <relocation>
-              <pattern>org.apache.hadoop.metrics2.lib.MutableSizeHistogram</pattern>
-              <shadedPattern>org.apache.hudi.org.apache.hadoop.metrics2.lib.MutableSizeHistogram
+              <pattern>${hadoop.groupid}.metrics2.lib.MutableSizeHistogram</pattern>
+              <shadedPattern>io.hops.hudi.${hadoop.groupid}.metrics2.lib.MutableSizeHistogram
               </shadedPattern>
             </relocation>
             <relocation>
-              <pattern>org.apache.hadoop.metrics2.lib.MutableTimeHistogram</pattern>
-              <shadedPattern>org.apache.hudi.org.apache.hadoop.metrics2.lib.MutableTimeHistogram
+              <pattern>${hadoop.groupid}.metrics2.lib.MutableTimeHistogram</pattern>
+              <shadedPattern>io.hops.hudi.${hadoop.groupid}.metrics2.lib.MutableTimeHistogram
               </shadedPattern>
             </relocation>
             <relocation>
-              <pattern>org.apache.hadoop.metrics2.util.MetricQuantile</pattern>
-              <shadedPattern>org.apache.hudi.org.apache.hadoop.metrics2.util.MetricQuantile
+              <pattern>${hadoop.groupid}.metrics2.util.MetricQuantile</pattern>
+              <shadedPattern>io.hops.hudi.${hadoop.groupid}.metrics2.util.MetricQuantile
               </shadedPattern>
             </relocation>
             <relocation>
-              <pattern>org.apache.hadoop.metrics2.util.MetricSampleQuantiles</pattern>
-              <shadedPattern>org.apache.hudi.org.apache.hadoop.metrics2.util.MetricSampleQuantiles
+              <pattern>${hadoop.groupid}.metrics2.util.MetricSampleQuantiles</pattern>
+              <shadedPattern>io.hops.hudi.${hadoop.groupid}.metrics2.util.MetricSampleQuantiles
               </shadedPattern>
             </relocation>
             <relocation>
@@ -1217,7 +1218,7 @@
 
       <!-- Hadoop -->
       <dependency>
-        <groupId>org.apache.hadoop</groupId>
+        <groupId>${hadoop.groupid}</groupId>
         <artifactId>hadoop-client</artifactId>
         <version>${hadoop.version}</version>
         <scope>provided</scope>
@@ -1237,7 +1238,27 @@
         </exclusions>
       </dependency>
       <dependency>
-        <groupId>org.apache.hadoop</groupId>
+        <groupId>${hadoop.groupid}</groupId>
+        <artifactId>hadoop-client-runtime</artifactId>
+        <version>${hadoop.version}</version>
+        <scope>provided</scope>
+        <exclusions>
+          <exclusion>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>${hadoop.groupid}</groupId>
         <artifactId>hadoop-common</artifactId>
         <version>${hadoop.version}</version>
         <scope>provided</scope>
@@ -1258,10 +1279,14 @@
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
           </exclusion>
+          <exclusion>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>*</artifactId>
+          </exclusion>
         </exclusions>
       </dependency>
       <dependency>
-        <groupId>org.apache.hadoop</groupId>
+        <groupId>${hadoop.groupid}</groupId>
         <artifactId>hadoop-hdfs</artifactId>
         <version>${hadoop.version}</version>
         <scope>provided</scope>
@@ -1270,10 +1295,14 @@
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
           </exclusion>
+          <exclusion>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>*</artifactId>
+          </exclusion>
         </exclusions>
       </dependency>
       <dependency>
-        <groupId>org.apache.hadoop</groupId>
+        <groupId>${hadoop.groupid}</groupId>
         <artifactId>hadoop-auth</artifactId>
         <version>${hadoop.version}</version>
         <scope>provided</scope>
@@ -1289,7 +1318,7 @@
         </exclusions>
       </dependency>
       <dependency>
-        <groupId>org.apache.hadoop</groupId>
+        <groupId>${hadoop.groupid}</groupId>
         <artifactId>hadoop-mapreduce-client-core</artifactId>
         <version>${hadoop.version}</version>
         <scope>provided</scope>
@@ -1306,6 +1335,10 @@
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
           </exclusion>
+          <exclusion>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>*</artifactId>
+          </exclusion>
         </exclusions>
       </dependency>
       <dependency>
@@ -1319,7 +1352,7 @@
         <version>3.4.0</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.hadoop</groupId>
+        <groupId>${hadoop.groupid}</groupId>
         <artifactId>hadoop-mapreduce-client-common</artifactId>
         <version>${hadoop.version}</version>
         <scope>provided</scope>
@@ -1339,7 +1372,7 @@
         </exclusions>
       </dependency>
       <dependency>
-        <groupId>org.apache.hadoop</groupId>
+        <groupId>${hadoop.groupid}</groupId>
         <artifactId>hadoop-hdfs</artifactId>
         <classifier>tests</classifier>
         <scope>test</scope>
@@ -1349,10 +1382,14 @@
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
           </exclusion>
+          <exclusion>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>*</artifactId>
+          </exclusion>
         </exclusions>
       </dependency>
       <dependency>
-        <groupId>org.apache.hadoop</groupId>
+        <groupId>${hadoop.groupid}</groupId>
         <artifactId>hadoop-common</artifactId>
         <classifier>tests</classifier>
         <version>${hadoop.version}</version>
@@ -1373,6 +1410,10 @@
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
           </exclusion>
+          <exclusion>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>*</artifactId>
+          </exclusion>
         </exclusions>
       </dependency>
 
@@ -1388,7 +1429,7 @@
             <artifactId>*</artifactId>
           </exclusion>
           <exclusion>
-            <groupId>org.eclipse.jetty.aggregate</groupId>
+            <groupId>org.eclipse.jetty</groupId>
             <artifactId>*</artifactId>
           </exclusion>
           <exclusion>
@@ -1419,6 +1460,14 @@
             <groupId>org.apache.hbase</groupId>
             <artifactId>*</artifactId>
           </exclusion>
+          <exclusion>
+            <groupId>${hive.groupid}</groupId>
+            <artifactId>hive-llap-server</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>${hive.groupid}</groupId>
+            <artifactId>hive-llap-tez</artifactId>
+          </exclusion>
         </exclusions>
       </dependency>
       <dependency>
@@ -1443,6 +1492,10 @@
             <groupId>org.pentaho</groupId>
             <artifactId>*</artifactId>
           </exclusion>
+          <exclusion>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>*</artifactId>
+          </exclusion>
         </exclusions>
       </dependency>
       <dependency>
@@ -1464,8 +1517,24 @@
             <artifactId>slf4j-log4j12</artifactId>
           </exclusion>
           <exclusion>
+            <groupId>${hive.groupid}</groupId>
+            <artifactId>hive-llap-server</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>${hive.groupid}</groupId>
+            <artifactId>hive-llap-tez</artifactId>
+          </exclusion>
+          <exclusion>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>*</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.parquet</groupId>
+            <artifactId>*</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
@@ -1478,6 +1547,14 @@
           <exclusion>
             <groupId>javax.mail</groupId>
             <artifactId>mail</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>*</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.apache.parquet</groupId>
+            <artifactId>*</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
@@ -1511,6 +1588,10 @@
             <groupId>org.apache.hbase</groupId>
             <artifactId>*</artifactId>
           </exclusion>
+          <exclusion>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>*</artifactId>
+          </exclusion>
         </exclusions>
       </dependency>
       <dependency>
@@ -1541,6 +1622,14 @@
           </exclusion>
           <exclusion>
             <groupId>org.apache.hbase</groupId>
+            <artifactId>*</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.eclipse.jetty</groupId>
             <artifactId>*</artifactId>
           </exclusion>
         </exclusions>
@@ -1582,6 +1671,14 @@
           </exclusion>
           <exclusion>
             <groupId>org.apache.hbase</groupId>
+            <artifactId>*</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.eclipse.jetty</groupId>
             <artifactId>*</artifactId>
           </exclusion>
         </exclusions>
@@ -1638,6 +1735,14 @@
           </exclusion>
           <exclusion>
             <groupId>org.apache.hbase</groupId>
+            <artifactId>*</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.eclipse.jetty</groupId>
             <artifactId>*</artifactId>
           </exclusion>
         </exclusions>
@@ -1916,6 +2021,17 @@
       <id>confluent</id>
       <url>https://packages.confluent.io/maven/</url>
     </repository>
+    <repository>
+      <id>Hops</id>
+      <name>Hops Repo</name>
+      <url>https://archiva.hops.works/repository/Hops/</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
   </repositories>
 
   <profiles>
@@ -2173,11 +2289,12 @@
           <value>true</value>
         </property>
       </activation>
+      <!--
       <modules>
         <module>docker/hoodie/hadoop</module>
         <module>hudi-integ-test</module>
         <module>packaging/hudi-integ-test-bundle</module>
-      </modules>
+      </modules> -->
       <properties>
         <skipUTs>true</skipUTs>
         <skipFTs>true</skipFTs>
@@ -2427,7 +2544,7 @@
         <hudi.spark.common.module>hudi-spark3-common</hudi.spark.common.module>
         <scalatest.version>${scalatest.spark3.version}</scalatest.version>
         <kafka.version>3.4.1</kafka.version>
-        <hive.storage.version>2.8.1</hive.storage.version>
+        <hive.storage.version>2.6.1.3</hive.storage.version>
         <!-- NOTE: Some Hudi modules require standalone Parquet/Orc/etc file-format dependency (hudi-hive-sync,
                    hudi-hadoop-mr, for ex). Since these Hudi modules might be used from w/in the execution engine(s)
                    bringing these file-formats as dependencies as well, we need to make sure that versions are
@@ -2576,8 +2693,8 @@
         <!-- This glob has to include hudi-spark3-common, hudi-spark3.2plus-common -->
         <hudi.spark.common.module>hudi-spark3-common</hudi.spark.common.module>
         <scalatest.version>${scalatest.spark3.version}</scalatest.version>
-        <kafka.version>3.4.1</kafka.version>
-        <hive.storage.version>2.8.1</hive.storage.version>
+        <kafka.version>2.6.0</kafka.version>
+        <hive.storage.version>2.6.1.3</hive.storage.version>
         <!-- NOTE: Some Hudi modules require standalone Parquet/Orc/etc file-format dependency (hudi-hive-sync,
                    hudi-hadoop-mr, for ex). Since these Hudi modules might be used from w/in the execution engine(s)
                    bringing these file-formats as dependencies as well, we need to make sure that versions are

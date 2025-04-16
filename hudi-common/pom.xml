@@ -19,7 +19,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
     <artifactId>hudi</artifactId>
-    <groupId>org.apache.hudi</groupId>
+    <groupId>io.hops.hudi</groupId>
     <version>1.0.2</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
@@ -104,7 +104,7 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.apache.hudi</groupId>
+      <groupId>io.hops.hudi</groupId>
       <artifactId>hudi-io</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -160,6 +160,7 @@
     <dependency>
       <groupId>org.apache.parquet</groupId>
       <artifactId>parquet-avro</artifactId>
+      <scope>provided</scope>
     </dependency>
 
     <!-- Orc -->
@@ -168,7 +169,7 @@
       <artifactId>orc-core</artifactId>
       <exclusions>
         <exclusion>
-          <groupId>org.apache.hadoop</groupId>
+          <groupId>${hadoop.groupid}</groupId>
           <artifactId>*</artifactId>
         </exclusion>
       </exclusions>
@@ -196,7 +197,7 @@
     </dependency>
 
     <dependency>
-      <groupId>org.apache.hudi</groupId>
+      <groupId>io.hops.hudi</groupId>
       <artifactId>hudi-io</artifactId>
       <version>${project.version}</version>
       <classifier>tests</classifier>
@@ -204,7 +205,7 @@
     </dependency>
 
     <dependency>
-      <groupId>org.apache.hudi</groupId>
+      <groupId>io.hops.hudi</groupId>
       <artifactId>hudi-tests-common</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
@@ -233,6 +234,36 @@
       <artifactId>jetty-servlet</artifactId>
     </dependency>
 
+    <!-- Hadoop -->
+    <dependency>
+      <groupId>io.hops</groupId>
+      <artifactId>hadoop-client</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>javax.servlet</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.hops</groupId>
+      <artifactId>hadoop-common</artifactId>
+      <classifier>tests</classifier>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.hops</groupId>
+      <artifactId>hadoop-hdfs</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.hops</groupId>
+      <artifactId>hadoop-hdfs</artifactId>
+      <classifier>tests</classifier>
+      <scope>test</scope>
+    </dependency>
+
     <!-- HBase -->
     <dependency>
       <groupId>org.apache.hbase</groupId>
@@ -246,6 +277,10 @@
         <exclusion>
           <groupId>log4j</groupId>
           <artifactId>log4j</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.hadoop</groupId>
+          <artifactId>*</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -273,6 +308,14 @@
           <groupId>tomcat</groupId>
           <artifactId>*</artifactId>
         </exclusion>
+        <exclusion>
+          <groupId>log4j</groupId>
+          <artifactId>log4j</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.hadoop</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
 
@@ -298,7 +341,7 @@
     </dependency>
 
     <dependency>
-      <groupId>joda-time</groupId>
+       <groupId>joda-time</groupId>
       <artifactId>joda-time</artifactId>
       <scope>test</scope>
     </dependency>

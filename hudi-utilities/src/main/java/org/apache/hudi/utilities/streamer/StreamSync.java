@@ -592,6 +592,8 @@ public class StreamSync implements Serializable, Closeable {
     }
 
     Pair<InputBatch, Boolean> inputBatchAndRowWriterEnabled = fetchNextBatchFromSource(resumeCheckpoint, metaClient);
+    LOG.info("Fetched input batch: " + inputBatchAndRowWriterEnabled.getLeft()
+        + " with checkpoint: " + inputBatchAndRowWriterEnabled.getLeft().getCheckpointForNextBatch());
     InputBatch inputBatch = inputBatchAndRowWriterEnabled.getLeft();
     boolean useRowWriter = inputBatchAndRowWriterEnabled.getRight();
     final Checkpoint checkpoint = inputBatch.getCheckpointForNextBatch();

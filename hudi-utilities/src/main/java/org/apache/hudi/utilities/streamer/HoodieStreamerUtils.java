@@ -62,6 +62,8 @@ import org.slf4j.LoggerFactory;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import static org.apache.hudi.common.table.HoodieTableConfig.DROP_PARTITION_COLUMNS;
@@ -71,6 +73,7 @@ import static org.apache.hudi.config.HoodieErrorTableConfig.ERROR_ENABLE_VALIDAT
  * Util class for HoodieStreamer.
  */
 public class HoodieStreamerUtils {
+  private static final Logger LOG = Logger.getLogger(HoodieStreamerUtils.class.getName());
 
   private static final Logger LOG = LoggerFactory.getLogger(HoodieStreamerUtils.class);
 
@@ -82,6 +85,7 @@ public class HoodieStreamerUtils {
   public static Option<JavaRDD<HoodieRecord>> createHoodieRecords(HoodieStreamer.Config cfg, TypedProperties props, Option<JavaRDD<GenericRecord>> avroRDDOptional,
                                                                   SchemaProvider schemaProvider, HoodieRecord.HoodieRecordType recordType, boolean autoGenerateRecordKeys,
                                                                   String instantTime, Option<BaseErrorTableWriter> errorTableWriter) {
+    LOG.log(Level.INFO, "Creating hoodie records for " + cfg.sourceClassName);
     boolean shouldCombine = cfg.filterDupes || cfg.operation.equals(WriteOperationType.UPSERT);
     boolean shouldUseOrderingField = shouldCombine && !StringUtils.isNullOrEmpty(cfg.sourceOrderingField);
     boolean shouldErrorTable = errorTableWriter.isPresent() && props.getBoolean(ERROR_ENABLE_VALIDATE_RECORD_CREATION.key(), ERROR_ENABLE_VALIDATE_RECORD_CREATION.defaultValue());

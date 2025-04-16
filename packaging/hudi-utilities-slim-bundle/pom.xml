@@ -18,7 +18,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
     <artifactId>hudi</artifactId>
-    <groupId>org.apache.hudi</groupId>
+    <groupId>io.hops.hudi</groupId>
     <version>1.0.2</version>
     <relativePath>../../pom.xml</relativePath>
   </parent>
@@ -91,8 +91,13 @@
               </transformers>
               <artifactSet>
                 <includes combine.children="append">
-                  <include>org.apache.hudi:hudi-utilities_${scala.binary.version}</include>
-
+                  <include>io.hops.hudi:hudi-utilities_${scala.binary.version}</include>
+                  <include>io.hops.hudi:hudi-hadoop-common</include>
+                  <include>io.hops.hudi:hudi-common</include>
+                  <include>io.hops.hudi:hudi-client-common</include>
+                  <include>io.hops.hudi:hudi-utilities_${scala.binary.version}</include>
+                  <include>io.hops.hudi:hudi-hadoop-mr</include>
+                  <include>io.hops.hudi:hudi-timeline-service</include>
                   <include>org.antlr:stringtemplate</include>
                   <!-- SPARK-43489 Spark 3.5+ has marked protobuf as provided -->
                   <include>com.google.protobuf:protobuf-java</include>
@@ -120,55 +125,59 @@
                            their runtime, since Hudi carries some of the same classes as "spark-avro" -->
                 <relocation>
                   <pattern>org.apache.spark.sql.avro.</pattern>
-                  <shadedPattern>org.apache.hudi.org.apache.spark.sql.avro.</shadedPattern>
+                  <shadedPattern>io.hops.hudi.org.apache.spark.sql.avro.</shadedPattern>
+                </relocation>
+                <relocation>
+                  <pattern>com.yammer.metrics.</pattern>
+                  <shadedPattern>io.hops.hudi.com.yammer.metrics.</shadedPattern>
                 </relocation>
                 <relocation>
                   <pattern>com.beust.jcommander.</pattern>
-                  <shadedPattern>org.apache.hudi.com.beust.jcommander.</shadedPattern>
+                  <shadedPattern>io.hops.hudi.com.beust.jcommander.</shadedPattern>
                 </relocation>
                 <relocation>
                   <pattern>org.apache.commons.io.</pattern>
-                  <shadedPattern>org.apache.hudi.org.apache.commons.io.</shadedPattern>
+                  <shadedPattern>io.hops.hudi.org.apache.commons.io.</shadedPattern>
                 </relocation>
                 <relocation>
-                  <pattern>org.apache.hadoop.hive.metastore.</pattern>
-                  <shadedPattern>${utilities.bundle.hive.shade.prefix}org.apache.hadoop.hive.metastore.</shadedPattern>
+                  <pattern>${hive.groupid}.metastore.</pattern>
+                  <shadedPattern>${utilities.bundle.hive.shade.prefix}${hive.groupid}.metastore.</shadedPattern>
                 </relocation>
                 <relocation>
-                  <pattern>org.apache.hadoop.hive.common.</pattern>
-                  <shadedPattern>${utilities.bundle.hive.shade.prefix}org.apache.hadoop.hive.common.</shadedPattern>
+                  <pattern>${hive.groupid}.common.</pattern>
+                  <shadedPattern>${utilities.bundle.hive.shade.prefix}${hive.groupid}.common.</shadedPattern>
                 </relocation>
                 <relocation>
-                  <pattern>org.apache.hadoop.hive.conf.</pattern>
-                  <shadedPattern>${utilities.bundle.hive.shade.prefix}org.apache.hadoop.hive.conf.</shadedPattern>
+                  <pattern>${hive.groupid}.conf.</pattern>
+                  <shadedPattern>${utilities.bundle.hive.shade.prefix}${hive.groupid}.conf.</shadedPattern>
                 </relocation>
                 <relocation>
-                  <pattern>org.apache.hadoop.hive.service.</pattern>
-                  <shadedPattern>${utilities.bundle.hive.shade.prefix}org.apache.hadoop.hive.service.</shadedPattern>
+                  <pattern>${hive.groupid}.service.</pattern>
+                  <shadedPattern>${utilities.bundle.hive.shade.prefix}${hive.groupid}.service.</shadedPattern>
                 </relocation>
                 <relocation>
                   <pattern>com.codahale.metrics.</pattern>
-                  <shadedPattern>org.apache.hudi.com.codahale.metrics.</shadedPattern>
+                  <shadedPattern>io.hops.hudi.com.codahale.metrics.</shadedPattern>
                 </relocation>
                 <relocation>
                   <pattern>org.apache.commons.codec.</pattern>
-                  <shadedPattern>org.apache.hudi.org.apache.commons.codec.</shadedPattern>
+                  <shadedPattern>io.hops.hudi.org.apache.commons.codec.</shadedPattern>
                 </relocation>
                 <relocation>
                   <pattern>org.eclipse.jetty.</pattern>
-                  <shadedPattern>org.apache.hudi.org.eclipse.jetty.</shadedPattern>
+                  <shadedPattern>io.hops.hudi.org.eclipse.jetty.</shadedPattern>
                 </relocation>
                 <relocation>
                   <pattern>org.openjdk.jol.</pattern>
-                  <shadedPattern>org.apache.hudi.org.openjdk.jol.</shadedPattern>
+                  <shadedPattern>io.hops.hudi.org.openjdk.jol.</shadedPattern>
                 </relocation>
                 <relocation>
                   <pattern>com.google.protobuf.</pattern>
-                  <shadedPattern>org.apache.hudi.com.google.protobuf.</shadedPattern>
+                  <shadedPattern>io.hops.hudi.com.google.protobuf.</shadedPattern>
                 </relocation>
                 <relocation>
                   <pattern>com.uber.m3.</pattern>
-                  <shadedPattern>org.apache.hudi.com.uber.m3.</shadedPattern>
+                  <shadedPattern>io.hops.hudi.com.uber.m3.</shadedPattern>
                 </relocation>
               </relocations>
               <filters>
@@ -200,23 +209,23 @@
   <dependencies>
     <!-- Hoodie -->
     <dependency>
-      <groupId>org.apache.hudi</groupId>
+      <groupId>io.hops.hudi</groupId>
       <artifactId>hudi-common</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.apache.hudi</groupId>
+      <groupId>io.hops.hudi</groupId>
       <artifactId>hudi-utilities_${scala.binary.version}</artifactId>
       <version>${project.version}</version>
       <exclusions>
         <exclusion>
-          <groupId>org.apache.hudi</groupId>
+          <groupId>io.hops.hudi</groupId>
           <artifactId>hudi-spark_${scala.binary.version}</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.apache.hudi</groupId>
+      <groupId>io.hops.hudi</groupId>
       <artifactId>hudi-spark-client</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -227,7 +236,7 @@
       <id>utilities-bundle-shade-hive</id>
       <properties>
         <utilities.bundle.hive.scope>compile</utilities.bundle.hive.scope>
-        <utilities.bundle.hive.shade.prefix>org.apache.hudi.</utilities.bundle.hive.shade.prefix>
+        <utilities.bundle.hive.shade.prefix>io.hops.hudi.</utilities.bundle.hive.shade.prefix>
       </properties>
     </profile>
   </profiles>
