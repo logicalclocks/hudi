@@ -100,7 +100,7 @@ public class HiveIncrementalPuller {
   }
 
   static {
-    String driverName = "org.apache.hive.jdbc.HiveDriver";
+    String driverName = "io.hops.hive.jdbc.HiveDriver";
     try {
       Class.forName(driverName);
     } catch (ClassNotFoundException e) {

@@ -33,7 +33,7 @@
     <main.basedir>${project.parent.basedir}</main.basedir>
     <skipTests>true</skipTests>
     <flink.bundle.hive.scope>provided</flink.bundle.hive.scope>
-    <flink.bundle.shade.prefix>org.apache.hudi.</flink.bundle.shade.prefix>
+    <flink.bundle.shade.prefix>io.hops.hudi.</flink.bundle.shade.prefix>
     <javax.servlet.version>3.1.0</javax.servlet.version>
     <!-- override to be same with flink 1.15.x -->
     <parquet.version>${flink.format.parquet.version}</parquet.version>
@@ -75,16 +75,16 @@
               </transformers>
               <artifactSet>
                 <includes combine.children="append">
-                  <include>org.apache.hudi:hudi-hadoop-common</include>
-                  <include>org.apache.hudi:hudi-common</include>
-                  <include>org.apache.hudi:hudi-client-common</include>
-                  <include>org.apache.hudi:hudi-flink-client</include>
-                  <include>org.apache.hudi:hudi-flink</include>
-                  <include>org.apache.hudi:${hudi.flink.module}</include>
-                  <include>org.apache.hudi:hudi-hive-sync</include>
-                  <include>org.apache.hudi:hudi-sync-common</include>
-                  <include>org.apache.hudi:hudi-hadoop-mr</include>
-                  <include>org.apache.hudi:hudi-timeline-service</include>
+                  <include>io.hops.hudi:hudi-hadoop-common</include>
+                  <include>io.hops.hudi:hudi-common</include>
+                  <include>io.hops.hudi:hudi-client-common</include>
+                  <include>io.hops.hudi:hudi-flink-client</include>
+                  <include>io.hops.hudi:hudi-flink</include>
+                  <include>io.hops.hudi:${hudi.flink.module}</include>
+                  <include>io.hops.hudi:hudi-hive-sync</include>
+                  <include>io.hops.hudi:hudi-sync-common</include>
+                  <include>io.hops.hudi:hudi-hadoop-mr</include>
+                  <include>io.hops.hudi:hudi-timeline-service</include>
 
                   <!-- Kryo -->
                   <include>com.esotericsoftware:kryo-shaded</include>
@@ -161,19 +161,19 @@
                 <!-- Kryo -->
                 <relocation>
                   <pattern>com.esotericsoftware.kryo.</pattern>
-                  <shadedPattern>org.apache.hudi.com.esotericsoftware.kryo.</shadedPattern>
+                  <shadedPattern>io.hops.hudi.com.esotericsoftware.kryo.</shadedPattern>
                 </relocation>
                 <relocation>
                   <pattern>com.esotericsoftware.reflectasm.</pattern>
-                  <shadedPattern>org.apache.hudi.com.esotericsoftware.reflectasm.</shadedPattern>
+                  <shadedPattern>io.hops.hudi.com.esotericsoftware.reflectasm.</shadedPattern>
                 </relocation>
                 <relocation>
                   <pattern>com.esotericsoftware.minlog.</pattern>
-                  <shadedPattern>org.apache.hudi.com.esotericsoftware.minlog.</shadedPattern>
+                  <shadedPattern>io.hops.hudi.com.esotericsoftware.minlog.</shadedPattern>
                 </relocation>
                 <relocation>
                   <pattern>org.objenesis.</pattern>
-                  <shadedPattern>org.apache.hudi.org.objenesis.</shadedPattern>
+                  <shadedPattern>io.hops.hudi.org.objenesis.</shadedPattern>
                 </relocation>
 
                 <relocation>
@@ -186,7 +186,7 @@
                 </relocation>
                 <relocation>
                   <pattern>org.apache.commons.io.</pattern>
-                  <shadedPattern>org.apache.hudi.org.apache.commons.io.</shadedPattern>
+                  <shadedPattern>io.hops.hudi.org.apache.commons.io.</shadedPattern>
                 </relocation>
                 <relocation>
                   <pattern>com.yammer.metrics.</pattern>
@@ -210,11 +210,11 @@
                 </relocation>
                 <relocation>
                   <pattern>org.openjdk.jol.</pattern>
-                  <shadedPattern>org.apache.hudi.org.openjdk.jol.</shadedPattern>
+                  <shadedPattern>io.hops.hudi.org.openjdk.jol.</shadedPattern>
                 </relocation>
                 <relocation>
                   <pattern>com.uber.m3.</pattern>
-                  <shadedPattern>org.apache.hudi.com.uber.m3.</shadedPattern>
+                  <shadedPattern>io.hops.hudi.com.uber.m3.</shadedPattern>
                 </relocation>
               </relocations>
               <filters>
@@ -683,7 +683,7 @@
                 <configuration>
                   <artifactSet>
                     <includes combine.children="append">
-                      <include>org.apache.hudi:hudi-metaserver-client</include>
+                      <include>io.hops.hudi:hudi-metaserver-client</include>
                     </includes>
                   </artifactSet>
                 </configuration>

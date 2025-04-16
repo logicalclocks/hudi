@@ -94,7 +94,7 @@ public class JDBCExecutor extends QueryBasedDDLExecutor {
   private void createHiveConnection(String jdbcUrl, String hiveUser, String hivePass) {
     if (connection == null) {
       try {
-        Class.forName("org.apache.hive.jdbc.HiveDriver");
+        Class.forName("io.hops.hive.jdbc.HiveDriver");
       } catch (ClassNotFoundException e) {
         LOG.error("Unable to load Hive driver class", e);
         return;
