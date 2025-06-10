@@ -106,11 +106,11 @@
                   <include>com.uber.m3:tally-m3</include>
                   <include>com.uber.m3:tally-core</include>
                   <include>com.yammer.metrics:metrics-core</include>
-                  <include>org.apache.hive:hive-common</include>
-                  <include>org.apache.hive:hive-service</include>
-                  <include>org.apache.hive:hive-service-rpc</include>
-                  <include>org.apache.hive:hive-metastore</include>
-                  <include>org.apache.hive:hive-jdbc</include>
+                  <include>${hive.groupid}:hive-common</include>
+                  <include>${hive.groupid}:hive-service</include>
+                  <include>${hive.groupid}:hive-service-rpc</include>
+                  <include>${hive.groupid}:hive-metastore</include>
+                  <include>${hive.groupid}:hive-jdbc</include>
 
                   <include>org.apache.curator:curator-framework</include>
                   <include>org.apache.curator:curator-client</include>
@@ -146,7 +146,7 @@
                 </relocation>
                 <!-- TODO: clean up hive dep - Revisit GH ISSUE #533 & PR#633-->
                 <relocation>
-                  <pattern>org.apache.hive.jdbc.</pattern>
+                  <pattern>${hive.groupid}.jdbc.</pattern>
                   <shadedPattern>${spark.bundle.hive.shade.prefix}${hive.groupid}.jdbc.</shadedPattern>
                 </relocation>
                 <relocation>

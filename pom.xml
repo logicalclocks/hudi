@@ -208,9 +208,9 @@
     <argLine>-Xmx2g -Xms128m</argLine>
     <jacoco.version>0.8.12</jacoco.version>
     <presto.bundle.bootstrap.scope>compile</presto.bundle.bootstrap.scope>
-    <presto.bundle.bootstrap.shade.prefix>org.apache.hudi.</presto.bundle.bootstrap.shade.prefix>
+    <presto.bundle.bootstrap.shade.prefix>io.hops.hudi.</presto.bundle.bootstrap.shade.prefix>
     <trino.bundle.bootstrap.scope>compile</trino.bundle.bootstrap.scope>
-    <trino.bundle.bootstrap.shade.prefix>org.apache.hudi.</trino.bundle.bootstrap.shade.prefix>
+    <trino.bundle.bootstrap.shade.prefix>io.hops.hudi.</trino.bundle.bootstrap.shade.prefix>
     <twitter.chill.version>0.10.0</twitter.chill.version>
     <shadeSources>true</shadeSources>
     <zk-curator.version>2.7.1</zk-curator.version>
@@ -461,7 +461,7 @@
           <!-- common to all bundles -->
           <artifactSet>
             <includes>
-              <include>org.apache.hudi:hudi-io</include>
+              <include>io.hops.hudi:hudi-io</include>
               <include>io.airlift:aircompressor</include>
               <!-- org.apache.httpcomponents -->
               <include>org.apache.httpcomponents:httpclient</include>
@@ -495,7 +495,7 @@
             <!-- org.apache.httpcomponents -->
             <relocation>
               <pattern>org.apache.http.</pattern>
-              <shadedPattern>org.apache.hudi.org.apache.http.</shadedPattern>
+              <shadedPattern>io.hops.hudi.org.apache.http.</shadedPattern>
             </relocation>
             <!-- hbase -->
             <relocation>
@@ -507,11 +507,11 @@
             </relocation>
             <relocation>
               <pattern>org.apache.hbase.</pattern>
-              <shadedPattern>org.apache.hudi.org.apache.hbase.</shadedPattern>
+              <shadedPattern>io.hops.hudi.org.apache.hbase.</shadedPattern>
             </relocation>
             <relocation>
               <pattern>org.apache.htrace.</pattern>
-              <shadedPattern>org.apache.hudi.org.apache.htrace.</shadedPattern>
+              <shadedPattern>io.hops.hudi.org.apache.htrace.</shadedPattern>
             </relocation>
             <!-- hbase
                  The classes below in ${hadoop.groupid}.metrics2 package come from
@@ -586,16 +586,16 @@
             </relocation>
             <relocation>
               <pattern>org.roaringbitmap.</pattern>
-              <shadedPattern>org.apache.hudi.org.roaringbitmap.</shadedPattern>
+              <shadedPattern>io.hops.hudi.org.roaringbitmap.</shadedPattern>
             </relocation>
             <relocation>
               <pattern>com.fasterxml.jackson.module</pattern>
-              <shadedPattern>org.apache.hudi.com.fasterxml.jackson.module
+              <shadedPattern>io.hops.hudi.com.fasterxml.jackson.module
               </shadedPattern>
             </relocation>
             <relocation>
               <pattern>com.google.protobuf.</pattern>
-              <shadedPattern>org.apache.hudi.com.google.protobuf.</shadedPattern>
+              <shadedPattern>io.hops.hudi.com.google.protobuf.</shadedPattern>
             </relocation>
           </relocations>
         </configuration>
@@ -1472,6 +1472,10 @@
             <groupId>${hive.groupid}</groupId>
             <artifactId>hive-llap-tez</artifactId>
           </exclusion>
+          <exclusion>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+          </exclusion>
         </exclusions>
       </dependency>
       <dependency>
@@ -1540,6 +1544,10 @@
             <groupId>org.apache.parquet</groupId>
             <artifactId>*</artifactId>
           </exclusion>
+          <exclusion>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+          </exclusion>
         </exclusions>
       </dependency>
       <dependency>
@@ -1559,6 +1567,10 @@
           <exclusion>
             <groupId>org.apache.parquet</groupId>
             <artifactId>*</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
@@ -1595,6 +1607,10 @@
           <exclusion>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>*</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
@@ -1688,7 +1704,7 @@
         </exclusions>
       </dependency>
       <dependency>
-        <groupId>org.apache.hive</groupId>
+        <groupId>${hive.groupid}</groupId>
         <artifactId>hive-exec</artifactId>
         <version>${hive.version}</version>
         <scope>provided</scope>

@@ -57,7 +57,7 @@
           <artifactId>hadoop-hdfs</artifactId>
         </exclusion>
         <exclusion>
-          <groupId>org.apache.hive</groupId>
+          ${hive.groupid}
           <artifactId>hive-shims</artifactId>
         </exclusion>
         <exclusion>
@@ -121,7 +121,7 @@
       <artifactId>hadoop-common</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.hive</groupId>
+      ${hive.groupid}
       <artifactId>hive-exec</artifactId>
       <version>${hive.version}</version>
       <exclusions>
