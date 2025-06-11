@@ -184,7 +184,7 @@
 
         <!-- Hive -->
         <dependency>
-            ${hive.groupid}
+            <groupId>${hive.groupid}</groupId>
             <artifactId>hive-common</artifactId>
             <version>${hive.version}</version>
             <exclusions>
