@@ -99,7 +99,7 @@
     <fasterxml.jackson.databind.version>${fasterxml.spark3.version}</fasterxml.jackson.databind.version>
     <fasterxml.jackson.module.scala.version>${fasterxml.spark3.version}</fasterxml.jackson.module.scala.version>
     <fasterxml.jackson.dataformat.yaml.version>${fasterxml.spark3.version}</fasterxml.jackson.dataformat.yaml.version>
-    <kafka.version>2.6.0</kafka.version>
+    <kafka.version>3.4.1</kafka.version>
     <pulsar.version>3.0.2</pulsar.version>
     <kafka.connect.api.version>2.5.0</kafka.connect.api.version>
     <kafka.spark3.version>2.8.2</kafka.spark3.version>
@@ -2706,7 +2706,7 @@
         <!-- This glob has to include hudi-spark3-common, hudi-spark3.2plus-common -->
         <hudi.spark.common.module>hudi-spark3-common</hudi.spark.common.module>
         <scalatest.version>${scalatest.spark3.version}</scalatest.version>
-        <kafka.version>2.6.0</kafka.version>
+        <kafka.version>3.4.1</kafka.version>
         <hive.storage.version>2.6.1.3</hive.storage.version>
         <!-- NOTE: Some Hudi modules require standalone Parquet/Orc/etc file-format dependency (hudi-hive-sync,
                    hudi-hadoop-mr, for ex). Since these Hudi modules might be used from w/in the execution engine(s)
