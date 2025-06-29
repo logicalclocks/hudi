@@ -27,6 +27,8 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static org.apache.hudi.sync.common.HoodieSyncConfig.META_SYNC_BASE_PATH;
 
@@ -35,7 +37,7 @@ import static org.apache.hudi.sync.common.HoodieSyncConfig.META_SYNC_BASE_PATH;
  * Hudi table queryable through external systems.
  */
 public abstract class HoodieSyncTool implements AutoCloseable {
-
+  private final Logger logger = Logger.getLogger(HoodieSyncTool.class.getName());
   protected Properties props;
   protected Configuration hadoopConf;
   protected HoodieMetaSyncMetrics metrics;
@@ -47,7 +49,9 @@ public abstract class HoodieSyncTool implements AutoCloseable {
   public HoodieSyncTool(Properties props, Configuration hadoopConf) {
     this.props = props;
     this.hadoopConf = hadoopConf;
-    this.metrics = new HoodieMetaSyncMetrics(new HoodieSyncConfig(props, hadoopConf), getClass().getSimpleName());
+    HoodieSyncConfig hoodieSyncConfig = new HoodieSyncConfig(props, hadoopConf);
+    logger.log(Level.INFO, "Initializing HoodieSyncTool with config: " + hoodieSyncConfig.toString());
+    this.metrics = new HoodieMetaSyncMetrics(hoodieSyncConfig, getClass().getSimpleName());
   }
 
   @Deprecated

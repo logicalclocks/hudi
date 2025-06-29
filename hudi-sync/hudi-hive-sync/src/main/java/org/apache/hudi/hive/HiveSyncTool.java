@@ -343,12 +343,14 @@ public class HiveSyncTool extends HoodieSyncTool implements AutoCloseable {
       createOrReplaceTable(tableName, useRealtimeInputFormat, readAsOptimized, schema);
       syncAllPartitions(tableName);
       syncClient.updateLastCommitTimeSynced(tableName);
-      if (Objects.nonNull(timerContext)) {
+      if (Objects.nonNull(timerContext) && config.getMetricsConfig().isMetricsOn()) {
         long durationInNs = timerContext.stop();
         metrics.updateRecreateAndSyncDurationInMs(durationInNs);
       }
     } catch (HoodieHiveSyncException ex) {
-      metrics.incrementRecreateAndSyncFailureCounter();
+      if (config.getMetricsConfig().isMetricsOn()) {
+        metrics.incrementRecreateAndSyncFailureCounter();
+      }
       throw new HoodieHiveSyncException("failed to recreate the table for " + tableName, ex);
     }
   }
