@@ -118,7 +118,7 @@
     <slf4j.version>1.7.36</slf4j.version>
     <joda.version>2.9.9</joda.version>
     <hadoop.groupid>io.hops</hadoop.groupid>
-    <hadoop.version>3.2.0.16-EE-SNAPSHOT</hadoop.version>
+    <hadoop.version>3.2.0.16</hadoop.version>
     <hive.groupid>io.hops.hive</hive.groupid>
     <hive.version>3.0.0.13.3</hive.version>
     <hive.parquet.version>1.13.1</hive.parquet.version>
