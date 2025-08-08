@@ -115,12 +115,12 @@
     <junit.platform.version>1.8.2</junit.platform.version>
     <mockito.jupiter.version>3.12.4</mockito.jupiter.version>
     <log4j2.version>2.17.2</log4j2.version>
-    <slf4j.version>1.7.36</slf4j.version>
+    <slf4j.version>2.0.17</slf4j.version>
     <joda.version>2.9.9</joda.version>
     <hadoop.groupid>io.hops</hadoop.groupid>
-    <hadoop.version>3.2.0.16-SNAPSHOT</hadoop.version>
+    <hadoop.version>3.2.0.18-SNAPSHOT</hadoop.version>
     <hive.groupid>io.hops.hive</hive.groupid>
-    <hive.version>3.0.0.13.3</hive.version>
+    <hive.version>3.0.0.13.9</hive.version>
     <hive.parquet.version>1.13.1</hive.parquet.version>
     <hive.avro.version>1.11.4</hive.avro.version>
     <presto.version>0.273</presto.version>
