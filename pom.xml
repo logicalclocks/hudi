@@ -120,7 +120,7 @@
     <hadoop.groupid>io.hops</hadoop.groupid>
     <hadoop.version>3.2.0.18-EE-HWORKS-2203-SNAPSHOT</hadoop.version>
     <hive.groupid>io.hops.hive</hive.groupid>
-    <hive.version>3.0.0.13.4</hive.version>
+    <hive.version>3.0.0.13.8</hive.version>
     <hive.parquet.version>1.13.1</hive.parquet.version>
     <hive.avro.version>1.11.4</hive.avro.version>
     <presto.version>0.273</presto.version>
@@ -2995,12 +2995,12 @@
   </profiles>
   <distributionManagement>
     <repository>
-      <id>Hops</id>
+      <id>HopsEE</id>
       <name>Hops Repo</name>
       <url>https://nexus.hops.works/repository/hops-artifacts/</url>
     </repository>
     <snapshotRepository>
-      <id>Hops</id>
+      <id>HopsEE</id>
       <name>Hops Repo</name>
       <url>https://nexus.hops.works/repository/hops-artifacts/</url>
     </snapshotRepository>
