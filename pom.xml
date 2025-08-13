@@ -2037,7 +2037,7 @@
     <repository>
       <id>Hops</id>
       <name>Hops Repo</name>
-      <url>https://archiva.hops.works/repository/Hops/</url>
+      <url>https://nexus.hops.works/repository/hops-artifacts</url>
       <releases>
         <enabled>true</enabled>
       </releases>
@@ -2975,12 +2975,12 @@
     <repository>
       <id>Hops</id>
       <name>Hops Repo</name>
-      <url>https://archiva.hops.works/repository/Hops/</url>
+      <url>https://nexus.hops.works/repository/hops-artifacts/</url>
     </repository>
     <snapshotRepository>
       <id>Hops</id>
       <name>Hops Repo</name>
-      <url>https://archiva.hops.works/repository/Hops/</url>
+      <url>https://nexus.hops.works/repository/hops-artifacts/</url>
     </snapshotRepository>
   </distributionManagement>
 </project>
