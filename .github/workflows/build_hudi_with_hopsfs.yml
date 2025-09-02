@@ -18,6 +18,11 @@ on:
         required: false
         type: string
         default: 'ubuntu-latest'
+      build:
+        description: 'Whether to build Hudi or not, default is true'
+        required: false
+        type: boolean
+        default: true
     secrets: 
       NEXUS_HARBOR_PASSWORD:
         description: 'The password for the Nexus user'
@@ -39,6 +44,11 @@ on:
         required: false
         type: string
         default: 'ubuntu-latest'
+      build:
+        description: 'Whether to build Hudi or not, default is true'
+        required: false
+        type: boolean
+        default: true
 
 concurrency:
   group: build-hudi-${{ github.workflow }}-${{ github.job }}-${{ inputs.jira_tag || 'NOJIRA' }}
@@ -71,8 +81,29 @@ jobs:
         ref: ${{ env.HUDI_REF }}
         path: ${{ github.workspace }}/hudi
 
+    - name: To build or not to build
+      id: to_build_or_not_to_build
+      shell: bash
+      env:
+        BUILD_HUDI: ${{ (github.event_name == 'pull_request' && contains(join(github.event.pull_request.labels.*.name, ','), 'build-hudi')) || inputs.build }}
+      run: |
+        if [[ "${{ env.BUILD_HUDI }}" != "true" ]]; then
+          echo "# :recycle: Not building hudi" >> $GITHUB_STEP_SUMMARY
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            echo "This is a pull request and the 'build-hudi' label is not present." >> $GITHUB_STEP_SUMMARY
+            echo "pull_request_labels=${{ join(github.event.pull_request.labels.*.name, ', ') }}" >> $GITHUB_STEP_SUMMARY
+          elif [[ "${{ inputs.build || 'false'}}" != "true" ]]; then
+            echo "The input 'build' is set to false." >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "BUILD_HUDI=$BUILD_HUDI" >> $GITHUB_OUTPUT
+        else
+          echo "# :white_check_mark: Building hudi" >> $GITHUB_STEP_SUMMARY
+          echo "BUILD_HUDI=$BUILD_HUDI" >> $GITHUB_OUTPUT
+        fi
+        
     - name: Set up .m2 settings.xml
       shell: bash
+      if: steps.to_build_or_not_to_build.outputs.BUILD_HUDI == 'true'
       env:
         M2_HOME: ~/.m2
       run: |
@@ -82,9 +113,10 @@ jobs:
         echo "<server><id>HopsEE</id><username>${{ vars.NEXUS_HARBOR_USER }}</username><password>${{ secrets.NEXUS_HARBOR_PASSWORD }}</password><configuration></configuration></server>" >> ~/.m2/settings.xml
         echo "<server><id>HiveEE</id><username>${{ vars.NEXUS_HARBOR_USER }}</username><password>${{ secrets.NEXUS_HARBOR_PASSWORD }}</password><configuration></configuration></server>" >> ~/.m2/settings.xml
         echo "</servers></settings>" >> ~/.m2/settings.xml
-    
+
     - name: Cache maven
       id: cache-maven
+      if: steps.to_build_or_not_to_build.outputs.BUILD_HUDI == 'true'
       uses: actions/cache@v4
       with:
         path: |
@@ -118,7 +150,6 @@ jobs:
         echo "HUDI_UTILS_JAR_URL=${HUDI_UTILS_JAR_URL}" >> $GITHUB_ENV
         echo "HOPSFS_VERSION=${HOPSFS_VERSION}" >> $GITHUB_ENV
 
-        echo "# Build Hudi" >> $GITHUB_STEP_SUMMARY
         echo "POM_VERSION_NO_JIRA=${POM_VERSION_NO_JIRA}" >> $GITHUB_STEP_SUMMARY
         echo "POM_VERSION=${POM_VERSION}" >> $GITHUB_STEP_SUMMARY
         echo "COMMIT_HASH=$COMMIT_HASH" >> $GITHUB_STEP_SUMMARY
@@ -139,6 +170,7 @@ jobs:
 
     - name: Build hudi and hudi-packaging
       shell: bash
+      if: steps.to_build_or_not_to_build.outputs.BUILD_HUDI == 'true'
       working-directory: ${{ github.workspace }}/hudi
       env:
         POM_VERSION: ${{ env.POM_VERSION }}
@@ -148,6 +180,7 @@ jobs:
 
     - name: Upload hudi-packaging artifact to Nexus
       shell: bash
+      if: steps.to_build_or_not_to_build.outputs.BUILD_HUDI == 'true'
       working-directory: ${{ github.workspace }}/hudi
       run: |
         ls -lh
