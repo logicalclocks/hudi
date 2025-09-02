@@ -1,0 +1,146 @@
+name: Build Hudi with hopsfs
+
+on:
+  workflow_call:
+    inputs:
+      ref:
+        description: 'The ref to checkout for the spark repo, default is master'
+        required: false
+        type: string
+        default: 'master'
+      jira_tag:
+        description: 'The tag to use for the jira release, default is the version from version.txt'
+        required: false
+        type: string
+        default: 'NOJIRA'
+      nexus_user:
+        description: 'The Nexus user, should have read/write access to the Nexus repo'
+        required: false
+        type: string
+        default: 'harbordev'
+      nexus_dev_spark_url:
+        description: 'The Nexus URL to upload the spark artifacts to'
+        required: true
+        type: string
+      runner:
+        description: 'The runner to use, default is ubuntu-latest'
+        required: false
+        type: string
+        default: 'ghrunner-ee8'
+    secrets: 
+      NEXUS_HARBOR_PASSWORD:
+        description: 'The password for the Nexus user'
+        required: true
+
+concurrency:
+  group: build-hudi-${{ github.workflow }}-${{ github.job }}-${{ inputs.jira_tag || 'NOJIRA' }}
+  cancel-in-progress: true
+
+env:
+  # HUDI_REF: ${{ inputs.ref || 'release-1.0.2' }}
+  HUDI_REF: ${{ inputs.ref || 'HWORKS-2204-vatj' }}
+  JIRA_TAG: ${{ inputs.jira_tag || 'NOJIRA' }}
+
+jobs:
+  build-hudi:
+    runs-on: ${{ inputs.runner }}
+    outputs:
+      pom_version_no_jira: ${{ steps.prep_version.outputs.hudi_version_no_jira }}
+      pom_version: ${{ steps.prep_version.outputs.pom_version }}
+      commit_hash: ${{ steps.prep_version.outputs.commit_hash }}
+      jira_tag: ${{ env.JIRA_TAG }}
+      hudi_utils_jar_name: ${{ steps.prep_version.outputs.hudi_utils_jar_name }}
+      hudi_utils_jar_url: ${{ steps.prep_version.outputs.hudi_utils_jar_url }}
+      hudi_spark_jar_name: ${{ steps.prep_version.outputs.hudi_spark_jar_name }}
+      hudi_spark_jar_url: ${{ steps.prep_version.outputs.hudi_spark_jar_url }}
+      hopsfs_version: ${{ steps.prep_version.outputs.hopsfs_version }}
+    steps:
+    - name: Checkout hudi repo
+      uses: actions/checkout@v4
+      with:
+        repository: logicalclocks/hudi
+        ref: ${{ env.HUDI_REF }}
+        path: ${{ github.workspace }}/hudi
+
+    - name: Set up .m2 settings.xml
+      shell: bash
+      env:
+        M2_HOME: ~/.m2
+      run: |
+        echo "M2_HOME var is $M2_HOME" >> $GITHUB_STEP_SUMMARY
+        mkdir -p ~/.m2
+        echo "<settings><servers>" > ~/.m2/settings.xml
+        echo "<server><id>HopsEE</id><username>${{ inputs.nexus_user }}</username><password>${{ secrets.NEXUS_HARBOR_PASSWORD }}</password><configuration></configuration></server>" >> ~/.m2/settings.xml
+        echo "<server><id>HiveEE</id><username>${{ inputs.nexus_user }}</username><password>${{ secrets.NEXUS_HARBOR_PASSWORD }}</password><configuration></configuration></server>" >> ~/.m2/settings.xml
+        echo "</servers></settings>" >> ~/.m2/settings.xml
+    
+    - name: Cache maven
+      id: cache-maven
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.m2
+          !~/.m2/settings.xml
+        key: ${{ runner.os }}-maven-hudi-${{ hashFiles('hudi/**/pom.xml') }}
+        restore-keys: |
+          ${{ runner.os }}-maven-hudi-
+
+    - name: Prep step version
+      shell: bash
+      id: prep_version
+      working-directory: ${{ github.workspace }}/hudi
+      run: |
+        COMMIT_HASH=$(git rev-parse --short HEAD)   
+        POM_VERSION_NO_JIRA=$(mvn -q -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive exec:exec)
+        find . -name "pom.xml" -exec sed -i "s|<version>${POM_VERSION_NO_JIRA}</version>|<version>${POM_VERSION_NO_JIRA}-${JIRA_TAG}-SNAPSHOT</version>|g" {} \;
+        POM_VERSION=$(mvn -q -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive exec:exec)
+        HUDI_SPARK_JAR_NAME=hudi-spark3.5-bundle_2.12-${POM_VERSION}.jar
+        HUDI_UTILS_JAR_NAME=hudi-utilities-slim-bundle_2.12-${POM_VERSION}.jar
+        HUDI_SPARK_JAR_URL="${{ inputs.nexus_dev_spark_url }}/${JIRA_TAG}/${HUDI_SPARK_JAR_NAME}"
+        HUDI_UTILS_JAR_URL="${{ inputs.nexus_dev_spark_url }}/${JIRA_TAG}/${HUDI_UTILS_JAR_NAME}"
+        HOPSFS_VERSION=$(mvn -q -Dexec.executable="echo" -Dexec.args='${hadoop.version}' --non-recursive exec:exec)
+
+        echo "POM_VERSION=${POM_VERSION}" >> $GITHUB_ENV
+        echo "POM_VERSION_NO_JIRA=${POM_VERSION_NO_JIRA}" >> $GITHUB_ENV
+        echo "COMMIT_HASH=$COMMIT_HASH" >> $GITHUB_ENV
+        echo "HUDI_SPARK_JAR_NAME=${HUDI_SPARK_JAR_NAME}" >> $GITHUB_ENV
+        echo "HUDI_SPARK_JAR_URL=${HUDI_SPARK_JAR_URL}" >> $GITHUB_ENV
+        echo "HUDI_UTILS_JAR_NAME=${HUDI_UTILS_JAR_NAME}" >> $GITHUB_ENV
+        echo "HUDI_UTILS_JAR_URL=${HUDI_UTILS_JAR_URL}" >> $GITHUB_ENV
+        echo "HOPSFS_VERSION=${HOPSFS_VERSION}" >> $GITHUB_ENV
+
+        echo "# Build Hudi" >> $GITHUB_STEP_SUMMARY
+        echo "POM_VERSION_NO_JIRA=${POM_VERSION_NO_JIRA}" >> $GITHUB_STEP_SUMMARY
+        echo "POM_VERSION=${POM_VERSION}" >> $GITHUB_STEP_SUMMARY
+        echo "COMMIT_HASH=$COMMIT_HASH" >> $GITHUB_STEP_SUMMARY
+        echo "HUDI_SPARK_JAR_NAME=${HUDI_SPARK_JAR_NAME}" >> $GITHUB_STEP_SUMMARY
+        echo "HUDI_SPARK_JAR_URL=${HUDI_SPARK_JAR_URL}" >> $GITHUB_STEP_SUMMARY
+        echo "HUDI_UTILS_JAR_NAME=${HUDI_UTILS_JAR_NAME}" >> $GITHUB_STEP_SUMMARY
+        echo "HUDI_UTILS_JAR_URL=${HUDI_UTILS_JAR_URL}" >> $GITHUB_STEP_SUMMARY
+        echo "HOPSFS_VERSION=${HOPSFS_VERSION}" >> $GITHUB_STEP_SUMMARY
+
+        echo "POM_VERSION_NO_JIRA=${POM_VERSION_NO_JIRA}" >> $GITHUB_OUTPUT
+        echo "POM_VERSION=${POM_VERSION}" >> $GITHUB_OUTPUT
+        echo "COMMIT_HASH=$COMMIT_HASH" >> $GITHUB_OUTPUT
+        echo "HUDI_SPARK_JAR_NAME=${HUDI_SPARK_JAR_NAME}" >> $GITHUB_OUTPUT
+        echo "HUDI_SPARK_JAR_URL=${HUDI_SPARK_JAR_URL}" >> $GITHUB_OUTPUT
+        echo "HUDI_UTILS_JAR_NAME=${HUDI_UTILS_JAR_NAME}" >> $GITHUB_OUTPUT
+        echo "HUDI_UTILS_JAR_URL=${HUDI_UTILS_JAR_URL}" >> $GITHUB_OUTPUT
+        echo "HOPSFS_VERSION=${HOPSFS_VERSION}" >> $GITHUB_OUTPUT
+
+    - name: Build hudi and hudi-packaging
+      shell: bash
+      working-directory: ${{ github.workspace }}/hudi
+      env:
+        POM_VERSION: ${{ env.POM_VERSION }}
+        M2_HOME: ~/.m2
+      run: |
+        mvn -s ~/.m2/settings.xml -Denforcer.skip=true -Drat.skip=true -Dcheckstyle.skip=true clean install deploy -Pspark3.5 -DskipTests 
+
+    - name: Upload hudi-packaging artifact to Nexus
+      shell: bash
+      working-directory: ${{ github.workspace }}/hudi
+      run: |
+        ls -lh
+        curl -u ${{ inputs.nexus_user }}:${{ secrets.NEXUS_HARBOR_PASSWORD }} --upload-file packaging/hudi-spark-bundle/target/hudi-spark3.5-bundle_2.12-${POM_VERSION}.jar "${HUDI_SPARK_JAR_URL}"
+        curl -u ${{ inputs.nexus_user }}:${{ secrets.NEXUS_HARBOR_PASSWORD }} --upload-file packaging/hudi-utilities-slim-bundle/target/hudi-utilities-slim-bundle_2.12-${POM_VERSION}.jar "${HUDI_UTILS_JAR_URL}"
