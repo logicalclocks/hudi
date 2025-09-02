@@ -13,24 +13,32 @@ on:
         required: false
         type: string
         default: 'NOJIRA'
-      nexus_user:
-        description: 'The Nexus user, should have read/write access to the Nexus repo'
-        required: false
-        type: string
-        default: 'harbordev'
-      nexus_dev_spark_url:
-        description: 'The Nexus URL to upload the spark artifacts to'
-        required: true
-        type: string
       runner:
         description: 'The runner to use, default is ubuntu-latest'
         required: false
         type: string
-        default: 'ghrunner-ee8'
+        default: 'ubuntu-latest'
     secrets: 
       NEXUS_HARBOR_PASSWORD:
         description: 'The password for the Nexus user'
         required: true
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'The ref to checkout for the spark repo, default is master'
+        required: false
+        type: string
+        default: 'master'
+      jira_tag:
+        description: 'The tag to use for the jira release, default is the version from version.txt'
+        required: false
+        type: string
+        default: 'NOJIRA'
+      runner:
+        description: 'The runner to use, default is ubuntu-latest'
+        required: false
+        type: string
+        default: 'ubuntu-latest'
 
 concurrency:
   group: build-hudi-${{ github.workflow }}-${{ github.job }}-${{ inputs.jira_tag || 'NOJIRA' }}
@@ -43,6 +51,7 @@ env:
 
 jobs:
   build-hudi:
+    if: ${{ github.event_name != 'pull_request' || (github.event_name == 'pull_request' && contains(joins(github.event.pull_request.labels.*.name), 'build-hudi')) }}
     runs-on: ${{ inputs.runner }}
     outputs:
       pom_version_no_jira: ${{ steps.prep_version.outputs.hudi_version_no_jira }}
@@ -70,8 +79,8 @@ jobs:
         echo "M2_HOME var is $M2_HOME" >> $GITHUB_STEP_SUMMARY
         mkdir -p ~/.m2
         echo "<settings><servers>" > ~/.m2/settings.xml
-        echo "<server><id>HopsEE</id><username>${{ inputs.nexus_user }}</username><password>${{ secrets.NEXUS_HARBOR_PASSWORD }}</password><configuration></configuration></server>" >> ~/.m2/settings.xml
-        echo "<server><id>HiveEE</id><username>${{ inputs.nexus_user }}</username><password>${{ secrets.NEXUS_HARBOR_PASSWORD }}</password><configuration></configuration></server>" >> ~/.m2/settings.xml
+        echo "<server><id>HopsEE</id><username>${{ vars.NEXUS_HARBOR_USER }}</username><password>${{ secrets.NEXUS_HARBOR_PASSWORD }}</password><configuration></configuration></server>" >> ~/.m2/settings.xml
+        echo "<server><id>HiveEE</id><username>${{ vars.NEXUS_HARBOR_USER }}</username><password>${{ secrets.NEXUS_HARBOR_PASSWORD }}</password><configuration></configuration></server>" >> ~/.m2/settings.xml
         echo "</servers></settings>" >> ~/.m2/settings.xml
     
     - name: Cache maven
@@ -96,8 +105,8 @@ jobs:
         POM_VERSION=$(mvn -q -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive exec:exec)
         HUDI_SPARK_JAR_NAME=hudi-spark3.5-bundle_2.12-${POM_VERSION}.jar
         HUDI_UTILS_JAR_NAME=hudi-utilities-slim-bundle_2.12-${POM_VERSION}.jar
-        HUDI_SPARK_JAR_URL="${{ inputs.nexus_dev_spark_url }}/${JIRA_TAG}/${HUDI_SPARK_JAR_NAME}"
-        HUDI_UTILS_JAR_URL="${{ inputs.nexus_dev_spark_url }}/${JIRA_TAG}/${HUDI_UTILS_JAR_NAME}"
+        HUDI_SPARK_JAR_URL="${{ vars.NEXUS_DEV_SPARK_URL }}/${JIRA_TAG}/${HUDI_SPARK_JAR_NAME}"
+        HUDI_UTILS_JAR_URL="${{ vars.NEXUS_DEV_SPARK_URL }}/${JIRA_TAG}/${HUDI_UTILS_JAR_NAME}"
         HOPSFS_VERSION=$(mvn -q -Dexec.executable="echo" -Dexec.args='${hadoop.version}' --non-recursive exec:exec)
 
         echo "POM_VERSION=${POM_VERSION}" >> $GITHUB_ENV
@@ -142,5 +151,5 @@ jobs:
       working-directory: ${{ github.workspace }}/hudi
       run: |
         ls -lh
-        curl -u ${{ inputs.nexus_user }}:${{ secrets.NEXUS_HARBOR_PASSWORD }} --upload-file packaging/hudi-spark-bundle/target/hudi-spark3.5-bundle_2.12-${POM_VERSION}.jar "${HUDI_SPARK_JAR_URL}"
-        curl -u ${{ inputs.nexus_user }}:${{ secrets.NEXUS_HARBOR_PASSWORD }} --upload-file packaging/hudi-utilities-slim-bundle/target/hudi-utilities-slim-bundle_2.12-${POM_VERSION}.jar "${HUDI_UTILS_JAR_URL}"
+        curl -u ${{ vars.NEXUS_HARBOR_USER }}:${{ secrets.NEXUS_HARBOR_PASSWORD }} --upload-file packaging/hudi-spark-bundle/target/hudi-spark3.5-bundle_2.12-${POM_VERSION}.jar "${HUDI_SPARK_JAR_URL}"
+        curl -u ${{ vars.NEXUS_HARBOR_USER }}:${{ secrets.NEXUS_HARBOR_PASSWORD }} --upload-file packaging/hudi-utilities-slim-bundle/target/hudi-utilities-slim-bundle_2.12-${POM_VERSION}.jar "${HUDI_UTILS_JAR_URL}"
