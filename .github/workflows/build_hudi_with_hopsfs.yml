@@ -61,7 +61,7 @@ env:
 
 jobs:
   build-hudi:
-    if: ${{ github.event_name != 'pull_request' || (github.event_name == 'pull_request' && contains(joins(github.event.pull_request.labels.*.name), 'build-hudi')) }}
+    if: ${{ github.event_name != 'pull_request' || (github.event_name == 'pull_request' && contains(join(github.event.pull_request.labels.*.name), 'build-hudi')) }}
     runs-on: ${{ inputs.runner }}
     outputs:
       pom_version_no_jira: ${{ steps.prep_version.outputs.hudi_version_no_jira }}
