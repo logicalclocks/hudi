@@ -20,7 +20,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>hudi-examples</artifactId>
-        <groupId>org.apache.hudi</groupId>
+        <groupId>io.hops.hudi</groupId>
         <version>1.0.2</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -94,6 +94,24 @@
     </build>
 
     <dependencies>
+        <!-- Hadoop -->
+        <dependency>
+            <groupId>${hadoop.groupid}</groupId>
+            <artifactId>hadoop-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${hadoop.groupid}</groupId>
+            <artifactId>hadoop-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${hadoop.groupid}</groupId>
+            <artifactId>hadoop-hdfs</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${hadoop.groupid}</groupId>
+            <artifactId>hadoop-auth</artifactId>
+        </dependency>
+
         <!-- Logging -->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
@@ -102,7 +120,7 @@
 
         <!-- Hudi -->
         <dependency>
-            <groupId>org.apache.hudi</groupId>
+            <groupId>io.hops.hudi</groupId>
             <artifactId>hudi-examples-common</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -114,13 +132,13 @@
         </dependency>
 
         <dependency>
-            <groupId>org.apache.hudi</groupId>
+            <groupId>io.hops.hudi</groupId>
             <artifactId>hudi-client-common</artifactId>
             <version>${project.version}</version>
         </dependency>
 
         <dependency>
-            <groupId>org.apache.hudi</groupId>
+            <groupId>io.hops.hudi</groupId>
             <artifactId>hudi-java-client</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -132,7 +150,7 @@
         </dependency>
 
         <dependency>
-            <groupId>org.apache.hudi</groupId>
+            <groupId>io.hops.hudi</groupId>
             <artifactId>hudi-tests-common</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>

@@ -35,7 +35,6 @@ import static org.apache.hudi.sync.common.HoodieSyncConfig.META_SYNC_BASE_PATH;
  * Hudi table queryable through external systems.
  */
 public abstract class HoodieSyncTool implements AutoCloseable {
-
   protected Properties props;
   protected Configuration hadoopConf;
   protected HoodieMetaSyncMetrics metrics;

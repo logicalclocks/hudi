@@ -726,11 +726,25 @@ public class FSUtils {
     }
     return pathInfoList;
   }
-
+  
   public static boolean comparePathsWithoutScheme(String pathStr1, String pathStr2) {
-    Path pathWithoutScheme1 = getPathWithoutScheme(new Path(pathStr1));
-    Path pathWithoutScheme2 = getPathWithoutScheme(new Path(pathStr2));
+    // In hopsfs the following the authority does not matter, so we just compare the paths without scheme and authority.
+    // The following paths are equivalent: hopsfs://10.244.231.90:8020/apps/hive/warehouse/g1_featurestore.db/loans_1,
+    // hopsfs://rpc.namenode.service.consul:8020/apps/hive/warehouse/g1_featurestore.db/loans_1.
+    Path path1 = new Path(pathStr1);
+    Path path2 = new Path(pathStr2);
+    Path pathWithoutScheme1 =
+        path1.isUriPathAbsolute() && path1.toUri().getScheme().equals("hopsfs")
+            ? getPathWithoutSchemeAndAuthority(path1) : getPathWithoutScheme(new Path(pathStr1));
+    Path pathWithoutScheme2 =
+        path2.isUriPathAbsolute() && path2.toUri().getScheme().equals("hopsfs")
+            ? getPathWithoutSchemeAndAuthority(path2) : getPathWithoutScheme(new Path(pathStr2));
     return pathWithoutScheme1.equals(pathWithoutScheme2);
+  }
+  
+  public static Path getPathWithoutSchemeAndAuthority(Path path) {
+    return path.isUriPathAbsolute()
+        ? new Path(path.toUri().getPath()) : path;
   }
 
   public static Path getPathWithoutScheme(Path path) {

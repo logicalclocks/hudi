@@ -22,7 +22,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>hudi-examples</artifactId>
-        <groupId>org.apache.hudi</groupId>
+        <groupId>io.hops.hudi</groupId>
         <version>1.0.2</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -110,7 +110,7 @@
     <dependencies>
         <!-- Hoodie -->
         <dependency>
-            <groupId>org.apache.hudi</groupId>
+            <groupId>io.hops.hudi</groupId>
             <artifactId>hudi-flink${flink.bundle.version}-bundle</artifactId>
             <scope>compile</scope>
             <version>${project.version}</version>
@@ -156,7 +156,7 @@
 
         <!-- Hadoop -->
         <dependency>
-            <groupId>org.apache.hadoop</groupId>
+            <groupId>${hadoop.groupid}</groupId>
             <artifactId>hadoop-mapreduce-client-core</artifactId>
             <scope>runtime</scope>
             <version>${hadoop.version}</version>
@@ -179,35 +179,35 @@
         </dependency>
 
         <dependency>
-            <groupId>org.apache.hadoop</groupId>
+            <groupId>${hadoop.groupid}</groupId>
             <artifactId>hadoop-common</artifactId>
             <scope>runtime</scope>
             <version>${hadoop.version}</version>
         </dependency>
 
         <dependency>
-            <groupId>org.apache.hadoop</groupId>
+            <groupId>${hadoop.groupid}</groupId>
             <artifactId>hadoop-auth</artifactId>
             <scope>runtime</scope>
             <version>${hadoop.version}</version>
         </dependency>
 
         <dependency>
-            <groupId>org.apache.hadoop</groupId>
+            <groupId>${hadoop.groupid}</groupId>
             <artifactId>hadoop-hdfs</artifactId>
             <scope>runtime</scope>
             <version>${hadoop.version}</version>
         </dependency>
 
         <dependency>
-            <groupId>org.apache.hadoop</groupId>
+            <groupId>${hadoop.groupid}</groupId>
             <artifactId>hadoop-aws</artifactId>
             <scope>runtime</scope>
             <version>${hadoop.version}</version>
         </dependency>
 
         <dependency>
-            <groupId>org.apache.hudi</groupId>
+            <groupId>io.hops.hudi</groupId>
             <artifactId>hudi-tests-common</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>

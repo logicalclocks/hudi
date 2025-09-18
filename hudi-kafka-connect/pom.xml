@@ -18,7 +18,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>hudi</artifactId>
-        <groupId>org.apache.hudi</groupId>
+        <groupId>io.hops.hudi</groupId>
         <version>1.0.2</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -92,17 +92,17 @@
 
         <!-- Hudi Dependencies -->
         <dependency>
-            <groupId>org.apache.hudi</groupId>
+            <groupId>io.hops.hudi</groupId>
             <artifactId>hudi-java-client</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.hudi</groupId>
+            <groupId>io.hops.hudi</groupId>
             <artifactId>hudi-utilities_${scala.binary.version}</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.hudi</groupId>
+            <groupId>io.hops.hudi</groupId>
             <artifactId>hudi-client-common</artifactId>
             <version>${project.version}</version>
             <exclusions>
@@ -122,7 +122,7 @@
         </dependency>
         <!-- NOTE: This is temp (SchemaProvide dep) until PR3162 lands -->
         <dependency>
-            <groupId>org.apache.hudi</groupId>
+            <groupId>io.hops.hudi</groupId>
             <artifactId>hudi-flink</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -177,16 +177,22 @@
 
         <!-- Hadoop -->
         <dependency>
-            <groupId>org.apache.hadoop</groupId>
+            <groupId>${hadoop.groupid}</groupId>
             <artifactId>hadoop-common</artifactId>
             <version>${hadoop.version}</version>
         </dependency>
 
         <!-- Hive -->
         <dependency>
-            <groupId>org.apache.hive</groupId>
+            <groupId>${hive.groupid}</groupId>
             <artifactId>hive-common</artifactId>
             <version>${hive.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.eclipse.jetty</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>${hive.groupid}</groupId>
@@ -196,13 +202,13 @@
 
         <!-- Hudi - Test -->
         <dependency>
-            <groupId>org.apache.hudi</groupId>
+            <groupId>io.hops.hudi</groupId>
             <artifactId>hudi-tests-common</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.hudi</groupId>
+            <groupId>io.hops.hudi</groupId>
             <artifactId>hudi-common</artifactId>
             <version>${project.version}</version>
             <classifier>tests</classifier>
@@ -210,7 +216,7 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.hudi</groupId>
+            <groupId>io.hops.hudi</groupId>
             <artifactId>hudi-hadoop-common</artifactId>
             <version>${project.version}</version>
             <classifier>tests</classifier>

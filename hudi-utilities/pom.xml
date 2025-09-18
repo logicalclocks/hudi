@@ -18,7 +18,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
     <artifactId>hudi</artifactId>
-    <groupId>org.apache.hudi</groupId>
+    <groupId>io.hops.hudi</groupId>
     <version>1.0.2</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
@@ -121,7 +121,7 @@
     <!-- Hoodie - Spark -->
 
     <dependency>
-      <groupId>org.apache.hudi</groupId>
+      <groupId>io.hops.hudi</groupId>
       <artifactId>hudi-spark_${scala.binary.version}</artifactId>
       <version>${project.version}</version>
       <exclusions>
@@ -129,13 +129,17 @@
           <groupId>javax.servlet</groupId>
           <artifactId>servlet-api</artifactId>
         </exclusion>
+        <exclusion>
+          <groupId>io.hops</groupId>
+          <artifactId>hops-leader-election</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
 
     <!-- Hoodie - cloud providers -->
 
     <dependency>
-      <groupId>org.apache.hudi</groupId>
+      <groupId>io.hops.hudi</groupId>
       <artifactId>hudi-aws</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -152,7 +156,7 @@
     </dependency>
 
     <dependency>
-      <groupId>org.apache.hudi</groupId>
+      <groupId>io.hops.hudi</groupId>
       <artifactId>hudi-gcp</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -164,29 +168,49 @@
                test for Spark 3.x (this occurs b/c Hudi depends on "nohive" version of "orc-core"
                while Spark 3.x switches to a regular one) -->
     <dependency>
-      <groupId>org.apache.hudi</groupId>
+      <groupId>io.hops.hudi</groupId>
       <artifactId>hudi-common</artifactId>
       <version>${project.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>javax.servlet</groupId>
+          <artifactId>servlet-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>io.hops</groupId>
+          <artifactId>hops-leader-election</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.apache.hudi</groupId>
+      <groupId>io.hops.hudi</groupId>
       <artifactId>hudi-io</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.apache.hudi</groupId>
+      <groupId>io.hops.hudi</groupId>
       <artifactId>hudi-hadoop-common</artifactId>
       <version>${project.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>io.hops</groupId>
+          <artifactId>hops-leader-election</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <dependency>
-      <groupId>org.apache.hudi</groupId>
+      <groupId>io.hops.hudi</groupId>
       <artifactId>hudi-hive-sync</artifactId>
       <version>${project.version}</version>
       <exclusions>
         <exclusion>
           <groupId>javax.servlet</groupId>
           <artifactId>servlet-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>io.hops</groupId>
+          <artifactId>hops-leader-election</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -262,11 +286,11 @@
       <artifactId>spark-core_${scala.binary.version}</artifactId>
       <exclusions>
         <exclusion>
-          <groupId>org.apache.hadoop</groupId>
+          <groupId>${hadoop.groupid}</groupId>
           <artifactId>hadoop-client-api</artifactId>
         </exclusion>
         <exclusion>
-          <groupId>org.apache.hadoop</groupId>
+          <groupId>${hadoop.groupid}</groupId>
           <artifactId>hadoop-client-runtime</artifactId>
         </exclusion>
         <exclusion>
@@ -306,11 +330,11 @@
       <version>${spark.version}</version>
       <exclusions>
         <exclusion>
-          <groupId>org.apache.hadoop</groupId>
+          <groupId>${hadoop.groupid}</groupId>
           <artifactId>hadoop-client-api</artifactId>
         </exclusion>
         <exclusion>
-          <groupId>org.apache.hadoop</groupId>
+          <groupId>${hadoop.groupid}</groupId>
           <artifactId>hadoop-client-runtime</artifactId>
         </exclusion>
       </exclusions>
@@ -405,16 +429,26 @@
 
     <!-- Hadoop -->
     <dependency>
-      <groupId>org.apache.hadoop</groupId>
+      <groupId>${hadoop.groupid}</groupId>
       <artifactId>hadoop-client</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>io.hops</groupId>
+          <artifactId>hops-leader-election</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.apache.hadoop</groupId>
+      <groupId>${hadoop.groupid}</groupId>
       <artifactId>hadoop-mapreduce-client-common</artifactId>
       <exclusions>
         <exclusion>
           <groupId>javax.servlet</groupId>
           <artifactId>servlet-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>io.hops.hive</groupId>
+          <artifactId>hive-llap-tez</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -443,6 +477,12 @@
       <groupId>${hive.groupid}</groupId>
       <artifactId>hive-service</artifactId>
       <version>${hive.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>io.hops</groupId>
+          <artifactId>hops-leader-election</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <!-- Kakfa .-->
@@ -457,47 +497,77 @@
 
     <!-- Hoodie - Test -->
     <dependency>
-      <groupId>org.apache.hudi</groupId>
+      <groupId>io.hops.hudi</groupId>
       <artifactId>hudi-client-common</artifactId>
       <version>${project.version}</version>
       <classifier>tests</classifier>
       <type>test-jar</type>
       <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>io.hops</groupId>
+          <artifactId>hops-leader-election</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.apache.hudi</groupId>
+      <groupId>io.hops.hudi</groupId>
       <artifactId>hudi-spark-client</artifactId>
       <version>${project.version}</version>
       <classifier>tests</classifier>
       <type>test-jar</type>
       <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>io.hops</groupId>
+          <artifactId>hops-leader-election</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.apache.hudi</groupId>
+      <groupId>io.hops.hudi</groupId>
       <artifactId>hudi-common</artifactId>
       <version>${project.version}</version>
       <classifier>tests</classifier>
       <type>test-jar</type>
       <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>io.hops</groupId>
+          <artifactId>hops-leader-election</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.apache.hudi</groupId>
+      <groupId>io.hops.hudi</groupId>
       <artifactId>hudi-io</artifactId>
       <version>${project.version}</version>
       <classifier>tests</classifier>
       <type>test-jar</type>
       <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>io.hops</groupId>
+          <artifactId>hops-leader-election</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.apache.hudi</groupId>
+      <groupId>io.hops.hudi</groupId>
       <artifactId>hudi-hadoop-common</artifactId>
       <version>${project.version}</version>
       <classifier>tests</classifier>
       <type>test-jar</type>
       <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>io.hops</groupId>
+          <artifactId>hops-leader-election</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.apache.hudi</groupId>
+      <groupId>io.hops.hudi</groupId>
       <artifactId>hudi-hive-sync</artifactId>
       <version>${project.version}</version>
       <classifier>tests</classifier>
@@ -505,7 +575,7 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.apache.hudi</groupId>
+      <groupId>io.hops.hudi</groupId>
       <artifactId>hudi-spark_${scala.binary.version}</artifactId>
       <version>${project.version}</version>
       <classifier>tests</classifier>
@@ -513,7 +583,7 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.apache.hudi</groupId>
+      <groupId>io.hops.hudi</groupId>
       <artifactId>hudi-tests-common</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>

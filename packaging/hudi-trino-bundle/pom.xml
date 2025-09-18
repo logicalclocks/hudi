@@ -19,7 +19,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
     <artifactId>hudi</artifactId>
-    <groupId>org.apache.hudi</groupId>
+    <groupId>io.hops.hudi</groupId>
     <version>1.0.2</version>
     <relativePath>../../pom.xml</relativePath>
   </parent>
@@ -67,11 +67,11 @@
               </transformers>
               <artifactSet>
                 <includes combine.children="append">
-                  <include>org.apache.hudi:hudi-hadoop-common</include>
-                  <include>org.apache.hudi:hudi-common</include>
-                  <include>org.apache.hudi:hudi-client-common</include>
-                  <include>org.apache.hudi:hudi-java-client</include>
-                  <include>org.apache.hudi:hudi-hadoop-mr</include>
+                  <include>io.hops.hudi:hudi-hadoop-common</include>
+                  <include>io.hops.hudi:hudi-common</include>
+                  <include>io.hops.hudi:hudi-client-common</include>
+                  <include>io.hops.hudi:hudi-java-client</include>
+                  <include>io.hops.hudi:hudi-hadoop-mr</include>
 
                   <!-- Kryo -->
                   <include>com.esotericsoftware:kryo-shaded</include>
@@ -92,36 +92,36 @@
                 <!-- Kryo -->
                 <relocation>
                   <pattern>com.esotericsoftware.kryo.</pattern>
-                  <shadedPattern>org.apache.hudi.com.esotericsoftware.kryo.</shadedPattern>
+                  <shadedPattern>io.hops.hudi.com.esotericsoftware.kryo.</shadedPattern>
                 </relocation>
                 <relocation>
                   <pattern>com.esotericsoftware.reflectasm.</pattern>
-                  <shadedPattern>org.apache.hudi.com.esotericsoftware.reflectasm.</shadedPattern>
+                  <shadedPattern>io.hops.hudi.com.esotericsoftware.reflectasm.</shadedPattern>
                 </relocation>
                 <relocation>
                   <pattern>com.esotericsoftware.minlog.</pattern>
-                  <shadedPattern>org.apache.hudi.com.esotericsoftware.minlog.</shadedPattern>
+                  <shadedPattern>io.hops.hudi.com.esotericsoftware.minlog.</shadedPattern>
                 </relocation>
                 <relocation>
                   <pattern>org.objenesis.</pattern>
-                  <shadedPattern>org.apache.hudi.org.objenesis.</shadedPattern>
+                  <shadedPattern>io.hops.hudi.org.objenesis.</shadedPattern>
                 </relocation>
 
                 <relocation>
                   <pattern>org.apache.parquet.avro.</pattern>
-                  <shadedPattern>org.apache.hudi.org.apache.parquet.avro.</shadedPattern>
+                  <shadedPattern>io.hops.hudi.org.apache.parquet.avro.</shadedPattern>
                 </relocation>
                 <relocation>
                   <pattern>org.apache.avro.</pattern>
-                  <shadedPattern>org.apache.hudi.org.apache.avro.</shadedPattern>
+                  <shadedPattern>io.hops.hudi.org.apache.avro.</shadedPattern>
                 </relocation>
                 <relocation>
                   <pattern>org.apache.commons.io.</pattern>
-                  <shadedPattern>org.apache.hudi.org.apache.commons.io.</shadedPattern>
+                  <shadedPattern>io.hops.hudi.org.apache.commons.io.</shadedPattern>
                 </relocation>
                 <relocation>
                   <pattern>com.yammer.metrics.</pattern>
-                  <shadedPattern>org.apache.hudi.com.yammer.metrics.</shadedPattern>
+                  <shadedPattern>io.hops.hudi.com.yammer.metrics.</shadedPattern>
                 </relocation>
                 <relocation>
                   <pattern>com.google.common.</pattern>
@@ -137,7 +137,7 @@
                 </relocation>
                 <relocation>
                   <pattern>org.openjdk.jol.</pattern>
-                  <shadedPattern>org.apache.hudi.org.openjdk.jol.</shadedPattern>
+                  <shadedPattern>io.hops.hudi.org.openjdk.jol.</shadedPattern>
                 </relocation>
               </relocations>
               <createDependencyReducedPom>false</createDependencyReducedPom>
@@ -170,12 +170,12 @@
   <dependencies>
     <!-- Hoodie -->
     <dependency>
-      <groupId>org.apache.hudi</groupId>
+      <groupId>io.hops.hudi</groupId>
       <artifactId>hudi-hadoop-mr-bundle</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.apache.hudi</groupId>
+      <groupId>io.hops.hudi</groupId>
       <artifactId>hudi-client-common</artifactId>
       <version>${project.version}</version>
       <exclusions>
@@ -186,7 +186,7 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.apache.hudi</groupId>
+      <groupId>io.hops.hudi</groupId>
       <artifactId>hudi-java-client</artifactId>
       <version>${project.version}</version>
     </dependency>

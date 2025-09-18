@@ -19,7 +19,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>hudi-client</artifactId>
-        <groupId>org.apache.hudi</groupId>
+        <groupId>io.hops.hudi</groupId>
         <version>1.0.2</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -51,12 +51,12 @@
 
         <!-- Hudi  -->
         <dependency>
-            <groupId>org.apache.hudi</groupId>
+            <groupId>io.hops.hudi</groupId>
             <artifactId>hudi-client-common</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.hudi</groupId>
+            <groupId>io.hops.hudi</groupId>
             <artifactId>hudi-hadoop-common</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -122,7 +122,7 @@
 
         <!-- Hoodie - Test -->
         <dependency>
-            <groupId>org.apache.hudi</groupId>
+            <groupId>io.hops.hudi</groupId>
             <artifactId>hudi-common</artifactId>
             <version>${project.version}</version>
             <classifier>tests</classifier>
@@ -130,7 +130,7 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.hudi</groupId>
+            <groupId>io.hops.hudi</groupId>
             <artifactId>hudi-client-common</artifactId>
             <version>${project.version}</version>
             <classifier>tests</classifier>
@@ -138,7 +138,7 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.hudi</groupId>
+            <groupId>io.hops.hudi</groupId>
             <artifactId>hudi-hadoop-common</artifactId>
             <version>${project.version}</version>
             <classifier>tests</classifier>
@@ -146,13 +146,13 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.hudi</groupId>
+            <groupId>io.hops.hudi</groupId>
             <artifactId>hudi-hadoop-mr</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.hudi</groupId>
+            <groupId>io.hops.hudi</groupId>
             <artifactId>hudi-tests-common</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>

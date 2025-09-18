@@ -18,7 +18,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
     <artifactId>hudi</artifactId>
-    <groupId>org.apache.hudi</groupId>
+    <groupId>io.hops.hudi</groupId>
     <version>1.0.2</version>
     <relativePath>../../pom.xml</relativePath>
   </parent>
@@ -38,26 +38,26 @@
   <dependencies>
     <!-- Hoodie -->
     <dependency>
-      <groupId>org.apache.hudi</groupId>
+      <groupId>io.hops.hudi</groupId>
       <artifactId>hudi-common</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.apache.hudi</groupId>
+      <groupId>io.hops.hudi</groupId>
       <artifactId>hudi-sync-common</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.apache.hudi</groupId>
+      <groupId>io.hops.hudi</groupId>
       <artifactId>hudi-hive-sync</artifactId>
       <version>${project.version}</version>
       <exclusions>
         <exclusion>
-          <groupId>org.apache.hadoop</groupId>
+          <groupId>${hadoop.groupid}</groupId>
           <artifactId>hadoop-hdfs</artifactId>
         </exclusion>
         <exclusion>
-          <groupId>org.apache.hive</groupId>
+          ${hive.groupid}
           <artifactId>hive-shims</artifactId>
         </exclusion>
         <exclusion>
@@ -79,7 +79,7 @@
     </dependency>
 
     <dependency>
-      <groupId>org.apache.hadoop</groupId>
+      <groupId>${hadoop.groupid}</groupId>
       <artifactId>hadoop-aliyun</artifactId>
       <version>${hadoop.aliyun.version}</version>
     </dependency>
@@ -117,11 +117,11 @@
 
     <!-- Hadoop -->
     <dependency>
-      <groupId>org.apache.hadoop</groupId>
+      <groupId>${hadoop.groupid}</groupId>
       <artifactId>hadoop-common</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.hive</groupId>
+      ${hive.groupid}
       <artifactId>hive-exec</artifactId>
       <version>${hive.version}</version>
       <exclusions>
@@ -134,7 +134,7 @@
 
     <!-- Testing -->
     <dependency>
-      <groupId>org.apache.hudi</groupId>
+      <groupId>io.hops.hudi</groupId>
       <artifactId>hudi-tests-common</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
