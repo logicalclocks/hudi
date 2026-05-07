@@ -28,7 +28,7 @@
   <groupId>io.hops.hudi</groupId>
   <artifactId>hudi</artifactId>
   <packaging>pom</packaging>
-  <version>1.0.2</version>
+  <version>1.0.2.1</version>
   <description>Apache Hudi brings stream style processing on big data</description>
   <url>https://github.com/apache/hudi</url>
   <name>Hudi</name>
@@ -118,9 +118,9 @@
     <slf4j.version>1.7.36</slf4j.version>
     <joda.version>2.9.9</joda.version>
     <hadoop.groupid>io.hops</hadoop.groupid>
-    <hadoop.version>3.2.0.16-SNAPSHOT</hadoop.version>
+    <hadoop.version>3.4.3.0-EE-RC3</hadoop.version>
     <hive.groupid>io.hops.hive</hive.groupid>
-    <hive.version>3.0.0.13.10-SNAPSHOT</hive.version>
+    <hive.version>3.0.0.14.3</hive.version>
     <hive.parquet.version>1.13.1</hive.parquet.version>
     <hive.avro.version>1.11.4</hive.avro.version>
     <presto.version>0.273</presto.version>
@@ -2038,6 +2038,17 @@
       <id>Hops</id>
       <name>Hops Repo</name>
       <url>https://archiva.hops.works/repository/Hops/</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>HiveEE</id>
+      <name>HiveEE Repository</name>
+      <url>https://nexus.hops.works/repository/hive-artifacts</url>
       <releases>
         <enabled>true</enabled>
       </releases>
