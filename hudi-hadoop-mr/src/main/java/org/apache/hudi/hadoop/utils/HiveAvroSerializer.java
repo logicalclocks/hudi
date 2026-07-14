@@ -59,7 +59,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -349,7 +348,7 @@ public class HiveAvroSerializer {
     List<? extends StructField> allStructFieldRefs = ssoi.getAllStructFieldRefs();
     List<Object> structFieldsDataAsList = ssoi.getStructFieldsDataAsList(o);
     GenericData.Record record = new GenericData.Record(schema.toAvroSchema());
-    ArrayList<TypeInfo> allStructFieldTypeInfos = typeInfo.getAllStructFieldTypeInfos();
+    List<TypeInfo> allStructFieldTypeInfos = typeInfo.getAllStructFieldTypeInfos();
 
     for (int i = 0; i < size; i++) {
       HoodieSchemaField field = schema.getFields().get(i);

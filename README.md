@@ -122,20 +122,20 @@ mvn javadoc:aggregate -Pjavadocs
 
 ### Build with different Spark versions
 
-The default Spark 3.x version, corresponding to `spark3` profile is
-3.5.3. The default Scala version is 2.12. Scala 2.13 is supported for Spark 3.5 and above.
+The default Spark version is 4.1 (`spark4.1` profile), which builds against Scala 2.13 and
+requires Java 17.
 
 Refer to the table below for building with different Spark and Scala versions.
 
 | Maven build options       | Expected Spark bundle jar name               | Notes                                            |
 |:--------------------------|:---------------------------------------------|:-------------------------------------------------|
-| (empty)                   | hudi-spark3.5-bundle_2.12                    | For Spark 3.5.x and Scala 2.12 (default options) |
+| (empty)                   | hudi-spark4.1-bundle_2.13                    | For Spark 4.1 and Scala 2.13 (default options, needs java 17) |
 | `-Dspark3.3`              | hudi-spark3.3-bundle_2.12                    | For Spark 3.3.2+ and Scala 2.12                  |
 | `-Dspark3.4`              | hudi-spark3.4-bundle_2.12                    | For Spark 3.4.x and Scala 2.12                   |
-| `-Dspark3.5 -Dscala-2.12` | hudi-spark3.5-bundle_2.12                    | For Spark 3.5.x and Scala 2.12 (same as default) |
+| `-Dspark3.5 -Dscala-2.12` | hudi-spark3.5-bundle_2.12                    | For Spark 3.5.x and Scala 2.12                   |
 | `-Dspark3.5 -Dscala-2.13` | hudi-spark3.5-bundle_2.13                    | For Spark 3.5.x and Scala 2.13                   |
 | `-Dspark4.0`              | hudi-spark4.0-bundle_2.13                    | For Spark 4.0 and Scala 2.13 (Needs java 17)     |
-| `-Dspark4.1`              | hudi-spark4.1-bundle_2.13                    | For Spark 4.1 and Scala 2.13 (Needs java 17)     |
+| `-Dspark4.1`              | hudi-spark4.1-bundle_2.13                    | For Spark 4.1 and Scala 2.13 (same as default)   |
 | `-Dspark3`                | hudi-spark3-bundle_2.12 (legacy bundle name) | For Spark 3.5.x and Scala 2.12                   |
 
 Please note that only Spark-related bundles, i.e., `hudi-spark-bundle`, `hudi-utilities-bundle`,

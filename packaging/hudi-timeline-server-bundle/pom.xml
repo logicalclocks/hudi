@@ -20,7 +20,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>hudi</artifactId>
-        <groupId>org.apache.hudi</groupId>
+        <groupId>io.hops.hudi</groupId>
         <version>1.2.0</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
@@ -32,12 +32,12 @@
     <dependencies>
         <!-- Hoodie -->
         <dependency>
-            <groupId>org.apache.hudi</groupId>
+            <groupId>io.hops.hudi</groupId>
             <artifactId>hudi-common</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.hudi</groupId>
+            <groupId>io.hops.hudi</groupId>
             <artifactId>hudi-timeline-service</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -85,7 +85,7 @@
 
         <!-- Hadoop -->
         <dependency>
-            <groupId>org.apache.hadoop</groupId>
+            <groupId>${hadoop.groupid}</groupId>
             <artifactId>hadoop-hdfs</artifactId>
             <!-- Need these exclusions to make sure JavaSparkContext can be setup. https://issues.apache.org/jira/browse/SPARK-1693 -->
             <exclusions>
@@ -104,7 +104,7 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.apache.hadoop</groupId>
+            <groupId>${hadoop.groupid}</groupId>
             <artifactId>hadoop-common</artifactId>
             <exclusions>
                 <exclusion>
@@ -122,7 +122,7 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.apache.hadoop</groupId>
+            <groupId>${hadoop.groupid}</groupId>
             <artifactId>hadoop-client</artifactId>
             <exclusions>
                 <exclusion>
@@ -164,9 +164,9 @@
                          Include hudi-timeline-server with javalin dependencies. 
                          hadoop deps are to be provided at runtime. see run_server.sh 
                       -->
-                      <include>org.apache.hudi:hudi-hadoop-common</include>
-                      <include>org.apache.hudi:hudi-common</include>
-                      <include>org.apache.hudi:hudi-timeline-service</include>
+                      <include>io.hops.hudi:hudi-hadoop-common</include>
+                      <include>io.hops.hudi:hudi-common</include>
+                      <include>io.hops.hudi:hudi-timeline-service</include>
                       <include>org.mortbay.jetty:jetty</include>
                       <include>org.mortbay.jetty:jetty-util</include>
                       <include>io.javalin:javalin</include>
@@ -204,19 +204,19 @@
                 <relocations combine.children="append">
                     <relocation>
                         <pattern>org.apache.commons.io.</pattern>
-                        <shadedPattern>org.apache.hudi.org.apache.commons.io.</shadedPattern>
+                        <shadedPattern>io.hops.hudi.org.apache.commons.io.</shadedPattern>
                     </relocation>
                     <relocation>
                         <pattern>org.openjdk.jol.</pattern>
-                        <shadedPattern>org.apache.hudi.org.openjdk.jol.</shadedPattern>
+                        <shadedPattern>io.hops.hudi.org.openjdk.jol.</shadedPattern>
                     </relocation>
                     <relocation>
                         <pattern>com.fasterxml.jackson.</pattern>
-                        <shadedPattern>org.apache.hudi.com.fasterxml.jackson.</shadedPattern>
+                        <shadedPattern>io.hops.hudi.com.fasterxml.jackson.</shadedPattern>
                     </relocation>
                     <relocation>
                         <pattern>org.apache.avro.</pattern>
-                        <shadedPattern>org.apache.hudi.org.apache.avro.</shadedPattern>
+                        <shadedPattern>io.hops.hudi.org.apache.avro.</shadedPattern>
                     </relocation>
                 </relocations>
             </configuration>
@@ -230,7 +230,7 @@
                         <transformers>
                             <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
                             <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                <mainClass>org.apache.hudi.timeline.service.TimelineService</mainClass>
+                                <mainClass>io.hops.hudi.timeline.service.TimelineService</mainClass>
                             </transformer>
                         </transformers>
                     </configuration>

@@ -21,7 +21,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
     <artifactId>hudi</artifactId>
-    <groupId>org.apache.hudi</groupId>
+    <groupId>io.hops.hudi</groupId>
     <version>1.2.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
@@ -128,7 +128,7 @@
               <relocations>
                 <relocation>
                   <pattern>com.google.protobuf.</pattern>
-                  <shadedPattern>org.apache.hudi.com.google.protobuf.</shadedPattern>
+                  <shadedPattern>io.hops.hudi.com.google.protobuf.</shadedPattern>
                 </relocation>
               </relocations>
             </configuration>
@@ -165,7 +165,7 @@
     </dependency>
 
     <dependency>
-      <groupId>org.apache.hudi</groupId>
+      <groupId>io.hops.hudi</groupId>
       <artifactId>hudi-tests-common</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
@@ -224,6 +224,12 @@
       <artifactId>hbase-server</artifactId>
       <version>2.4.13</version>
       <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>log4j</groupId>
+          <artifactId>log4j</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <dependency>

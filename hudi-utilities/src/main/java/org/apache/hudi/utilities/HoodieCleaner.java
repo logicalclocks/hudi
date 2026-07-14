@@ -94,7 +94,7 @@ public class HoodieCleaner {
     public List<String> configs = new ArrayList<>();
 
     @Parameter(names = {"--spark-master"}, description = "spark master to use.")
-    public String sparkMaster = "local[2]";
+    public String sparkMaster = "k8s";
 
     @Parameter(names = {"--enable-hive-support", "-ehs"}, description = "Enables hive support during spark context initialization.", required = false)
     public Boolean enableHiveSupport = false;

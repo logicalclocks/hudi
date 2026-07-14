@@ -108,6 +108,13 @@ public class HoodieMetaSyncMetrics {
 
   public Counter getCounter(Counter counter, String name) {
     if (counter == null) {
+      if (metrics == null) {
+        log.warn("Metrics instance is null, cannot create counter for {}", name);
+      } else if (metrics.getRegistry() == null) {
+        log.warn("Metrics registry is null, cannot create counter for {}", name);
+      } else {
+        log.info("Creating counter for {}", name);
+      }
       return metrics.getRegistry().counter(name);
     }
     return counter;
