@@ -56,7 +56,7 @@
         <configuration>
           <archive>
             <manifest>
-              <mainClass>io.hops.hudi.gcp.bigquery.BigQuerySyncTool</mainClass>
+              <mainClass>org.apache.hudi.gcp.bigquery.BigQuerySyncTool</mainClass>
             </manifest>
           </archive>
           <descriptorRefs>

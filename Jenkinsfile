@@ -48,6 +48,7 @@ pipeline {
         checkout([$class: 'GitSCM',
           branches: [[name: "${params.BRANCH_TO_BUILD}"]],
           userRemoteConfigs: [[
+            // TODO: change to git@github.com:logicalclocks/hudi.git before merging
             url: 'git@github.com:gibchikafa/hudi.git',
             credentialsId: 'id_rsa'
           ]]

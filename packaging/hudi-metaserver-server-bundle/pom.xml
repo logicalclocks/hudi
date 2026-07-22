@@ -120,7 +120,7 @@
                             </dependencyReducedPomLocation>
                             <transformers>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>io.hops.hudi.metaserver.HoodieMetaserver</mainClass>
+                                    <mainClass>org.apache.hudi.metaserver.HoodieMetaserver</mainClass>
                                 </transformer>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ApacheLicenseResourceTransformer" />
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ApacheNoticeResourceTransformer">

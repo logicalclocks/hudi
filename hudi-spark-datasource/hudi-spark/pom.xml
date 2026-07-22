@@ -116,7 +116,7 @@
         <groupId>org.scalatest</groupId>
         <artifactId>scalatest-maven-plugin</artifactId>
         <configuration>
-          <tagsToExclude>io.hops.hudi.functional.SparkSQLCoreFlow</tagsToExclude>
+          <tagsToExclude>org.apache.hudi.functional.SparkSQLCoreFlow</tagsToExclude>
         </configuration>
       </plugin>
       <plugin>
