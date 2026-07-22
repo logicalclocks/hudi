@@ -36,7 +36,7 @@ pipeline {
     MAVEN_LOCAL_REPO = '/maven-repo/repository'
     MAVEN_OPTS = '-Xmx4G'
     MAVEN_SETTINGS = "${WORKSPACE}@tmp/mvn-settings.xml"
-    DEPLOY_REPOSITORY = 'HopsEE::default::https://nexus.hops.works/repository/hops-artifacts'
+    DEPLOY_REPOSITORY = 'HopsEE::default::https://nexus.hops.works/repository/hudi'
     HUDI_REPOSITORY = '/opt/repository/master/hudi'
   }
 

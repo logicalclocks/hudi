@@ -2074,13 +2074,13 @@
   <distributionManagement>
     <repository>
       <id>Hops</id>
-      <name>Hops Repo</name>
-      <url>https://archiva.hops.works/repository/Hops/</url>
+      <name>Hops Hudi Repo</name>
+      <url>https://nexus.hops.works/repository/hudi/</url>
     </repository>
     <snapshotRepository>
       <id>Hops</id>
-      <name>Hops Repo</name>
-      <url>https://archiva.hops.works/repository/Hops/</url>
+      <name>Hops Hudi Repo</name>
+      <url>https://nexus.hops.works/repository/hudi/</url>
     </snapshotRepository>
   </distributionManagement>
 
