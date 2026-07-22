@@ -37,6 +37,7 @@ pipeline {
     MAVEN_OPTS = '-Xmx4G'
     MAVEN_SETTINGS = "${WORKSPACE}@tmp/mvn-settings.xml"
     DEPLOY_REPOSITORY = 'HopsEE::default::https://nexus.hops.works/repository/hudi'
+    DEPLOY_REPOSITORY_2 = 'HopsEE::default::https://nexus.hops.works/repository/hops-artifacts'
     HUDI_REPOSITORY = '/opt/repository/master/hudi'
   }
 
@@ -116,6 +117,7 @@ EOF
             -e MAVEN_OPTS="$MAVEN_OPTS" \
             -e MAVEN_SETTINGS="$MAVEN_SETTINGS" \
             -e DEPLOY_REPOSITORY="$DEPLOY_REPOSITORY" \
+            -e DEPLOY_REPOSITORY_2="$DEPLOY_REPOSITORY_2" \
             -e UPDATE_ARG="$UPDATE_ARG" \
             "$DOCKER_IMAGE" \
             bash -lc '
@@ -129,6 +131,8 @@ EOF
               test -x "$JAVA_HOME/bin/javadoc"
               mvn -s "$MAVEN_SETTINGS" -Dmaven.repo.local="$MAVEN_LOCAL_REPO" $UPDATE_ARG \
                 clean deploy -DskipTests -DaltDeploymentRepository="$DEPLOY_REPOSITORY"
+              mvn -s "$MAVEN_SETTINGS" -Dmaven.repo.local="$MAVEN_LOCAL_REPO" \
+                deploy -DskipTests -DaltDeploymentRepository="$DEPLOY_REPOSITORY_2"
             '
         '''
       }
