@@ -39,9 +39,10 @@ pipeline {
     DEPLOY_REPOSITORY = 'HopsEE::default::https://nexus.hops.works/repository/hudi'
     DEPLOY_REPOSITORY_2 = 'HopsEE::default::https://nexus.hops.works/repository/hops-artifacts'
     HUDI_REPOSITORY = '/opt/repository/master/hudi'
-    // Resolve Maven Central through our own Nexus proxy so builds do not get
-    // rate-limited (HTTP 429) by repo.maven.apache.org.
-    CENTRAL_MIRROR_URL = 'https://nexus.hops.works/repository/maven-central/'
+    // Set to a Nexus proxy of Maven Central (e.g. https://nexus.hops.works/repository/maven-central/)
+    // to stop repo.maven.apache.org rate-limiting (HTTP 429) the agent's IP. Left empty until such a
+    // proxy exists: pointing this at a repository Nexus does not host would break all resolution.
+    CENTRAL_MIRROR_URL = ''
     // Be patient with 429/503 responses from whichever remote is serving us.
     MAVEN_RETRY_ARGS = '-Daether.connector.http.retryHandler.count=10 -Daether.connector.http.retryHandler.interval=15000'
   }
@@ -65,6 +66,19 @@ pipeline {
           sh '''#!/bin/bash -eu
             rm -rf "$WORKSPACE/.m2" "$HOST_MAVEN_REPO/repository/io/hops/hudi"
             mkdir -p "$(dirname "$MAVEN_SETTINGS")" "$HOST_MAVEN_REPO/repository"
+
+            # Only mirror central when a proxy URL is configured; an empty CENTRAL_MIRROR_URL
+            # must not emit a <mirror> with a blank <url>, which would break all resolution.
+            CENTRAL_MIRROR_XML=""
+            if [ -n "${CENTRAL_MIRROR_URL:-}" ]; then
+              CENTRAL_MIRROR_XML="<mirror>
+      <id>hops-central</id>
+      <name>Nexus proxy of Maven Central</name>
+      <url>${CENTRAL_MIRROR_URL}</url>
+      <mirrorOf>central</mirrorOf>
+    </mirror>"
+            fi
+
             cat > "$MAVEN_SETTINGS" <<EOF
 <settings>
   <localRepository>${MAVEN_LOCAL_REPO}</localRepository>
@@ -92,12 +106,7 @@ pipeline {
   </servers>
   <mirrors>
     <!-- Only mirror central; '*' would also reroute the HopsEE/Hops/HopsHive repos. -->
-    <mirror>
-      <id>hops-central</id>
-      <name>Nexus proxy of Maven Central</name>
-      <url>${CENTRAL_MIRROR_URL}</url>
-      <mirrorOf>central</mirrorOf>
-    </mirror>
+    ${CENTRAL_MIRROR_XML}
   </mirrors>
 </settings>
 EOF
