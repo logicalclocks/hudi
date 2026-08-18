@@ -27,7 +27,7 @@ pipeline {
 
   parameters {
     string(name: 'BRANCH_TO_BUILD', defaultValue: 'release-1.2.0', description: 'Git branch to build.')
-    booleanParam(name: 'FORCE_UPDATE', defaultValue: true, description: 'Pass -U to Maven to refresh snapshot and cached dependency resolution.')
+    booleanParam(name: 'FORCE_UPDATE', defaultValue: false, description: 'Pass -U to Maven to refresh snapshot and cached dependency resolution. Leave off for normal builds; -U re-checks every cached artifact against the remote repositories.')
   }
 
   environment {
@@ -39,6 +39,11 @@ pipeline {
     DEPLOY_REPOSITORY = 'HopsEE::default::https://nexus.hops.works/repository/hudi'
     DEPLOY_REPOSITORY_2 = 'HopsEE::default::https://nexus.hops.works/repository/hops-artifacts'
     HUDI_REPOSITORY = '/opt/repository/master/hudi'
+    // Resolve Maven Central through our own Nexus proxy so builds do not get
+    // rate-limited (HTTP 429) by repo.maven.apache.org.
+    CENTRAL_MIRROR_URL = 'https://nexus.hops.works/repository/maven-central/'
+    // Be patient with 429/503 responses from whichever remote is serving us.
+    MAVEN_RETRY_ARGS = '-Daether.connector.http.retryHandler.count=10 -Daether.connector.http.retryHandler.interval=15000'
   }
 
   stages {
@@ -79,7 +84,21 @@ pipeline {
       <username>$USERNAME</username>
       <password>$PASSWORD</password>
     </server>
+    <server>
+      <id>hops-central</id>
+      <username>$USERNAME</username>
+      <password>$PASSWORD</password>
+    </server>
   </servers>
+  <mirrors>
+    <!-- Only mirror central; '*' would also reroute the HopsEE/Hops/HopsHive repos. -->
+    <mirror>
+      <id>hops-central</id>
+      <name>Nexus proxy of Maven Central</name>
+      <url>${CENTRAL_MIRROR_URL}</url>
+      <mirrorOf>central</mirrorOf>
+    </mirror>
+  </mirrors>
 </settings>
 EOF
           '''
@@ -117,6 +136,7 @@ EOF
             -e MAVEN_SETTINGS="$MAVEN_SETTINGS" \
             -e DEPLOY_REPOSITORY="$DEPLOY_REPOSITORY" \
             -e DEPLOY_REPOSITORY_2="$DEPLOY_REPOSITORY_2" \
+            -e MAVEN_RETRY_ARGS="$MAVEN_RETRY_ARGS" \
             -e UPDATE_ARG="$UPDATE_ARG" \
             "$DOCKER_IMAGE" \
             bash -lc '
@@ -128,9 +148,9 @@ EOF
                 exit 1
               fi
               test -x "$JAVA_HOME/bin/javadoc"
-              mvn -s "$MAVEN_SETTINGS" -Dmaven.repo.local="$MAVEN_LOCAL_REPO" $UPDATE_ARG \
+              mvn -s "$MAVEN_SETTINGS" -Dmaven.repo.local="$MAVEN_LOCAL_REPO" $MAVEN_RETRY_ARGS $UPDATE_ARG \
                 clean deploy -DskipTests -DaltDeploymentRepository="$DEPLOY_REPOSITORY"
-              mvn -s "$MAVEN_SETTINGS" -Dmaven.repo.local="$MAVEN_LOCAL_REPO" \
+              mvn -s "$MAVEN_SETTINGS" -Dmaven.repo.local="$MAVEN_LOCAL_REPO" $MAVEN_RETRY_ARGS \
                 deploy -DskipTests -DaltDeploymentRepository="$DEPLOY_REPOSITORY_2"
             '
         '''
