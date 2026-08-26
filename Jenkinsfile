@@ -39,10 +39,10 @@ pipeline {
     DEPLOY_REPOSITORY = 'HopsEE::default::https://nexus.hops.works/repository/hudi'
     DEPLOY_REPOSITORY_2 = 'HopsEE::default::https://nexus.hops.works/repository/hops-artifacts'
     HUDI_REPOSITORY = '/opt/repository/master/hudi'
-    // Set to a Nexus proxy of Maven Central (e.g. https://nexus.hops.works/repository/maven-central/)
-    // to stop repo.maven.apache.org rate-limiting (HTTP 429) the agent's IP. Left empty until such a
-    // proxy exists: pointing this at a repository Nexus does not host would break all resolution.
-    CENTRAL_MIRROR_URL = ''
+    // Nexus proxy of Maven Central, so repo.maven.apache.org stops rate-limiting (HTTP 429) the
+    // agent's IP. It also turns the io.hops lookups Maven sends to Central, which Central will
+    // never hold, into instant local 404s instead of throttled round trips.
+    CENTRAL_MIRROR_URL = 'https://nexus.hops.works/repository/cache-maven-public/'
     // Be patient with 429/503 responses from whichever remote is serving us.
     MAVEN_RETRY_ARGS = '-Daether.connector.http.retryHandler.count=10 -Daether.connector.http.retryHandler.interval=15000'
   }
