@@ -107,16 +107,18 @@ public class HoodieMetaSyncMetrics {
   }
 
   public Counter getCounter(Counter counter, String name) {
-    if (counter == null) {
-      if (metrics == null) {
-        log.warn("Metrics instance is null, cannot create counter for {}", name);
-      } else if (metrics.getRegistry() == null) {
-        log.warn("Metrics registry is null, cannot create counter for {}", name);
-      } else {
-        log.info("Creating counter for {}", name);
-      }
-      return metrics.getRegistry().counter(name);
+    if (counter != null) {
+      return counter;
     }
-    return counter;
+    if (metrics == null || metrics.getRegistry() == null) {
+      // Both branches used to fall through to metrics.getRegistry().counter(name), so the
+      // guard only logged immediately before the NPE it was meant to prevent. Returning an
+      // unregistered Counter rather than null keeps callers' counter.inc() safe: the count
+      // is simply never reported, which is the right degradation when metrics are off.
+      log.warn("Metrics unavailable, cannot create counter for {}", name);
+      return new Counter();
+    }
+    log.info("Creating counter for {}", name);
+    return metrics.getRegistry().counter(name);
   }
 }
