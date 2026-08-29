@@ -20,7 +20,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>hudi</artifactId>
-        <groupId>org.apache.hudi</groupId>
+        <groupId>io.hops.hudi</groupId>
         <version>1.2.0</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
@@ -35,7 +35,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.apache.hudi</groupId>
+            <groupId>io.hops.hudi</groupId>
             <artifactId>hudi-metaserver-server</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
@@ -100,8 +100,8 @@
                         <configuration>
                             <artifactSet>
                                 <includes combine.children="append">
-                                    <include>org.apache.hudi:hudi-common</include>
-                                    <include>org.apache.hudi:hudi-metaserver-server</include>
+                                    <include>io.hops.hudi:hudi-common</include>
+                                    <include>io.hops.hudi:hudi-metaserver-server</include>
                                     <include>org.apache.thrift:libthrift</include>
                                     <include>org.apache.logging.log4j:log4j-api</include>
                                     <include>org.apache.logging.log4j:log4j-core</include>

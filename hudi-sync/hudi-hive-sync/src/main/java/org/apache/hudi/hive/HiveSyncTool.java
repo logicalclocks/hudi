@@ -118,7 +118,7 @@ public class HiveSyncTool extends HoodieSyncTool implements AutoCloseable {
     if (nonEmpty(configuredMetastoreUris)) {
       // if metastore uri is configured, we can create a new configuration with the value set
       hadoopConfForSync = new Configuration(hadoopConf);
-      hadoopConfForSync.set(HiveConf.ConfVars.METASTOREURIS.varname, configuredMetastoreUris);
+      hadoopConfForSync.set(HiveConf.ConfVars.METASTORE_URIS.varname, configuredMetastoreUris);
     } else {
       // if the user did not provide any URIs, then we can use the provided configuration
       hadoopConfForSync = hadoopConf;
@@ -174,7 +174,7 @@ public class HiveSyncTool extends HoodieSyncTool implements AutoCloseable {
       if (syncClient != null) {
         log.info("Syncing target hoodie table with hive table({}). Hive metastore URL from HiveConf:{}). "
                 + "Hive metastore URL from HiveSyncConfig:{}, basePath :{}",
-            tableId(databaseName, tableName), config.getHiveConf().get(HiveConf.ConfVars.METASTOREURIS.varname),
+            tableId(databaseName, tableName), config.getHiveConf().get(HiveConf.ConfVars.METASTORE_URIS.varname),
             config.getString(METASTORE_URIS), config.getString(META_SYNC_BASE_PATH));
 
         doSync();
@@ -368,12 +368,14 @@ public class HiveSyncTool extends HoodieSyncTool implements AutoCloseable {
       createOrReplaceTable(tableName, useRealtimeInputFormat, readAsOptimized, schema);
       syncAllPartitions(tableName);
       syncClient.updateLastCommitTimeSynced(tableName);
-      if (Objects.nonNull(timerContext)) {
+      if (Objects.nonNull(timerContext) && config.getMetricsConfig().isMetricsOn()) {
         long durationInNs = timerContext.stop();
         metrics.updateRecreateAndSyncDurationInMs(durationInNs);
       }
     } catch (HoodieHiveSyncException ex) {
-      metrics.incrementRecreateAndSyncFailureCounter();
+      if (config.getMetricsConfig().isMetricsOn()) {
+        metrics.incrementRecreateAndSyncFailureCounter();
+      }
       throw new HoodieHiveSyncException("failed to recreate the table for " + tableName, ex);
     }
   }

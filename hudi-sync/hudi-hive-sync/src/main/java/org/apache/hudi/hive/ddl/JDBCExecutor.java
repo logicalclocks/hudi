@@ -101,7 +101,7 @@ public class JDBCExecutor extends QueryBasedDDLExecutor {
   private void createHiveConnection(String jdbcUrl, String hiveUser, String hivePass) {
     if (connection == null) {
       try {
-        Class.forName("org.apache.hive.jdbc.HiveDriver");
+        Class.forName("io.hops.hive.jdbc.HiveDriver");
       } catch (ClassNotFoundException e) {
         log.error("Unable to load Hive driver class", e);
         return;
@@ -124,9 +124,10 @@ public class JDBCExecutor extends QueryBasedDDLExecutor {
       urlAppend = hiveJdbcUrl.substring(hiveJdbcUrl.indexOf(";"));
       hiveJdbcUrl = hiveJdbcUrl.substring(0, hiveJdbcUrl.indexOf(";"));
     }
-    if (!hiveJdbcUrl.endsWith("/")) {
-      hiveJdbcUrl = hiveJdbcUrl + "/";
-    }
+    // HopsFS Hive does not require trailing slash in JDBC URL
+    // if (!hiveJdbcUrl.endsWith("/")) {
+    //   hiveJdbcUrl = hiveJdbcUrl + "/";
+    // }
     return hiveJdbcUrl + (urlAppend == null ? "" : urlAppend);
   }
 

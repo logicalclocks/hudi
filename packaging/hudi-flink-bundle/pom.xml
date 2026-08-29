@@ -20,7 +20,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
     <artifactId>hudi</artifactId>
-    <groupId>org.apache.hudi</groupId>
+    <groupId>io.hops.hudi</groupId>
     <version>1.2.0</version>
     <relativePath>../../pom.xml</relativePath>
   </parent>
@@ -33,10 +33,12 @@
     <main.basedir>${project.parent.basedir}</main.basedir>
     <skipTests>true</skipTests>
     <flink.bundle.hive.scope>provided</flink.bundle.hive.scope>
-    <flink.bundle.shade.prefix>org.apache.hudi.</flink.bundle.shade.prefix>
+    <flink.bundle.shade.prefix>io.hops.hudi.</flink.bundle.shade.prefix>
     <javax.servlet.version>3.1.0</javax.servlet.version>
     <!-- override to be same with flink 1.15.x -->
     <parquet.version>${flink.format.parquet.version}</parquet.version>
+    <!-- Flink bundle uses Apache Hive 2.3.4, not the HopsFS Hive fork -->
+    <hive.groupid>org.apache.hive</hive.groupid>
     <hive.version>2.3.4</hive.version>
     <thrift.version>0.9.3</thrift.version>
   </properties>
@@ -75,16 +77,16 @@
               </transformers>
               <artifactSet>
                 <includes combine.children="append">
-                  <include>org.apache.hudi:hudi-hadoop-common</include>
-                  <include>org.apache.hudi:hudi-common</include>
-                  <include>org.apache.hudi:hudi-client-common</include>
-                  <include>org.apache.hudi:hudi-flink-client</include>
-                  <include>org.apache.hudi:hudi-flink</include>
-                  <include>org.apache.hudi:${hudi.flink.module}</include>
-                  <include>org.apache.hudi:hudi-hive-sync</include>
-                  <include>org.apache.hudi:hudi-sync-common</include>
-                  <include>org.apache.hudi:hudi-hadoop-mr</include>
-                  <include>org.apache.hudi:hudi-timeline-service</include>
+                  <include>io.hops.hudi:hudi-hadoop-common</include>
+                  <include>io.hops.hudi:hudi-common</include>
+                  <include>io.hops.hudi:hudi-client-common</include>
+                  <include>io.hops.hudi:hudi-flink-client</include>
+                  <include>io.hops.hudi:hudi-flink</include>
+                  <include>io.hops.hudi:${hudi.flink.module}</include>
+                  <include>io.hops.hudi:hudi-hive-sync</include>
+                  <include>io.hops.hudi:hudi-sync-common</include>
+                  <include>io.hops.hudi:hudi-hadoop-mr</include>
+                  <include>io.hops.hudi:hudi-timeline-service</include>
 
                   <!-- Kryo -->
                   <include>com.esotericsoftware:kryo-shaded</include>
@@ -161,19 +163,19 @@
                 <!-- Kryo -->
                 <relocation>
                   <pattern>com.esotericsoftware.kryo.</pattern>
-                  <shadedPattern>org.apache.hudi.com.esotericsoftware.kryo.</shadedPattern>
+                  <shadedPattern>io.hops.hudi.com.esotericsoftware.kryo.</shadedPattern>
                 </relocation>
                 <relocation>
                   <pattern>com.esotericsoftware.reflectasm.</pattern>
-                  <shadedPattern>org.apache.hudi.com.esotericsoftware.reflectasm.</shadedPattern>
+                  <shadedPattern>io.hops.hudi.com.esotericsoftware.reflectasm.</shadedPattern>
                 </relocation>
                 <relocation>
                   <pattern>com.esotericsoftware.minlog.</pattern>
-                  <shadedPattern>org.apache.hudi.com.esotericsoftware.minlog.</shadedPattern>
+                  <shadedPattern>io.hops.hudi.com.esotericsoftware.minlog.</shadedPattern>
                 </relocation>
                 <relocation>
                   <pattern>org.objenesis.</pattern>
-                  <shadedPattern>org.apache.hudi.org.objenesis.</shadedPattern>
+                  <shadedPattern>io.hops.hudi.org.objenesis.</shadedPattern>
                 </relocation>
 
                 <relocation>
@@ -186,7 +188,7 @@
                 </relocation>
                 <relocation>
                   <pattern>org.apache.commons.io.</pattern>
-                  <shadedPattern>org.apache.hudi.org.apache.commons.io.</shadedPattern>
+                  <shadedPattern>io.hops.hudi.org.apache.commons.io.</shadedPattern>
                 </relocation>
                 <relocation>
                   <pattern>com.yammer.metrics.</pattern>
@@ -194,7 +196,7 @@
                 </relocation>
                 <relocation>
                   <pattern>com.codahale.metrics.</pattern>
-                  <shadedPattern>org.apache.hudi.com.codahale.metrics.</shadedPattern>
+                  <shadedPattern>io.hops.hudi.com.codahale.metrics.</shadedPattern>
                 </relocation>
                 <relocation>
                   <pattern>com.beust.jcommander.</pattern>
@@ -214,11 +216,11 @@
                 </relocation>
                 <relocation>
                   <pattern>org.openjdk.jol.</pattern>
-                  <shadedPattern>org.apache.hudi.org.openjdk.jol.</shadedPattern>
+                  <shadedPattern>io.hops.hudi.org.openjdk.jol.</shadedPattern>
                 </relocation>
                 <relocation>
                   <pattern>com.uber.m3.</pattern>
-                  <shadedPattern>org.apache.hudi.com.uber.m3.</shadedPattern>
+                  <shadedPattern>io.hops.hudi.com.uber.m3.</shadedPattern>
                 </relocation>
               </relocations>
               <filters>
@@ -249,7 +251,7 @@
   <dependencies>
     <!-- Hoodie -->
     <dependency>
-      <groupId>org.apache.hudi</groupId>
+      <groupId>io.hops.hudi</groupId>
       <artifactId>hudi-common</artifactId>
       <version>${project.version}</version>
       <exclusions>
@@ -264,7 +266,7 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.apache.hudi</groupId>
+      <groupId>io.hops.hudi</groupId>
       <artifactId>hudi-client-common</artifactId>
       <version>${project.version}</version>
       <exclusions>
@@ -275,22 +277,22 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.apache.hudi</groupId>
+      <groupId>io.hops.hudi</groupId>
       <artifactId>hudi-aws</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.apache.hudi</groupId>
+      <groupId>io.hops.hudi</groupId>
       <artifactId>hudi-flink-client</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.apache.hudi</groupId>
+      <groupId>io.hops.hudi</groupId>
       <artifactId>${hudi.flink.module}</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.apache.hudi</groupId>
+      <groupId>io.hops.hudi</groupId>
       <artifactId>hudi-flink</artifactId>
       <version>${project.version}</version>
       <exclusions>
@@ -301,7 +303,7 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.apache.hudi</groupId>
+      <groupId>io.hops.hudi</groupId>
       <artifactId>hudi-hadoop-mr</artifactId>
       <version>${project.version}</version>
       <exclusions>
@@ -312,7 +314,7 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.apache.hudi</groupId>
+      <groupId>io.hops.hudi</groupId>
       <artifactId>hudi-hive-sync</artifactId>
       <version>${project.version}</version>
       <exclusions>
@@ -323,7 +325,7 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.apache.hudi</groupId>
+      <groupId>io.hops.hudi</groupId>
       <artifactId>hudi-timeline-service</artifactId>
       <version>${project.version}</version>
       <exclusions>
@@ -398,7 +400,7 @@
       <scope>compile</scope>
       <exclusions>
         <exclusion>
-          <groupId>org.apache.hadoop</groupId>
+          <groupId>${hadoop.groupid}</groupId>
           <artifactId>hadoop-client</artifactId>
         </exclusion>
         <exclusion>
@@ -600,6 +602,12 @@
       <artifactId>orc-core</artifactId>
       <version>${orc.flink.version}</version>
       <scope>${flink.bundle.hive.scope}</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>log4j</groupId>
+          <artifactId>log4j</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <!-- Fasterxml -->
@@ -675,7 +683,7 @@
       </activation>
       <dependencies>
         <dependency>
-          <groupId>org.apache.hudi</groupId>
+          <groupId>io.hops.hudi</groupId>
           <artifactId>hudi-metaserver-client</artifactId>
           <version>${project.version}</version>
         </dependency>
@@ -691,7 +699,7 @@
                 <configuration>
                   <artifactSet>
                     <includes combine.children="append">
-                      <include>org.apache.hudi:hudi-metaserver-client</include>
+                      <include>io.hops.hudi:hudi-metaserver-client</include>
                     </includes>
                   </artifactSet>
                 </configuration>

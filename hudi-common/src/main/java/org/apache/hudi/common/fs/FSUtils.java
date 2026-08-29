@@ -744,8 +744,16 @@ public class FSUtils {
   }
 
   public static boolean comparePathsWithoutScheme(String pathStr1, String pathStr2) {
-    StoragePath pathWithoutScheme1 = getPathWithoutScheme(new StoragePath(pathStr1));
-    StoragePath pathWithoutScheme2 = getPathWithoutScheme(new StoragePath(pathStr2));
+    // In HopsFS the authority does not matter (different nodes report different namenode addresses),
+    // so compare only the path component when the scheme is hopsfs.
+    StoragePath path1 = new StoragePath(pathStr1);
+    StoragePath path2 = new StoragePath(pathStr2);
+    StoragePath pathWithoutScheme1 =
+        path1.isAbsolute() && "hopsfs".equals(path1.toUri().getScheme())
+            ? getPathWithoutSchemeAndAuthority(path1) : getPathWithoutScheme(path1);
+    StoragePath pathWithoutScheme2 =
+        path2.isAbsolute() && "hopsfs".equals(path2.toUri().getScheme())
+            ? getPathWithoutSchemeAndAuthority(path2) : getPathWithoutScheme(path2);
     return pathWithoutScheme1.equals(pathWithoutScheme2);
   }
 

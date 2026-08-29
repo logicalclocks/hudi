@@ -51,7 +51,6 @@ import org.apache.hadoop.hive.ql.io.CombineHiveRecordReader;
 import org.apache.hadoop.hive.ql.io.HiveFileFormatUtils;
 import org.apache.hadoop.hive.ql.io.HiveInputFormat;
 import org.apache.hadoop.hive.ql.io.IOContextMap;
-import org.apache.hadoop.hive.ql.io.IOPrepareCache;
 import org.apache.hadoop.hive.ql.io.SymlinkTextInputFormat;
 import org.apache.hadoop.hive.ql.log.PerfLogger;
 import org.apache.hadoop.hive.ql.parse.SplitSample;
@@ -141,7 +140,7 @@ public class HoodieCombineHiveInputFormat<K extends WritableComparable, V extend
   private InputSplit[] getCombineSplits(JobConf job, int numSplits, Map<Path, PartitionDesc> pathToPartitionInfo)
       throws IOException {
     init(job);
-    Map<Path, ArrayList<String>> pathToAliases = mrwork.getPathToAliases();
+    Map<Path, List<String>> pathToAliases = mrwork.getPathToAliases();
     Map<String, Operator<? extends OperatorDesc>> aliasToWork = mrwork.getAliasToWork();
     /* MOD - Initialize a custom combine input format shim that will call listStatus on the custom inputFormat **/
     HoodieCombineHiveInputFormat.HoodieCombineFileInputFormatShim combine = createInputFormatShim();
@@ -163,8 +162,7 @@ public class HoodieCombineHiveInputFormat<K extends WritableComparable, V extend
     Set<Path> poolSet = new HashSet<>();
 
     for (Path path : paths) {
-      PartitionDesc part = getPartitionFromPath(pathToPartitionInfo, path,
-          IOPrepareCache.get().allocatePartitionDescMap());
+      PartitionDesc part = getPartitionDescFromPath(pathToPartitionInfo, path);
       TableDesc tableDesc = part.getTableDesc();
       if ((tableDesc != null) && tableDesc.isNonNative()) {
         return super.getSplits(job, numSplits);
@@ -323,7 +321,7 @@ public class HoodieCombineHiveInputFormat<K extends WritableComparable, V extend
   @Override
   public InputSplit[] getSplits(JobConf job, int numSplits) throws IOException {
     PerfLogger perfLogger = SessionState.getPerfLogger();
-    perfLogger.PerfLogBegin(CLASS_NAME, PerfLogger.GET_SPLITS);
+    perfLogger.perfLogBegin(CLASS_NAME, PerfLogger.GET_SPLITS);
 
     try {
       init(job);
@@ -352,7 +350,7 @@ public class HoodieCombineHiveInputFormat<K extends WritableComparable, V extend
           }
         } catch (Exception e) {
           LOG.error("Error checking non-combinable path", e);
-          perfLogger.PerfLogEnd(CLASS_NAME, PerfLogger.GET_SPLITS);
+          perfLogger.perfLogEnd(CLASS_NAME, PerfLogger.GET_SPLITS);
           throw new IOException(e);
         }
       }
@@ -425,7 +423,7 @@ public class HoodieCombineHiveInputFormat<K extends WritableComparable, V extend
       }
 
       LOG.info("Number of all splits {}", result.size());
-      perfLogger.PerfLogEnd(CLASS_NAME, PerfLogger.GET_SPLITS);
+      perfLogger.perfLogEnd(CLASS_NAME, PerfLogger.GET_SPLITS);
       return result.toArray(new InputSplit[result.size()]);
     } finally {
       // Clear work from ThreadLocal after each getSplits attempt, in case the thread is reused in a pool.
@@ -501,11 +499,11 @@ public class HoodieCombineHiveInputFormat<K extends WritableComparable, V extend
    * @return the sampled splits
    */
   private List<CombineFileSplit> sampleSplits(List<CombineFileSplit> splits) {
-    HashMap<String, SplitSample> nameToSamples = mrwork.getNameToSplitSample();
+    Map<String, SplitSample> nameToSamples = mrwork.getNameToSplitSample();
     List<CombineFileSplit> retLists = new ArrayList<>();
     Map<String, ArrayList<CombineFileSplit>> aliasToSplitList = new HashMap<>();
-    Map<Path, ArrayList<String>> pathToAliases = mrwork.getPathToAliases();
-    Map<Path, ArrayList<String>> pathToAliasesNoScheme = removeScheme(pathToAliases);
+    Map<Path, List<String>> pathToAliases = mrwork.getPathToAliases();
+    Map<Path, List<String>> pathToAliasesNoScheme = removeScheme(pathToAliases);
 
     // Populate list of exclusive splits for every sampled alias
     //
@@ -573,9 +571,9 @@ public class HoodieCombineHiveInputFormat<K extends WritableComparable, V extend
     return retLists;
   }
 
-  Map<Path, ArrayList<String>> removeScheme(Map<Path, ArrayList<String>> pathToAliases) {
-    Map<Path, ArrayList<String>> result = new HashMap<>();
-    for (Map.Entry<Path, ArrayList<String>> entry : pathToAliases.entrySet()) {
+  Map<Path, List<String>> removeScheme(Map<Path, List<String>> pathToAliases) {
+    Map<Path, List<String>> result = new HashMap<>();
+    for (Map.Entry<Path, List<String>> entry : pathToAliases.entrySet()) {
       Path newKey = Path.getPathWithoutSchemeAndAuthority(entry.getKey());
       StringInternUtils.internUriStringsInPath(newKey);
       result.put(newKey, entry.getValue());
@@ -603,7 +601,7 @@ public class HoodieCombineHiveInputFormat<K extends WritableComparable, V extend
       throw new IOException("cannot find class " + inputFormatClassName);
     }
 
-    pushProjectionsAndFilters(job, inputFormatClass, hsplit.getPath(0));
+    pushProjectionsAndFiltersAndAsOf(job, hsplit.getPath(0));
 
     if (inputFormatClass.getName().equals(getParquetRealtimeInputFormatClassName())) {
       HoodieCombineFileInputFormatShim shims = createInputFormatShim();
@@ -661,8 +659,7 @@ public class HoodieCombineHiveInputFormat<K extends WritableComparable, V extend
         // CombinedSplit.
         Path[] ipaths = inputSplitShim.getPaths();
         if (ipaths.length > 0) {
-          PartitionDesc part = getPartitionFromPath(this.pathToPartitionInfo, ipaths[0],
-              IOPrepareCache.get().getPartitionDescMap());
+          PartitionDesc part = getPartitionDescFromPath(this.pathToPartitionInfo, ipaths[0]);
           inputFormatClassName = part.getInputFileFormatClass().getName();
         }
       }
@@ -794,8 +791,7 @@ public class HoodieCombineHiveInputFormat<K extends WritableComparable, V extend
 
         // extract all the inputFormatClass names for each chunk in the
         // CombinedSplit.
-        PartitionDesc part = getPartitionFromPath(pathToPartitionInfo, inputSplitShim.getPath(0),
-            IOPrepareCache.get().getPartitionDescMap());
+        PartitionDesc part = getPartitionDescFromPath(pathToPartitionInfo, inputSplitShim.getPath(0));
 
         // create a new InputFormat instance if this is the first time to see
         // this class
@@ -1028,7 +1024,7 @@ public class HoodieCombineHiveInputFormat<K extends WritableComparable, V extend
         }
         return new HoodieCombineRealtimeRecordReader(job, split, recordReaders);
       }
-      return new HadoopShimsSecure.CombineFileRecordReader(job, split, reporter, rrClass);
+      return HadoopShimsSecure.CombineFileRecordReader.createInstance(job, split, reporter, rrClass);
     }
 
     public void setHoodieFilter(boolean hoodieFilter) {
@@ -1058,8 +1054,7 @@ public class HoodieCombineHiveInputFormat<K extends WritableComparable, V extend
     public Set<Integer> call() throws Exception {
       Set<Integer> nonCombinablePathIndices = new HashSet<Integer>();
       for (int i = 0; i < length; i++) {
-        PartitionDesc part = getPartitionFromPath(pathToPartitionInfo, paths[i + start],
-            IOPrepareCache.get().allocatePartitionDescMap());
+        PartitionDesc part = getPartitionDescFromPath(pathToPartitionInfo, paths[i + start]);
         // Use HiveInputFormat if any of the paths is not splittable
         Class<? extends InputFormat> inputFormatClass = part.getInputFileFormatClass();
         InputFormat<WritableComparable, Writable> inputFormat = getInputFormatFromCache(inputFormatClass, conf);

@@ -18,7 +18,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
     <artifactId>hudi</artifactId>
-    <groupId>org.apache.hudi</groupId>
+    <groupId>io.hops.hudi</groupId>
     <version>1.2.0</version>
     <relativePath>../../pom.xml</relativePath>
   </parent>
@@ -66,11 +66,11 @@
               </transformers>
               <artifactSet>
                 <includes combine.children="append">
-                  <include>org.apache.hudi:hudi-hadoop-common</include>
-                  <include>org.apache.hudi:hudi-common</include>
-                  <include>org.apache.hudi:hudi-hadoop-mr</include>
-                  <include>org.apache.hudi:hudi-sync-common</include>
-                  <include>org.apache.hudi:hudi-hive-sync</include>
+                  <include>io.hops.hudi:hudi-hadoop-common</include>
+                  <include>io.hops.hudi:hudi-common</include>
+                  <include>io.hops.hudi:hudi-hadoop-mr</include>
+                  <include>io.hops.hudi:hudi-sync-common</include>
+                  <include>io.hops.hudi:hudi-hive-sync</include>
                   <include>com.fasterxml.jackson.core:jackson-annotations</include>
                   <include>com.fasterxml.jackson.core:jackson-core</include>
                   <include>com.fasterxml.jackson.core:jackson-databind</include>
@@ -99,28 +99,28 @@
               <relocations combine.children="append">
                 <relocation>
                   <pattern>org.apache.commons.io.</pattern>
-                  <shadedPattern>org.apache.hudi.org.apache.commons.io.</shadedPattern>
+                  <shadedPattern>io.hops.hudi.org.apache.commons.io.</shadedPattern>
                 </relocation>
                 <relocation>
                   <pattern>org.openjdk.jol.</pattern>
-                  <shadedPattern>org.apache.hudi.org.openjdk.jol.</shadedPattern>
+                  <shadedPattern>io.hops.hudi.org.openjdk.jol.</shadedPattern>
                 </relocation>
                 <!-- Kryo -->
                 <relocation>
                   <pattern>com.esotericsoftware.kryo.</pattern>
-                  <shadedPattern>org.apache.hudi.com.esotericsoftware.kryo.</shadedPattern>
+                  <shadedPattern>io.hops.hudi.com.esotericsoftware.kryo.</shadedPattern>
                 </relocation>
                 <relocation>
                   <pattern>com.esotericsoftware.reflectasm.</pattern>
-                  <shadedPattern>org.apache.hudi.com.esotericsoftware.reflectasm.</shadedPattern>
+                  <shadedPattern>io.hops.hudi.com.esotericsoftware.reflectasm.</shadedPattern>
                 </relocation>
                 <relocation>
                   <pattern>com.esotericsoftware.minlog.</pattern>
-                  <shadedPattern>org.apache.hudi.com.esotericsoftware.minlog.</shadedPattern>
+                  <shadedPattern>io.hops.hudi.com.esotericsoftware.minlog.</shadedPattern>
                 </relocation>
                 <relocation>
                   <pattern>org.objenesis.</pattern>
-                  <shadedPattern>org.apache.hudi.org.objenesis.</shadedPattern>
+                  <shadedPattern>io.hops.hudi.org.objenesis.</shadedPattern>
                 </relocation>
               </relocations>
               <createDependencyReducedPom>false</createDependencyReducedPom>
@@ -154,19 +154,19 @@
   <dependencies>
     <!-- Hoodie -->
     <dependency>
-      <groupId>org.apache.hudi</groupId>
+      <groupId>io.hops.hudi</groupId>
       <artifactId>hudi-common</artifactId>
       <version>${project.version}</version>
     </dependency>
 
     <dependency>
-      <groupId>org.apache.hudi</groupId>
+      <groupId>io.hops.hudi</groupId>
       <artifactId>hudi-hadoop-mr-bundle</artifactId>
       <version>${project.version}</version>
     </dependency>
 
     <dependency>
-      <groupId>org.apache.hudi</groupId>
+      <groupId>io.hops.hudi</groupId>
       <artifactId>hudi-hive-sync</artifactId>
       <version>${project.version}</version>
     </dependency>
