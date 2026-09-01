@@ -389,6 +389,12 @@ public abstract class HoodieStorage implements Closeable {
   @PublicAPIMethod(maturity = ApiMaturityLevel.EVOLVING)
   public final boolean needCreateTempFile() {
     return StorageSchemes.HDFS.getScheme().equals(getScheme())
+        // HopsFS has the same lease semantics as HDFS: a second create(path, overwrite=false)
+        // on a path another client still holds open fails with AlreadyBeingCreatedException,
+        // so concurrent writers of the same file need the temp-file + rename path. Without it,
+        // the tasks that initialise a metadata table partition all race on the single
+        // .hoodie_partition_metadata via HoodiePartitionMetadata#trySave and the losers fail.
+        || StorageSchemes.HOPSFS.getScheme().equals(getScheme())
         // viewfs itself is just an abstraction layer on top of other file systems based on hadoop like HDFS, therefore, enabling the creation of temporary files is the safest
         || StorageSchemes.VIEWFS.getScheme().equals(getScheme())
         // Local file will be visible immediately after LocalFileSystem#create(..), even before the output
