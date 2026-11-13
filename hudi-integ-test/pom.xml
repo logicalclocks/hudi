@@ -21,7 +21,7 @@
   <parent>
     <artifactId>hudi</artifactId>
     <groupId>io.hops.hudi</groupId>
-    <version>1.2.0.2-SNAPSHOT</version>
+    <version>1.2.0.2.0</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
   <artifactId>hudi-integ-test</artifactId>
