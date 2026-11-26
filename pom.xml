@@ -29,7 +29,7 @@
   <groupId>io.hops.hudi</groupId>
   <artifactId>hudi</artifactId>
   <packaging>pom</packaging>
-  <version>1.2.0.2-SNAPSHOT</version>
+  <version>1.2.0.3.0-SNAPSHOT</version>
   <description>Apache Hudi brings stream style processing on big data</description>
   <url>https://github.com/apache/hudi</url>
   <name>Hudi</name>
@@ -124,9 +124,9 @@
     <slf4j.version>2.0.17</slf4j.version>
     <joda.version>2.9.9</joda.version>
     <hadoop.groupid>io.hops</hadoop.groupid>
-    <hadoop.version>3.4.3.3-EE-RC1</hadoop.version>
+    <hadoop.version>3.4.3.4-EE-RC0</hadoop.version>
     <hive.groupid>io.hops.hive</hive.groupid>
-    <hive.version>4.1.0</hive.version>
+    <hive.version>4.1.0.2.0</hive.version>
     <hive.parquet.version>1.15.2</hive.parquet.version>
     <hive.avro.version>1.11.4</hive.avro.version>
     <presto.version>0.273</presto.version>
@@ -177,7 +177,7 @@
     <spark34.version>3.4.3</spark34.version>
     <spark35.version>3.5.5.1</spark35.version>
     <spark40.version>4.0.2</spark40.version>
-    <spark41.version>4.1.3.0</spark41.version>
+    <spark41.version>4.1.3.1.0</spark41.version>
     <hudi.spark.module>hudi-spark4.1.x</hudi.spark.module>
     <hudi.spark.common.module>hudi-spark4-common</hudi.spark.common.module>
     <avro.version>1.12.1</avro.version>
@@ -2636,7 +2636,7 @@
         <!-- This glob has to include hudi-spark4-common -->
         <hudi.spark.common.module>hudi-spark4-common</hudi.spark.common.module>
         <scalatest.version>${scalatest.spark4.version}</scalatest.version>
-        <hive.storage.version>4.1.0</hive.storage.version>
+        <hive.storage.version>4.1.0.2.0</hive.storage.version>
         <lance.spark.artifact>lance-spark-4.1_2.13</lance.spark.artifact>
         <lance.skip.tests>false</lance.skip.tests>
         <!-- NOTE: Some Hudi modules require standalone Parquet/Orc/etc file-format dependency (hudi-hive-sync,
